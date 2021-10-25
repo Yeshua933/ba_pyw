@@ -7,10 +7,6 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="PayYourWay_Pyw">
-        <sequence>
-            <module name="PayYourWay_PywAdminUi"/>
-            <module name="PayYourWay_PywApi"/>
-        </sequence>
+    <module name="PayYourWay_PywApi">
     </module>
 </config>

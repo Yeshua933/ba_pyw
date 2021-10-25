@@ -4,7 +4,9 @@
     "description": "Payment Service Integration",
     "type": "magento2-module",
     "require": {
-        "magento/framework": "*"
+        "magento/framework": "*",
+        "pay-your-way/module-pyw-admin-ui": "^1.0",
+        "pay-your-way/module-pyw-api": "^1.0"
     },
     "license": [
         "Proprietary"
