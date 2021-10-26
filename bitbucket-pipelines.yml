@@ -1,0 +1,62 @@
+image:
+  name: blueacornici/magento-services:pipelines-7.4composer2
+  username: $DOCKER_USER
+  password: $DOCKER_PASS
+definitions:
+  caches:
+    docker-composer: $BITBUCKET_CLONE_DIR/.composer/cache
+    node: ./node_modules
+    composer: ./.composer
+  step: &Lint
+    name: phpcs linter
+    script:
+      - /tools/docker-machine-vendor/lint
+    artifacts:
+      - report.json
+  parallel: &Build
+    - step:
+        name: Magento 2.4.2 EE
+        script:
+          - /tools/docker-machine-vendor/deploy 2.4.2-ee
+        services:
+          - docker
+        caches:
+          - docker
+    - step:
+        name: Magento 2.4.2 B2B
+        script:
+          - /tools/docker-machine-vendor/deploy 2.4.2-b2b
+        services:
+          - docker
+        caches:
+          - docker
+pipelines:
+  custom:
+    build:
+      - step: *Lint
+      - parallel: *Build
+    auto-db-snapshot:
+      - step:
+          name: "Create DB Image"
+          script:
+            - /tools/snapshot
+          services:
+            - docker
+    auto-provision:
+      - step:
+          name: "Provision in AWS"
+          script:
+            - /tools/provision
+          services:
+            - docker
+  default:
+    - step: *Lint
+  branches:
+    '{develop, staging}':
+      - step: *Lint
+      - parallel: *Build
+      - step:
+          name: Destroy
+          trigger: manual
+          script:
+            - /tools/destroy
