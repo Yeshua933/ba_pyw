@@ -1,0 +1,76 @@
+version: "3.7"
+services:
+  mysql:
+  # image: blueacornici/magento-services:mysql
+    image: DOCKER_REGISTRY:mysql-latest
+    volumes:
+      - mysql:/var/lib/mysql-no-volume
+    restart: unless-stopped
+  varnish:
+    image: blueacornici/magento-services:varnish
+    links:
+      - nginx
+    expose:
+      - 80
+    labels:
+      - "traefik.docker.network=gateway"
+      - "traefik.enable=true"
+      - "traefik.http.routers.varnish-BASUBDOMAIN.rule=Host(`BASUBDOMAIN.BADOMAIN`BASCOPES)"
+      - "traefik.http.routers.varnish-BASUBDOMAIN.entrypoints=websecure"
+      - "traefik.http.routers.varnish-BASUBDOMAIN.tls=true"
+      - "traefik.http.routers.varnish-BASUBDOMAIN.tls.certresolver=myresolver"
+      - "traefik.http.routers.varnish-BASUBDOMAIN.middlewares=test-auth"
+      - "traefik.http.middlewares.test-auth.basicauth.users=BAAUTH"
+    networks:
+      - default
+  php:
+    image: DOCKER_REGISTRY:BASUBDOMAIN-BUILDNO
+    links:
+      - redis
+      - ampq
+      - mysql
+      - elasticsearch
+      - mailhog
+    volumes:
+      - payload:/var/www/html
+      - media:/var/www/html/pub/media:rw
+    environment:
+      - MH_SENDMAIL_SMTP_ADDR=mailhog:1025
+  cli:
+    image: blueacornici/magento-services:cli-7.4
+    volumes:
+      - payload:/var/www/html
+      - media:/var/www/html/pub/media:rw
+    links:
+      - redis
+      - ampq
+      - mysql
+      - elasticsearch
+      - mailhog
+    environment:
+      - MH_SENDMAIL_SMTP_ADDR=mailhog:1025
+  nginx:
+    image: blueacornici/magento-services:nginx
+    links:
+      - php
+      - cli
+      - mailhog
+    volumes:
+      - payload:/var/www/html
+      - media:/var/www/html/pub/media:rw
+  redis:
+    image: blueacornici/magento-services:redis
+  ampq:
+    image: blueacornici/magento-services:ampq
+  mailhog:
+    image: blueacornici/magento-services:mailhog
+  elasticsearch:
+    image: blueacornici/magento-services:elasticsearch-7.9
+volumes:
+  payload:
+  mysql:
+  media:
+networks:
+  default:
+    external:
+      name: gateway
