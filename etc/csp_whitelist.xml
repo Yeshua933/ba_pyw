@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * @author    Blue Acorn iCi <code@blueacornici.com>
+ * @copyright 2021 Blue Acorn iCi. All Rights Reserved.
+ */
+  -->
+<csp_whitelist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Csp:etc/csp_whitelist.xsd">
+    <policies>
+        <policy id="connect-src">
+            <values>
+                <value id="payyourway_payments_connect _sdk" type="host">https://pywweb.uat.telluride.shopyourway.com</value>
+                <value id="payyourway_payments_api_connect_qa" type="host">https://checkout.uat.telluride.shopyourway.com</value>
+                <value id="payyourway_payments_connect_script" type="host">https://pywweb.uat.telluride.shopyourway.com/pyw_library/scripts/pywscript.js</value>
+            </values>
+        </policy>
+        <policy id="script-src">
+            <values>
+                <value id="payyourway_payments_source_sdk" type="host">https://pywweb.uat.telluride.shopyourway.com</value>
+                <value id="payyourway_payments_source_script" type="host">https://pywweb.uat.telluride.shopyourway.com/pyw_library/scripts/pywscript.js</value>
+                <value id="payyourway_payments_api_source__qa" type="host">https://checkout.uat.telluride.shopyourway.com</value>
+            </values>
+        </policy>
+    </policies>
+</csp_whitelist>

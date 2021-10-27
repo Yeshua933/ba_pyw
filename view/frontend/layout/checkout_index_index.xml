@@ -26,7 +26,7 @@
                                                                     <item name="component" xsi:type="string">PayYourWay_Pyw/js/view/payment/method-renderer</item>
                                                                     <item name="methods" xsi:type="array">
                                                                         <item name="payyourway" xsi:type="array">
-                                                                            <item name="isBillingAddressRequired" xsi:type="boolean">true</item>
+                                                                            <item name="isBillingAddressRequired" xsi:type="boolean">false</item>
                                                                         </item>
                                                                     </item>
                                                                 </item>
