@@ -15,17 +15,17 @@ definitions:
       - report.json
   parallel: &Build
     - step:
-        name: Magento 2.4.2 EE
+        name: Magento 2.4.3 EE
         script:
-          - /tools/docker-machine-vendor/deploy 2.4.2-ee
+          - /tools/docker-machine-vendor/deploy 2.4.3-ee
         services:
           - docker
         caches:
           - docker
     - step:
-        name: Magento 2.4.2 B2B
+        name: Magento 2.4.0 EE
         script:
-          - /tools/docker-machine-vendor/deploy 2.4.2-b2b
+          - /tools/docker-machine-vendor/deploy 2.4.0-ee
         services:
           - docker
         caches:
