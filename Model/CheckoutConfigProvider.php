@@ -16,7 +16,8 @@ class CheckoutConfigProvider implements ConfigProviderInterface
         return [
             'payment' => [
                 'payyourway' => [
-
+                    'refid' => 'oC4EbwWObOxb8FJtv8aWdaMhkYq3G7Tj6dP5kw1W+NQB4/XJH/pcbHcWVOw2IcO0HN4sq1Avg7Aq9y9XfiTiSbrZGxmY3BFJoiVWnFdGAFFK7xHO1dMllWbN+C6Fk7gOl4ofFMPZmtMi/txc7Xme25sdxAjR2NWkx59hT5J9hFmDeKFjT1DokvKUkilAo6IQr1kbtU5CZSeL56m9BfTQfFY0C3VF0FHAWV0d+lDE4RfWa5hp4TVLOVYIeLDwSB8cIu9pmfyE4aLpS+eO8bSHrE+D6KQleNNbrLySo8KbUOuer0D/dMZYgvP36Kv9HtS9FFeOOVAiEstYByvAgiy2Cw==',
+                    'sdkUrl' => 'https://pywweb.uat.telluride.shopyourway.com/pyw_library/scripts/pywscript'
                 ]
             ]
         ];
