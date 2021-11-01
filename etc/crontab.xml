@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * @author    Blue Acorn iCi <code@blueacornici.com>
+ * @copyright 2021 Blue Acorn iCi. All Rights Reserved.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="payyourway_pyw">
+        <job name="payyourway_pyw_refresh_token" instance="PayYourWay\Pyw\Cron\RefreshToken" method="execute">
+            <schedule>* * * * *</schedule>
+        </job>
+    </group>
+</config>
