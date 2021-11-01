@@ -1,5 +1,5 @@
 {
-    "name": "pay-your-way/module-pyw",
+    "name": "pay-your-way/module-pay-your-way",
     "version": "1.0.0",
     "description": "Payment Service Integration",
     "type": "magento2-module",
