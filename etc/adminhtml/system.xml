@@ -11,7 +11,7 @@
             <group id="payyourway" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>PYW Payment</label>
                 <field id="sign_up" translate="label" type="button" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>SIGN UP FOR PAY YOUR WAY</label>
+                    <label>Sign up</label>
                     <tooltip>Sign up for pay your way</tooltip>
                     <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\PywOnboarding</frontend_model>
                 </field>
@@ -40,7 +40,6 @@
                     <depends>
                         <field id="sandbox_flag">0</field>
                     </depends>
-                    <!--                        <config_path>paypal/wpp/api_username</config_path>-->
                     <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                 </field>
                 <field id="public_key_sb" translate="label"  type="textarea" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">

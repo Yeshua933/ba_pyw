@@ -41,7 +41,7 @@ class PywOnboarding extends Field
     }
     public function getButtonHtml()
     {
-        $button = $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')->setData(['id' => 'sign_up', 'label' => __('Sign up for Pay Your Way'),]);
+        $button = $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')->setData(['id' => 'sign_up', 'label' => __('SIGN UP FOR PAY YOUR WAY'),]);
         return $button->toHtml();
     }
 }
