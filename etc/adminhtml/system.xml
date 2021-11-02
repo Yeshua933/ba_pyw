@@ -74,7 +74,6 @@
                 </field>
                 <field id="sandbox_flag" translate="label" type="select" sortOrder='80' showInDefault="1" showInWebsite="1">
                     <label>Sandbox Mode</label>
-                    <!--                    <config_path>paypal/wpp/sandbox_flag</config_path>-->
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <attribute type="shared">1</attribute>
                 </field>
