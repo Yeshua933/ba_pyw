@@ -4,6 +4,7 @@
  * @author    Blue Acorn iCi <code@blueacornici.com>
  * @copyright 2021 Blue Acorn iCi. All Rights Reserved.
  */
+declare(strict_types=1);
 
 namespace PayYourWay\Pyw\Block\Adminhtml\System\Config;
 
@@ -16,9 +17,7 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
  */
 class KeyGenerator extends Field
 {
-    /**
-     * Path to block template
-     */
+    /** Path to block template */
     protected $_template = 'PayYourWay_Pyw::system/config/KeyGenerator.phtml';
 
     public function __construct(Context $context, array $data = [])

@@ -133,7 +133,7 @@
                         <field id="sandbox_flag">0</field>
                     </depends>
                 </field>
-                <field id="merchant_code_sb" translate="label" type="multiselect" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <field id="merchant_code_sb" translate="label" type="multiselect" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Sandbox Merchant MCC Code</label>
                     <depends>
                         <field id="sandbox_flag">1</field>
