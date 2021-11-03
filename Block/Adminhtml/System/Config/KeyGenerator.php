@@ -30,14 +30,17 @@ class KeyGenerator extends Field
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
         return parent::render($element);
     }
+
     protected function _getElementHtml(AbstractElement $element)
     {
         return $this->_toHtml();
     }
+
     public function getCustomUrl()
     {
         return $this->getUrl('router/controller/action');
     }
+
     public function getButtonHtml()
     {
         $button = $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')->setData(['id' => 'generate_key', 'label' => __('Generate Key'),]);
