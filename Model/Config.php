@@ -9,11 +9,12 @@ namespace PayYourWay\Pyw\Model;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
+use PayYourWay\Pyw\Api\ConfigInterface;
 
 /**
  * Configuration retrieval tool
  */
-class Config
+class Config implements ConfigInterface
 {
     public const CONFIG_XML_PATH_ENABLE_PAY_YOUR_WAY = 'payment/payyourway/active';
     public const CONFIG_XML_PATH_ENABLE_REFRESH_TOKEN_PROCESS = 'payment/payyourway/enable_refresh_token_process';
@@ -35,7 +36,7 @@ class Config
      * @param string $scope
      * @return bool
      */
-    public function isPayYourWayEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORE): bool
+    public function isPayYourWayEnabled($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): bool
     {
         return $this->scopeConfig->isSetFlag(self::CONFIG_XML_PATH_ENABLE_PAY_YOUR_WAY, $scope, $scopeId);
     }
@@ -47,7 +48,7 @@ class Config
      * @param string $scope
      * @return bool
      */
-    public function isRefreshTokenProcessEnabled($scopeId = null, $scope = ScopeInterface::SCOPE_STORE): bool
+    public function isRefreshTokenProcessEnabled($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): bool
     {
         return $this->scopeConfig->isSetFlag(self::CONFIG_XML_PATH_ENABLE_REFRESH_TOKEN_PROCESS, $scope, $scopeId);
     }
