@@ -25,23 +25,23 @@ class KeyGenerator extends Field
         parent::__construct($context, $data);
     }
 
-    public function render(AbstractElement $element)
+    public function render(AbstractElement $element): string
     {
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
         return parent::render($element);
     }
 
-    protected function _getElementHtml(AbstractElement $element)
+    protected function _getElementHtml(AbstractElement $element): string
     {
         return $this->_toHtml();
     }
 
-    public function getCustomUrl()
+    public function getCustomUrl(): string
     {
         return $this->getUrl('router/controller/action');
     }
 
-    public function getButtonHtml()
+    public function getButtonHtml(): string
     {
         $button = $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')->setData(['id' => 'generate_key', 'label' => __('Generate Key'),]);
         return $button->toHtml();
