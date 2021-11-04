@@ -8,14 +8,15 @@ declare(strict_types=1);
 namespace PayYourWay\Pyw\Controller\Checkout;
 
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Customer\Model\Group;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\HttpGetActionInterface;
-use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\App\Response\RedirectInterface;
+use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\CartManagementInterface;
+use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
 
@@ -45,6 +46,70 @@ class PlaceOrder implements HttpGetActionInterface
         $this->customerSession = $customerSession;
         $this->response = $response;
         $this->redirect = $redirect;
+    }
+
+    /**
+     * Return checkout quote object
+     *
+     * @return CartInterface
+     * @throws NoSuchEntityException
+     */
+    private function getQuote(): CartInterface
+    {
+        $quote = null;
+
+        if (!$this->quote->getId()) {
+            if ($this->checkoutSession->getQuoteId()) {
+                $quote = $this->quoteRepository->get($this->checkoutSession->getQuoteId());
+            }
+        }
+
+        return $quote;
+    }
+
+    /**
+     * Instantiate quote
+     *
+     * @return void
+     * @throws LocalizedException
+     */
+    private function initCheckout()
+    {
+        $quote = $this->getQuote();
+
+        if (!$quote->hasItems()) {
+            $this->response->setStatusHeader(403, '1.1', 'Forbidden');
+            throw new LocalizedException(__('We can\'t initialize the Pay Your Way Checkout.'));
+        }
+
+        if (!$quote->getGrandTotal()) {
+            throw new LocalizedException(
+                __(
+                    'Pay Your Way can\'t process orders with a zero balance due. '
+                    . 'To finish your purchase, please go through the standard checkout process.'
+                )
+            );
+        }
+
+        $this->quote = $quote;
+    }
+
+    /**
+     * Prepare quote for guest checkout order submit
+     *
+     * @return void
+     */
+    private function prepareGuestQuote()
+    {
+        $billingAddress = $this->quote->getBillingAddress();
+
+        $email = $billingAddress->getOrigData('email') !== null
+            ? $billingAddress->getOrigData('email') : $billingAddress->getEmail();
+
+        $this->quote->setCustomerId(null)
+            ->setCustomerEmail($email)
+            ->setCustomerIsGuest(true)
+            ->setCustomerGroupId(Group::NOT_LOGGED_IN_ID);
     }
 
     /**
@@ -81,69 +146,5 @@ class PlaceOrder implements HttpGetActionInterface
             ->setLastOrderStatus($order->getStatus());
 
         $this->redirect->redirect($this->response, 'checkout/onepage/success', []);
-    }
-
-    /**
-     * Instantiate quote
-     *
-     * @return void
-     * @throws LocalizedException
-     */
-    private function initCheckout()
-    {
-        $quote = $this->getQuote();
-
-        if (!$quote->hasItems()) {
-            $this->response->setStatusHeader(403, '1.1', 'Forbidden');
-            throw new LocalizedException(__('We can\'t initialize the Pay Your Way Checkout.'));
-        }
-
-        if (!$quote->getGrandTotal()) {
-            throw new LocalizedException(
-                __(
-                    'Pay Your Way can\'t process orders with a zero balance due. '
-                    . 'To finish your purchase, please go through the standard checkout process.'
-                )
-            );
-        }
-
-        $this->quote = $quote;
-    }
-
-    /**
-     * Return checkout quote object
-     *
-     * @return CartInterface
-     * @throws NoSuchEntityException
-     */
-    private function getQuote(): CartInterface
-    {
-        $quote = null;
-
-        if (!$this->quote->getId()) {
-            if ($this->checkoutSession->getQuoteId()) {
-                $quote = $this->quoteRepository->get($this->checkoutSession->getQuoteId());
-            }
-        }
-
-        return $quote;
-    }
-
-    /**
-     * Prepare quote for guest checkout order submit
-     *
-     * @return void
-     */
-    private function prepareGuestQuote()
-    {
-        $billingAddress = $this->quote->getBillingAddress();
-
-        $email = $billingAddress->getOrigData('email') !== null
-            ? $billingAddress->getOrigData('email') : $billingAddress->getEmail();
-
-        $this->quote->setCustomerId(null)
-            ->setCustomerEmail($email)
-            ->setCustomerIsGuest(true)
-            ->setCustomerGroupId(\Magento\Customer\Model\Group::NOT_LOGGED_IN_ID);
     }
 }
