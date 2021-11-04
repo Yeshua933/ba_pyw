@@ -13,7 +13,7 @@ use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
 
-class PlaceOrder implements HttpGetActionInterface
+class ReturnAction implements HttpGetActionInterface
 {
     private MessageManagerInterface $messageManager;
     private ResultFactory $resultFactory;
