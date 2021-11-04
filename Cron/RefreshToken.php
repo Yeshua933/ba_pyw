@@ -7,15 +7,27 @@ declare(strict_types=1);
 
 namespace PayYourWay\Pyw\Cron;
 
+use PayYourWay\Pyw\Model\Config;
+
 class RefreshToken
 {
+    private Config $config;
+
+    public function __construct(Config $config)
+    {
+        $this->config = $config;
+    }
+
     /**
      * Refresh and generate a token
      */
     public function execute()
     {
-        /**
-         * @todo: Implement the refresh and generate logic
-         */
+        if ($this->config->isPayYourWayEnabled() && $this->config->isRefreshTokenProcessEnabled())
+        {
+            /**
+             * @todo: Implement the refresh and generate logic
+             */
+        }
     }
 }
