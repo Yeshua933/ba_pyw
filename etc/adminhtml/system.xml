@@ -107,6 +107,7 @@
                     <depends>
                         <field id="sandbox_flag">0</field>
                     </depends>
+                    <validate>validate-email</validate>
                 </field>
                 <field id="merchant_email_sb" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Sandbox Merchant Email</label>
@@ -116,16 +117,18 @@
                     <validate>validate-email</validate>
                 </field>
                 <field id="merchant_phone_pr" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Merchant Email</label>
+                    <label>Merchant Phone</label>
                     <depends>
                         <field id="sandbox_flag">0</field>
                     </depends>
+                    <validate>phoneUS</validate>
                 </field>
                 <field id="merchant_phone_sb" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Sandbox Merchant Phone</label>
                     <depends>
                         <field id="sandbox_flag">1</field>
                     </depends>
+                    <validate>phoneUS</validate>
                 </field>
                 <field id="merchant_code_pr" translate="label" type="multiselect" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Merchant MCC Code</label>
