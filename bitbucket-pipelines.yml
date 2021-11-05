@@ -58,7 +58,7 @@ pipelines:
       - step:
           name: "Provision in AWS"
           script:
-            - /tools/provision
+            - /tools/docker/provision
           services:
             - docker
   default:
