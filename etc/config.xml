@@ -13,6 +13,7 @@
                 <model>PayYourWay\Pyw\Model\PaymentMethod</model>
                 <order_status>processing</order_status>
                 <title>Pay Your Way</title>
+                <environment>sandbox</environment>
                 <payment_action>authorize_capture</payment_action>
             </payyourway>
         </payment>
