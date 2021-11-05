@@ -4,11 +4,30 @@
     "description": "Payment Service Integration",
     "type": "magento2-module",
     "require": {
-        "magento/framework": "*"
+        "php": "^7.4.0",
+        "magento/framework": "^103.0.2",
+        "squizlabs/php_codesniffer": "*"
     },
     "license": [
         "Proprietary"
     ],
+    "repositories": {
+        "repo": {
+            "type": "composer",
+            "url": "https://repo.magento.com/"
+        },
+        "ba": {
+            "type": "composer",
+            "url": "https://satis.blueacorn.net"
+        }
+    },
+    "require-dev": {
+        "magento/magento-coding-standard": "^6.0"
+    },
+    "scripts": {
+        "post-install-cmd": ["([ $COMPOSER_DEV_MODE -eq 0 ] || vendor/bin/phpcs --config-set installed_paths ../../magento/magento-coding-standard/)"],
+        "post-update-cmd": ["([ $COMPOSER_DEV_MODE -eq 0 ] || vendor/bin/phpcs --config-set installed_paths ../../magento/magento-coding-standard/)"]
+    },
     "autoload": {
         "files": [
             "registration.php"
