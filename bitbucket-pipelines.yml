@@ -52,7 +52,7 @@ pipelines:
   default:
     - step: *Lint
   branches:
-    '{develop, staging}':
+    '{develop, staging, pipelines}':
       - step: *Lint
       - parallel: *Build
       - step:
