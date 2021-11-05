@@ -14,6 +14,7 @@
                 <order_status>processing</order_status>
                 <title>Pay Your Way</title>
                 <payment_action>authorize_capture</payment_action>
+                <enable_refresh_token_process>1</enable_refresh_token_process>
             </payyourway>
         </payment>
     </default>

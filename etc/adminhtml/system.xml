@@ -10,9 +10,149 @@
         <section id="payment">
             <group id="payyourway" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>PYW Payment</label>
+                <field id="sign_up" translate="label" type="button" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Sign up</label>
+                    <tooltip>Sign up for pay your way</tooltip>
+                    <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\PywOnboarding</frontend_model>
+                </field>
                 <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="client_id_pr" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Client Id</label>
+                    <depends>
+                        <field id="sandbox_flag">0</field>
+                    </depends>
+                </field>
+                <field id="client_id_sb" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Sandbox Client Id</label>
+                    <depends>
+                        <field id="sandbox_flag">1</field>
+                    </depends>
+                </field>
+                <field id="generate_key" translate="label" type="button" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Generate Key</label>
+                    <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\KeyGenerator</frontend_model>
+                </field>
+                <field id="public_key_pr" translate="label" type="textarea" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Public Key</label>
+                    <depends>
+                        <field id="sandbox_flag">0</field>
+                    </depends>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                </field>
+                <field id="public_key_sb" translate="label"  type="textarea" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Sandbox Public Key</label>
+                    <depends>
+                        <field id="sandbox_flag">1</field>
+                    </depends>
+                </field>
+                <field id="private_key_pr" translate="label" type="textarea" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Private Key</label>
+                    <depends>
+                        <field id="sandbox_flag">0</field>
+                    </depends>
+                </field>
+                <field id="private_key_sb" translate="label" type="textarea" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Sandbox Private Key</label>
+                    <depends>
+                        <field id="sandbox_flag">1</field>
+                    </depends>
+                </field>
+                <field id="secret_key_pr" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Secret Key</label>
+                    <depends>
+                        <field id="sandbox_flag">0</field>
+                    </depends>
+                </field>
+                <field id="secret_key_sb" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Sandbox Secret Key</label>
+                    <depends>
+                        <field id="sandbox_flag">1</field>
+                    </depends>
+                </field>
+                <field id="sandbox_flag" translate="label" type="select" sortOrder='80' showInDefault="1" showInWebsite="1">
+                    <label>Sandbox Mode</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <attribute type="shared">1</attribute>
+                </field>
+                <field id="item_details" translate="label" type="select" sortOrder='90' showInDefault="1" showInWebsite="1">
+                    <label>Item Details Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <attribute type="shared">1</attribute>
+                </field>
+                <field id="payment_action" translate="label" type="select" sortOrder='90' showInDefault="1" showInWebsite="1">
+                    <label>Payment Action</label>
+                    <source_model>PayYourWay\Pyw\Model\System\Config\Source\PaymentAction</source_model>
+                    <attribute type="shared">1</attribute>
+                </field>
+                <field id="merchant_name_pr" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Merchant Name</label>
+                    <depends>
+                        <field id="sandbox_flag">0</field>
+                    </depends>
+                </field>
+                <field id="merchant_name_sb" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Sandbox Merchant Name</label>
+                    <depends>
+                        <field id="sandbox_flag">1</field>
+                    </depends>
+                </field>
+                <field id="merchant_email_pr" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Merchant Email</label>
+                    <depends>
+                        <field id="sandbox_flag">0</field>
+                    </depends>
+                </field>
+                <field id="merchant_email_sb" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Sandbox Merchant Email</label>
+                    <depends>
+                        <field id="sandbox_flag">1</field>
+                    </depends>
+                    <validate>validate-email</validate>
+                </field>
+                <field id="merchant_phone_pr" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Merchant Email</label>
+                    <depends>
+                        <field id="sandbox_flag">0</field>
+                    </depends>
+                </field>
+                <field id="merchant_phone_sb" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Sandbox Merchant Phone</label>
+                    <depends>
+                        <field id="sandbox_flag">1</field>
+                    </depends>
+                </field>
+                <field id="merchant_code_pr" translate="label" type="multiselect" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Merchant MCC Code</label>
+                    <depends>
+                        <field id="sandbox_flag">0</field>
+                    </depends>
+                </field>
+                    <field id="merchant_code_sb" translate="label" type="multiselect" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Sandbox Merchant MCC Code</label>
+                    <depends>
+                        <field id="sandbox_flag">1</field>
+                    </depends>
+                </field>
+                <field id="merchant_address_pr" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Merchant Address</label>
+                    <depends>
+                        <field id="sandbox_flag">0</field>
+                    </depends>
+                </field>
+                <field id="merchant_address_sb" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Sandbox Merchant Address</label>
+                    <depends>
+                        <field id="sandbox_flag">1</field>
+                    </depends>
+                </field>
+                <field id="terms_conditions" translate="label" type="checkbox" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Terms and Conditions</label>
+                </field>
+                <field id="terms_conditions_link" translate="label" type="link" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Terms and Conditions Link</label>
                 </field>
                 <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1">
                     <label>Sort Order</label>
@@ -20,6 +160,10 @@
                 </field>
                 <field id="title" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Title</label>
+                </field>
+                <field id="enable_refresh_token_process" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" canRestore="1">
+                    <label>Enable Refresh Token Process</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
         </section>
