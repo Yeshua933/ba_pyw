@@ -33,7 +33,7 @@ definitions:
           - /tools/docker/use-example 2.4.2-ee
           - /tools/docker/build
           # - /tools/docker/use-image blueacornici/magento-services:v2-7-4composer2-490
-          - /tools/docker/run /tools/default/coding-standard
+          # - /tools/docker/run /tools/default/coding-standard
           - /tools/docker/run /tools/default/phpunit || true
           - /tools/docker/deploy
           # - /tools/docker/run /tools/default/mtft         
