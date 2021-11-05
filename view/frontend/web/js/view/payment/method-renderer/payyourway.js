@@ -51,7 +51,7 @@ define(
 
             openPopup : function () {
                 let total = 500;
-                let returnUrl = 'www.google.com';
+                let returnUrl = this.baseUrl + 'payyourway/checkout/return';
                 let cancelUrl = this.baseUrl + 'payyourway/checkout/cancel';
 
                 /**
