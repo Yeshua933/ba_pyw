@@ -19,6 +19,7 @@ use Magento\Quote\Api\CartManagementInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
+use Psr\Log\LoggerInterface;
 
 class PlaceOrder implements HttpGetActionInterface
 {
@@ -29,6 +30,7 @@ class PlaceOrder implements HttpGetActionInterface
     private ResponseInterface $response;
     private RedirectInterface $redirect;
     private CartInterface $quote;
+    private LoggerInterface $logger;
 
     public function __construct(
         CartManagementInterface $quoteManagement,
@@ -37,7 +39,8 @@ class PlaceOrder implements HttpGetActionInterface
         CustomerSession $customerSession,
         Quote $quote,
         ResponseInterface $response,
-        RedirectInterface $redirect
+        RedirectInterface $redirect,
+        LoggerInterface $logger
     ) {
         $this->quoteManagement = $quoteManagement;
         $this->quoteRepository = $quoteRepository;
@@ -46,6 +49,7 @@ class PlaceOrder implements HttpGetActionInterface
         $this->customerSession = $customerSession;
         $this->response = $response;
         $this->redirect = $redirect;
+        $this->logger = $logger;
     }
 
     /**
@@ -116,11 +120,21 @@ class PlaceOrder implements HttpGetActionInterface
      * Submit the order
      *
      * @return void
-     * @throws LocalizedException
      */
     public function execute()
     {
-        $this->initCheckout();
+        try {
+            $this->initCheckout();
+        } catch (LocalizedException $exception) {
+            $this->logger->error(
+                'Something went wrong with the Pay Your Way Checkout.',
+                [
+                    'quote' => $this->quote->getData(),
+                    'exception' => (string)$exception,
+                ]
+            );
+        }
+
         $quoteId = $this->quote->getId();
 
         if (!$this->customerSession->isLoggedIn()) {
@@ -133,7 +147,19 @@ class PlaceOrder implements HttpGetActionInterface
         }
 
         $this->quote->collectTotals();
-        $order = $this->quoteManagement->submit($this->quote);
+
+        try {
+            $order = $this->quoteManagement->submit($this->quote);
+        } catch (LocalizedException $exception) {
+            $this->logger->error(
+                'Something went wrong with the Pay Your Way Checkout.',
+                [
+                    'quote' => $this->quote->getData(),
+                    'exception' => (string)$exception,
+                ]
+            );
+        }
+
         $this->checkoutSession->clearHelperData();
         $this->checkoutSession->setLastQuoteId($quoteId)->setLastSuccessQuoteId($quoteId);
 
