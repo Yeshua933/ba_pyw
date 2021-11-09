@@ -1,71 +1,45 @@
 image:
-  name: blueacornici/magento-services:v2-pipelines-7.4composer2
+  name: blueacornici/magento-services:v2-pipelines-7.4composer2-v2-mftf 
   username: $DOCKER_USER
   password: $DOCKER_PASS
 definitions:
   caches:
-    docker-composer: $BITBUCKET_CLONE_DIR/.composer/cache
-    node: ./node_modules
-    composer: ./.composer
+    node: node_modules
+    composer: .composer
   services:
     docker:
       memory: 3072
-  step: &Lint
-      name: Bash Linting
-      script:
-        - /tools/update-pipeline-tools
-        - /tools/common/linting || true
-  parallel: &Build
-    - step:
-        name: mach 8.0
-        # size: 2x
-        script:
-          - export AUTO_IMAGE_TYPE=8.0
-          # - mach build php:$AUTO_IMAGE_TYPE
-          # - mach build pipelines:$AUTO_IMAGE_TYPE
-        services:
-          - docker
-    - step:
-        name: 7.4composer2 & 2.4.2-ee
-        size: 2x
-        script:
-          - export AUTO_IMAGE_TYPE=7.4composer2 
-          - /tools/docker/use-example 2.4.2-ee
-          - /tools/docker/build
-          # - /tools/docker/use-image blueacornici/magento-services:v2-7-4composer2-490
-          # - /tools/docker/run /tools/default/coding-standard
-          - /tools/docker/run /tools/default/phpunit || true
-          - /tools/docker/deploy
-          # - /tools/docker/run /tools/default/mtft         
-        services:
-          - docker
-        caches:
-          - docker
+    mysql:
+      image: blueacornici/magento-services:mysql
+    redis:
+      image: redis:latest
+    ampq:
+      image: rabbitmq:latest           
 pipelines:
   custom:
-    build:
-      - step: *Lint
-      - parallel: *Build
     auto-db-snapshot:
       - step:
-          name: "Create DB Image"
-          script:
-            - /tools/snapshot
-          services:
-            - docker
-            
+          name: Database Snapshot
+          script: [ source init, snapshot ]
+          services: [ docker ]
     auto-provision:
       - step:
-          name: "Provision in AWS"
-          script:
-            - /tools/docker/provision
-          services:
-            - docker
+          name: Provision in AWS
+          script: [ source init, provision ]
+          services: [ docker ]
   default:
-      # - step: *Lint
-      - parallel: *Build
-      - step:
-          name: Destroy
-          trigger: manual
-          script:
-            - /tools/destroy
+    - step: 
+        name: 7.4composer2 & 2.4.2-ee
+        size: 2x
+        script: [ 
+          export AUTO_IMAGE_TYPE=7.4composer2, 
+          export AUTO_USE_EXAMPLE=2.4.2-ee,
+          
+          source init, build, best-practices, deploy, # mftf, push-pipeline-images 
+          
+        ]
+        services: [ docker, mysql, redis, ampq ] # docker required for creating images, rest required for integration
+    - step:
+        name: Destroy
+        trigger: manual
+        script: [ source init, destroy ]
