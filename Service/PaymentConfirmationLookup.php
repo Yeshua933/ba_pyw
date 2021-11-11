@@ -7,12 +7,23 @@ declare(strict_types=1);
 
 namespace PayYourWay\Pyw\Service;
 
+use Magento\Framework\HTTP\Client\Curl;
 use Magento\Store\Model\ScopeInterface;
 use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
 use PayYourWay\Pyw\Api\RequestInterface;
 
 class PaymentConfirmationLookup implements PaymentConfirmationLookupInterface
 {
+    private const PAYMENT_CONFIRMATION_URL_UAT = 'https://checkout.uat.telluride.shopyourway.com/';
+    private const PAYMENT_CONFIRMATION_URL_PROD = 'https://checkout.telluride.shopyourway.com/';
+
+    private Curl $curl;
+
+    public function __construct(Curl $curl)
+    {
+        $this->curl = $curl;
+    }
+
     public function lookup(
         RequestInterface $request,
         $scopeCode = null,
@@ -20,10 +31,26 @@ class PaymentConfirmationLookup implements PaymentConfirmationLookupInterface
     ): string {
 
         /**
-         * @todo: Make a request to Payment Confirmation API in order
-         * to check and save details from payment
+         * @todo: Check whether production mode is enabled or not
          */
+        $this->curl->get(self::PAYMENT_CONFIRMATION_URL_UAT);
 
+        $headers = [
+            "Content-Type" => "application/json",
+            "channel" => $request->getChannel(),
+            "merchantId" => $request->getMerchantId(),
+            "pywid" => $request->getMerchantId(),
+            "transactionId" => $request->getTransactionId(),
+            "actionType" => $request->getActionType(),
+            "transactionType" => $request->getTransactionType(),
+            "refid" => $request->getRefId()
+        ];
+
+        $this->curl->setHeaders($headers);
+
+        return $this->curl->getBody();
+
+        /*
         return json_encode([
             'authCode' => 'XYZABC123',
             'orderDate' => '11-11-2021 09:00:00',
@@ -42,5 +69,6 @@ class PaymentConfirmationLookup implements PaymentConfirmationLookupInterface
                 '4111052212380192'
             ]
         ]);
+        */
     }
 }
