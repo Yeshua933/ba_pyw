@@ -13,7 +13,7 @@
     "require": {
         "magento/product-enterprise-edition": "2.4.3",
         "magento/composer-root-update-plugin": "~1.1",
-        "pay-your-way/module-pay-your-way": "*"
+        "pay-your-way/module-pay-your-way": "dev-staging"
     },
     "autoload": {
         "exclude-from-classmap": [
