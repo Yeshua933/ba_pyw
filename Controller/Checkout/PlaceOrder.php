@@ -22,7 +22,10 @@ use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
 use PayYourWay\Pyw\Model\PaymentMethod;
+use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
 use Psr\Log\LoggerInterface;
+use PayYourWay\Pyw\Api\RequestInterface as PaymentConfirmationRequestInterface;
+use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
 
 class PlaceOrder implements HttpGetActionInterface
 {
@@ -35,6 +38,9 @@ class PlaceOrder implements HttpGetActionInterface
     private CartInterface $quote;
     private LoggerInterface $logger;
     private RequestInterface $request;
+    private PaymentConfirmationLookupInterface $paymentConfirmationLookupInterface;
+    private PaymentConfirmationRequestInterface $paymentConfirmationRequestInterface;
+    private MessageManagerInterface $messageManager;
 
     public function __construct(
         CartManagementInterface $quoteManagement,
@@ -45,7 +51,10 @@ class PlaceOrder implements HttpGetActionInterface
         ResponseInterface $response,
         RedirectInterface $redirect,
         LoggerInterface $logger,
-        RequestInterface $request
+        RequestInterface $request,
+        PaymentConfirmationLookupInterface $paymentConfirmationLookupInterface,
+        PaymentConfirmationRequestInterface $paymentConfirmationRequestInterface,
+        MessageManagerInterface $messageManager
     ) {
         $this->quoteManagement = $quoteManagement;
         $this->quoteRepository = $quoteRepository;
@@ -56,6 +65,9 @@ class PlaceOrder implements HttpGetActionInterface
         $this->redirect = $redirect;
         $this->logger = $logger;
         $this->request = $request;
+        $this->paymentConfirmationLookupInterface = $paymentConfirmationLookupInterface;
+        $this->paymentConfirmationRequestInterface = $paymentConfirmationRequestInterface;
+        $this->messageManager = $messageManager;
     }
 
     /**
@@ -155,9 +167,37 @@ class PlaceOrder implements HttpGetActionInterface
         $this->quote->collectTotals();
 
         /**
-         * @todo: Make a request to Payment Confirmation API in order
-         * to check and save details from payment
+         * Make a request to Payment Confirmation API in order to check and save details from payment
+         * @todo: Grab the values dynamically
          */
+        $this->paymentConfirmationRequestInterface->setChannel('mockedChannel');
+        $this->paymentConfirmationRequestInterface->setMerchantId('mockedMerchantId');
+        $this->paymentConfirmationRequestInterface->setPywid($this->request->getParam('pywid'));
+        $this->paymentConfirmationRequestInterface->setTransactionId('mockedTransactionId');
+        $this->paymentConfirmationRequestInterface->setActionType('mockedActionType');
+        $this->paymentConfirmationRequestInterface->setTransactionType('mockedTransactionType');
+        $this->paymentConfirmationRequestInterface->setRefId('mockedRefId');
+
+        $paymentConfirmationResponse = json_decode($this->paymentConfirmationLookupInterface->lookup(
+            $this->paymentConfirmationRequestInterface
+        ));
+
+        if ($paymentConfirmationResponse->paymentTotal !== $this->quote->getGrandTotal()) {
+            $this->logger->error(
+                'The amount returned from PayYour Way doesn\'t match the amount on the store.',
+                [
+                    'paymentResponse' => $paymentConfirmationResponse,
+                    'quote' => $this->quote->getData(),
+                    'pywid' => $this->request->getParam('pywid')
+                ]
+            );
+            $this->messageManager->addErrorMessage(
+                __('The amount returned from PayYour Way doesn\'t match the amount on the store.')
+            );
+
+            $this->redirect->redirect($this->response, 'checkout/cart', []);
+            return;
+        }
 
         try {
             $this->quote->getPayment()->importData([
