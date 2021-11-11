@@ -12,8 +12,7 @@
     "version": "2.4.3",
     "require": {
         "magento/product-enterprise-edition": "2.4.3",
-        "magento/composer-root-update-plugin": "~1.1",
-        "magento/composer-dependency-version-audit-plugin": "~0.1"
+        "magento/composer-root-update-plugin": "~1.1"
     },
     "autoload": {
         "exclude-from-classmap": [
