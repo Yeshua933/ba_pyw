@@ -166,35 +166,7 @@ class PlaceOrder implements HttpGetActionInterface
 
         $this->quote->collectTotals();
 
-        /**
-         * Make a request to Payment Confirmation API in order to check and save details from payment
-         * @todo: Grab the values dynamically
-         */
-        $this->paymentConfirmationRequestInterface->setChannel('mockedChannel');
-        $this->paymentConfirmationRequestInterface->setMerchantId('mockedMerchantId');
-        $this->paymentConfirmationRequestInterface->setPywid($this->request->getParam('pywid'));
-        $this->paymentConfirmationRequestInterface->setTransactionId('mockedTransactionId');
-        $this->paymentConfirmationRequestInterface->setActionType('mockedActionType');
-        $this->paymentConfirmationRequestInterface->setTransactionType('mockedTransactionType');
-        $this->paymentConfirmationRequestInterface->setRefId('mockedRefId');
-
-        $paymentConfirmationResponse = json_decode($this->paymentConfirmationLookupInterface->lookup(
-            $this->paymentConfirmationRequestInterface
-        ));
-
-        if ($paymentConfirmationResponse->paymentTotal !== $this->quote->getGrandTotal()) {
-            $this->logger->error(
-                'The amount returned from PayYour Way doesn\'t match the amount on the store.',
-                [
-                    'paymentResponse' => $paymentConfirmationResponse,
-                    'quote' => $this->quote->getData(),
-                    'pywid' => $this->request->getParam('pywid')
-                ]
-            );
-            $this->messageManager->addErrorMessage(
-                __('The amount returned from PayYour Way doesn\'t match the amount on the store.')
-            );
-
+        if (!$this->checkPaymentConfirmation()) {
             $this->redirect->redirect($this->response, 'checkout/cart', []);
             return;
         }
@@ -232,6 +204,7 @@ class PlaceOrder implements HttpGetActionInterface
         $this->checkoutSession->setLastQuoteId($quoteId)->setLastSuccessQuoteId($quoteId);
 
         if (!$order) {
+            $this->redirect->redirect($this->response, 'checkout/cart', []);
             return;
         }
 
@@ -240,5 +213,40 @@ class PlaceOrder implements HttpGetActionInterface
             ->setLastOrderStatus($order->getStatus());
 
         $this->redirect->redirect($this->response, 'checkout/onepage/success', []);
+    }
+
+    private function checkPaymentConfirmation(): bool
+    {
+        /**
+         * Make a request to Payment Confirmation API in order to check and save details from payment
+         * @todo: Grab the values dynamically
+         */
+        $this->paymentConfirmationRequestInterface->setChannel('mockedChannel');
+        $this->paymentConfirmationRequestInterface->setMerchantId('mockedMerchantId');
+        $this->paymentConfirmationRequestInterface->setPywid($this->request->getParam('pywid'));
+        $this->paymentConfirmationRequestInterface->setTransactionId('mockedTransactionId');
+        $this->paymentConfirmationRequestInterface->setActionType('mockedActionType');
+        $this->paymentConfirmationRequestInterface->setTransactionType('mockedTransactionType');
+        $this->paymentConfirmationRequestInterface->setRefId('mockedRefId');
+
+        $paymentConfirmationResponse = json_decode($this->paymentConfirmationLookupInterface->lookup(
+            $this->paymentConfirmationRequestInterface
+        ));
+
+        if ($paymentConfirmationResponse->paymentTotal !== $this->quote->getGrandTotal()) {
+            $this->logger->error(
+                'The amount returned from PayYour Way doesn\'t match the amount on the store.',
+                [
+                    'paymentResponse' => $paymentConfirmationResponse,
+                    'quote' => $this->quote->getData(),
+                    'pywid' => $this->request->getParam('pywid')
+                ]
+            );
+            $this->messageManager->addErrorMessage(
+                __('The amount returned from PayYour Way doesn\'t match the amount on the store.')
+            );
+            return false;
+        }
+        return true;
     }
 }
