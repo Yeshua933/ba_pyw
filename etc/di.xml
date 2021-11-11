@@ -20,4 +20,6 @@
     </type>
     <preference for="PayYourWay\Pyw\Api\ConfigInterface" type="PayYourWay\Pyw\Model\Config"/>
     <preference for="PayYourWay\Pyw\Api\GenerateAccessTokenInterface" type="PayYourWay\Pyw\Model\GenerateAccessToken"/>
+    <preference for="PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface" type="PayYourWay\Pyw\Service\PaymentConfirmationLookup"/>
+    <preference for="PayYourWay\Pyw\Api\RequestInterface" type="PayYourWay\Pyw\Service\PaymentConfirmationLookup\Request"/>
 </config>
