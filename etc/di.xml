@@ -19,4 +19,5 @@
         </arguments>
     </type>
     <preference for="PayYourWay\Pyw\Api\ConfigInterface" type="PayYourWay\Pyw\Model\Config"/>
+    <preference for="PayYourWay\Pyw\Api\GenerateAccessTokenInterface" type="PayYourWay\Pyw\Model\GenerateAccessToken"/>
 </config>

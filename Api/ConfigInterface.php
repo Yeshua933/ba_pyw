@@ -28,4 +28,25 @@ interface ConfigInterface
      * @return bool
      */
     public function isRefreshTokenProcessEnabled($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): bool;
+
+    /**
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getEnvironment($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE):string;
+
+    /**
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getClientId($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE):string;
+
+    /**
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getPrivateKey($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE):string;
 }
