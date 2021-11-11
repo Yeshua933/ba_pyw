@@ -28,17 +28,29 @@ pipelines:
           script: [ source init, provision ]
           services: [ docker ]
   default:
-    - step: 
-        name: 7.4composer2 & 2.4.2-ee
-        size: 2x
-        script: [ 
-          export AUTO_IMAGE_TYPE=7.4composer2, 
-          export AUTO_USE_EXAMPLE=2.4.2-ee,
-          
-          source init, build, best-practices, deploy, # mftf, push-pipeline-images 
-          
-        ]
-        services: [ docker, mysql, redis, ampq ] # docker required for creating images, rest required for integration
+    - parallel:
+      - step: 
+          name: 7.4composer2 & 2.4.2-ee
+          size: 2x
+          script: [ 
+            export AUTO_IMAGE_TYPE=7.4composer2, 
+            export AUTO_USE_EXAMPLE=2.4.2-ee,
+            
+            source init, build, best-practices, deploy, # mftf, push-pipeline-images 
+            
+          ]
+          services: [ docker, mysql, redis, ampq ] # docker required for creating images, rest required for integration
+      - step: 
+          name: 7.4composer2 & 2.4.2-b2b
+          size: 2x
+          script: [ 
+            export AUTO_IMAGE_TYPE=7.4composer2, 
+            export AUTO_USE_EXAMPLE=2.4.2-b2b,
+            
+            source init, build, best-practices, deploy, # mftf, push-pipeline-images 
+            
+          ]
+          services: [ docker, mysql, redis, ampq ] # docker required for creating images, rest required for integration          
     - step:
         name: Destroy
         trigger: manual
