@@ -13,6 +13,7 @@ define(
             paymentConfig : window.checkoutConfig.payment.payyourway,
             payyourway: null,
             pywLoaded : false,
+            baseUrl:  window.BASE_URL,
 
             initialize : function () {
                 this._super();
@@ -50,7 +51,15 @@ define(
 
             openPopup : function () {
                 let total = 500;
-                let returnUrl = 'www.google.com';
+                let returnUrl = this.baseUrl + 'payyourway/checkout/return';
+                let cancelUrl = this.baseUrl + 'payyourway/checkout/cancel';
+
+                /**
+                 * @todo: We have to ask them to accept the cancelUrl parameter
+                 * and also replace the hard coded PYW_payment_failed.html
+                 * preparePayment(this.paymentConfig.refid, total, returnUrl, cancelUrl);
+                 */
+
                 preparePayment(this.paymentConfig.refid, total, returnUrl);
             }
         });
