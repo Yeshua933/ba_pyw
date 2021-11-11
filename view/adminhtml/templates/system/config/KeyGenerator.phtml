@@ -4,12 +4,53 @@
  * @copyright 2021 Blue Acorn iCi. All Rights Reserved.
  */
 
-use PayYourWay\Pyw\Block\Adminhtml\System\Config\KeyGenerator;
-
 /**
-* @var KeyGenerator $block
-*/
+ * @var PayYourWay\Pyw\Block\Adminhtml\System\Config\KeyGenerator $block
+ */
+?>
+    <script>
+        require([
+            'jquery',
+            'prototype',
+        ], function ($) {
+            function generateAccessToken() {
+                params = {};
+                new Ajax.Request('<?php echo $block->getAjaxUrl() ?>', {
+                    loaderArea: true,
+                    asynchronous: true,
+                    parameters: params,
+                    onSuccess: function (transport) {
+                        var response = JSON.parse(transport.responseText);
+                        $('#messages .message-success span.message-text').text('Success');
+                        $('#messages .message-success').show();
+                        $('#messages .message-success').delay(8000).fadeOut();
+                    },
+                    onFailure: function() {
+                        $('#messages .message-error span.message-text').text('Failed');
+                        $('#messages .message-error').show();
+                        $('#messages .message-error').delay(8000).fadeOut();
+                        return false;
+                    }
+                });
+            }
+            $('#generate_access_token').click(function () {
+                generateAccessToken();
+            });
+        });
+    </script>
 
-$controller = $block->getCustomUrl();
-echo $block->getButtonHtml();
-
+    <div id="messages" >
+        <div class="messages">
+            <div class="message message-success success" style="display: none;">
+                <div data-ui-id="messages-message-success">
+                    <span class="message-text"></span>
+                </div>
+            </div>
+            <div class="message message-error error" style="display: none;">
+                <div data-ui-id="messages-message-error">
+                    <span class="message-text"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php echo $block->getButtonHtml() ?>

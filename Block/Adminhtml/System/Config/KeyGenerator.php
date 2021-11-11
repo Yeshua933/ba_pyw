@@ -36,14 +36,14 @@ class KeyGenerator extends Field
         return $this->_toHtml();
     }
 
-    public function getCustomUrl(): string
+    public function getAjaxUrl(): string
     {
-        return $this->getUrl('router/controller/action');
+        return $this->getUrl('payyourway/configuration/generatekey');
     }
 
     public function getButtonHtml(): string
     {
-        $button = $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')->setData(['id' => 'generate_key', 'label' => __('Generate Key'),]);
+        $button = $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')->setData(['id' => 'generate_access_token', 'label' => __('Generate Access Token'),]);
         return $button->toHtml();
     }
 }
