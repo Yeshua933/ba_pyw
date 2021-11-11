@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace PayYourWay\Pyw\Model;
 
 use PayYourWay\Pyw\Api\GenerateAccessTokenInterface;
-
+use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
 
 /**
  * Used for creating/renewing the Pay Your Way access token
