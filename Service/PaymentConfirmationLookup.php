@@ -11,6 +11,8 @@ use Magento\Framework\HTTP\Client\Curl;
 use Magento\Store\Model\ScopeInterface;
 use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
 use PayYourWay\Pyw\Api\RequestInterface;
+use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
+use PayYourWay\Pyw\Model\Config;
 
 class PaymentConfirmationLookup implements PaymentConfirmationLookupInterface
 {
@@ -18,10 +20,14 @@ class PaymentConfirmationLookup implements PaymentConfirmationLookupInterface
     private const PAYMENT_CONFIRMATION_URL_PROD = 'https://checkout.telluride.shopyourway.com/';
 
     private Curl $curl;
+    private Config $config;
 
-    public function __construct(Curl $curl)
-    {
+    public function __construct(
+        Curl $curl,
+        Config $config
+    ) {
         $this->curl = $curl;
+        $this->config = $config;
     }
 
     public function lookup(
@@ -33,7 +39,12 @@ class PaymentConfirmationLookup implements PaymentConfirmationLookupInterface
         /**
          * @todo: Check whether production mode is enabled or not
          */
-        $this->curl->get(self::PAYMENT_CONFIRMATION_URL_UAT);
+        $paymentConfirmationUrl = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX ?
+            self::PAYMENT_CONFIRMATION_URL_UAT : self::PAYMENT_CONFIRMATION_URL_PROD;
+
+        $paymentConfirmationUrl = self::PAYMENT_CONFIRMATION_URL_UAT;
+
+        $this->curl->get($paymentConfirmationUrl);
 
         $headers = [
             "Content-Type" => "application/json",

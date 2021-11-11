@@ -23,10 +23,12 @@ use Magento\Quote\Api\CartManagementInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
-use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
-use PayYourWay\Pyw\Api\RequestInterface as PaymentConfirmationRequestInterface;
+use PayYourWay\Pyw\Model\GenerateAccessToken;
 use PayYourWay\Pyw\Model\PaymentMethod;
+use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
 use Psr\Log\LoggerInterface;
+use PayYourWay\Pyw\Api\RequestInterface as PaymentConfirmationRequestInterface;
+use PayYourWay\Pyw\Model\Config;
 
 class PlaceOrder implements HttpGetActionInterface
 {
@@ -43,6 +45,8 @@ class PlaceOrder implements HttpGetActionInterface
     private PaymentConfirmationRequestInterface $paymentConfirmationRequestInterface;
     private MessageManagerInterface $messageManager;
     private RedirectFactory $redirectFactory;
+    private Config $config;
+    private GenerateAccessToken $generateAccessToken;
 
     public function __construct(
         CartManagementInterface $quoteManagement,
@@ -57,7 +61,9 @@ class PlaceOrder implements HttpGetActionInterface
         PaymentConfirmationLookupInterface $paymentConfirmationLookupInterface,
         PaymentConfirmationRequestInterface $paymentConfirmationRequestInterface,
         MessageManagerInterface $messageManager,
-        RedirectFactory $redirectFactory
+        RedirectFactory $redirectFactory,
+        Config $config,
+        GenerateAccessToken $generateAccessToken
     ) {
         $this->quoteManagement = $quoteManagement;
         $this->quoteRepository = $quoteRepository;
@@ -72,6 +78,8 @@ class PlaceOrder implements HttpGetActionInterface
         $this->paymentConfirmationRequestInterface = $paymentConfirmationRequestInterface;
         $this->messageManager = $messageManager;
         $this->redirectFactory = $redirectFactory;
+        $this->config = $config;
+        $this->generateAccessToken = $generateAccessToken;
     }
 
     /**
@@ -145,6 +153,8 @@ class PlaceOrder implements HttpGetActionInterface
 
     /**
      * Submit the order
+     *
+     * @return void
      */
     public function execute()
     {
@@ -158,7 +168,6 @@ class PlaceOrder implements HttpGetActionInterface
                     'exception' => (string)$exception,
                 ]
             );
-            return;
         }
 
         $quoteId = $this->quote->getId();
@@ -175,10 +184,10 @@ class PlaceOrder implements HttpGetActionInterface
 
         $this->quote->collectTotals();
 
-        /**if (!$this->checkPaymentConfirmation()) {
+        if (!$this->checkPaymentConfirmation()) {
             $this->redirect->redirect($this->response, 'checkout/cart', []);
             return;
-        }*/
+        }
 
         try {
             $this->quote->getPayment()->importData([
@@ -232,13 +241,13 @@ class PlaceOrder implements HttpGetActionInterface
          * Make a request to Payment Confirmation API in order to check and save details from payment
          * @todo: Grab the values dynamically
          */
-        $this->paymentConfirmationRequestInterface->setChannel('mockedChannel');
-        $this->paymentConfirmationRequestInterface->setMerchantId('mockedMerchantId');
+        $this->paymentConfirmationRequestInterface->setChannel('ONLINE');
+        $this->paymentConfirmationRequestInterface->setMerchantId($this->config->getClientId());
         $this->paymentConfirmationRequestInterface->setPywid($this->request->getParam('pywid'));
-        $this->paymentConfirmationRequestInterface->setTransactionId('mockedTransactionId');
-        $this->paymentConfirmationRequestInterface->setActionType('mockedActionType');
-        $this->paymentConfirmationRequestInterface->setTransactionType('mockedTransactionType');
-        $this->paymentConfirmationRequestInterface->setRefId('mockedRefId');
+        $this->paymentConfirmationRequestInterface->setTransactionId($this->quote->getId());
+        $this->paymentConfirmationRequestInterface->setActionType('READONLY');
+        $this->paymentConfirmationRequestInterface->setTransactionType('1p');
+        $this->paymentConfirmationRequestInterface->setRefId($this->getRefId());
 
         $paymentConfirmationResponse = json_decode($this->paymentConfirmationLookupInterface->lookup(
             $this->paymentConfirmationRequestInterface
@@ -272,5 +281,36 @@ class PlaceOrder implements HttpGetActionInterface
             return false;
         }
         return true;
+    }
+
+    /**
+     * @todo: We need to refactor this method and move to another place
+     */
+    private function getRefId(): string
+    {
+        // client_id~~access_token~~requestorId~~timestamp~~transactionId~~userId
+
+        $clientId       = $this->config->getClientId();
+        $accessToken    = $this->generateAccessToken->execute();
+        $requestorId    = $this->config->getClientId();
+        $timestamp      = time();
+        $transactionId  = $this->quote->getId();
+        $userId         = $this->quote->getCustomer()->getEmail();
+
+        $refId = $clientId ."~~". $accessToken ."~~". $requestorId
+            ."~~". $timestamp ."~~". $transactionId ."~~". $userId;
+
+        $nonce = \Sodium\randombytes_buf(
+            \Sodium\CRYPTO_SECRETBOX_NONCEBYTES
+        );
+
+        return base64_encode(
+            $nonce.
+            \Sodium\crypto_secretbox(
+                $refId,
+                $nonce,
+                $this->config->getPrivateKey()
+            )
+        );
     }
 }
