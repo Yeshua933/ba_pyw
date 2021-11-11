@@ -7,10 +7,12 @@ declare(strict_types=1);
 
 namespace PayYourWay\Pyw\Controller\Checkout;
 
+use Exception;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Customer\Model\Group;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Response\RedirectInterface;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Exception\LocalizedException;
@@ -19,6 +21,7 @@ use Magento\Quote\Api\CartManagementInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
+use PayYourWay\Pyw\Model\PaymentMethod;
 use Psr\Log\LoggerInterface;
 
 class PlaceOrder implements HttpGetActionInterface
@@ -31,6 +34,7 @@ class PlaceOrder implements HttpGetActionInterface
     private RedirectInterface $redirect;
     private CartInterface $quote;
     private LoggerInterface $logger;
+    private RequestInterface $request;
 
     public function __construct(
         CartManagementInterface $quoteManagement,
@@ -40,7 +44,8 @@ class PlaceOrder implements HttpGetActionInterface
         Quote $quote,
         ResponseInterface $response,
         RedirectInterface $redirect,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        RequestInterface $request
     ) {
         $this->quoteManagement = $quoteManagement;
         $this->quoteRepository = $quoteRepository;
@@ -50,6 +55,7 @@ class PlaceOrder implements HttpGetActionInterface
         $this->response = $response;
         $this->redirect = $redirect;
         $this->logger = $logger;
+        $this->request = $request;
     }
 
     /**
@@ -148,13 +154,35 @@ class PlaceOrder implements HttpGetActionInterface
 
         $this->quote->collectTotals();
 
+        /**
+         * @todo: Make a request to Payment Confirmation API in order
+         * to check and save details from payment
+         */
+
         try {
-            $order = $this->quoteManagement->submit($this->quote);
+            $this->quote->getPayment()->importData([
+                'pywid' => $this->request->getParam('pywid'),
+                'method' => PaymentMethod::METHOD_CODE
+            ]);
         } catch (LocalizedException $exception) {
             $this->logger->error(
                 'Something went wrong with the Pay Your Way Checkout.',
                 [
                     'quote' => $this->quote->getData(),
+                    'pywid' => $this->request->getParam('pywid'),
+                    'exception' => (string)$exception,
+                ]
+            );
+        }
+
+        try {
+            $order = $this->quoteManagement->submit($this->quote);
+        } catch (LocalizedException | Exception $exception) {
+            $this->logger->error(
+                'Something went wrong with the Pay Your Way Checkout.',
+                [
+                    'quote' => $this->quote->getData(),
+                    'pywid' => $this->request->getParam('pywid'),
                     'exception' => (string)$exception,
                 ]
             );

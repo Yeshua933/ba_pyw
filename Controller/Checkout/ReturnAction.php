@@ -30,7 +30,7 @@ class ReturnAction implements HttpGetActionInterface
     }
 
     /**
-     * Return from Pay Your Way when success
+     * Handle the return from Pay Your Way
      *
      * @return void|ResultInterface
      */
@@ -38,9 +38,23 @@ class ReturnAction implements HttpGetActionInterface
     {
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
 
+        /**
+         * Proceed to the place order action if the parameters indicates the order has been successful
+         */
         if ($this->request->getParam('pywmsg') === 'Y' && $this->request->getParam('pywid') !== null) {
             $this->request->initForward();
+            $this->request->setParams(['pywid' => $this->request->getParam('pywid')]);
             $this->request->setActionName('placeOrder');
+            $this->request->setDispatched(false);
+            return;
+        }
+
+        /**
+         * Proceed to the cancel order action if the parameters indicates the order hasn't been successful
+         */
+        if ($this->request->getParam('pywmsg') === 'N') {
+            $this->request->initForward();
+            $this->request->setActionName('cancel');
             $this->request->setDispatched(false);
             return;
         }
