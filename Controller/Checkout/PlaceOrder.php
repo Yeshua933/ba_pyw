@@ -286,7 +286,8 @@ class PlaceOrder implements HttpGetActionInterface
     }
 
     /**
-     * @todo: We need to refactor this method and move to another place
+     * @todo: We need to refactor and move this method. We could use a Builder
+     * since this is a complex object and requires some logic build a request
      */
     private function getRefId(): string
     {
