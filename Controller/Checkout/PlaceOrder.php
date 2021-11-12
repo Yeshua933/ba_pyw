@@ -15,6 +15,7 @@ use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Response\RedirectInterface;
 use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -154,9 +155,9 @@ class PlaceOrder implements HttpGetActionInterface
     /**
      * Submit the order
      *
-     * @return void
+     * @return Redirect
      */
-    public function execute()
+    public function execute(): Redirect
     {
         try {
             $this->initCheckout();
@@ -185,8 +186,9 @@ class PlaceOrder implements HttpGetActionInterface
         $this->quote->collectTotals();
 
         if (!$this->checkPaymentConfirmation()) {
-            $this->redirect->redirect($this->response, 'checkout/cart', []);
-            return;
+            $redirect = $this->redirectFactory->create();
+            $redirect->setPath('checkout/cart');
+            return $redirect;
         }
 
         try {
@@ -218,13 +220,14 @@ class PlaceOrder implements HttpGetActionInterface
             );
         }
 
+        if (!$order) {
+            $redirect = $this->redirectFactory->create();
+            $redirect->setPath('checkout/cart');
+            return $redirect;
+        }
+
         $this->checkoutSession->clearHelperData();
         $this->checkoutSession->setLastQuoteId($quoteId)->setLastSuccessQuoteId($quoteId);
-
-        if (!$order) {
-            $this->redirect->redirect($this->response, 'checkout/cart', []);
-            return;
-        }
 
         $this->checkoutSession->setLastOrderId($order->getId())
             ->setLastRealOrderId($order->getIncrementId())
@@ -238,8 +241,7 @@ class PlaceOrder implements HttpGetActionInterface
     private function checkPaymentConfirmation(): bool
     {
         /**
-         * Make a request to Payment Confirmation API in order to check and save details from payment
-         * @todo: Grab the values dynamically
+         * Make a request to Payment Confirmation API in order to check the payment details
          */
         $this->paymentConfirmationRequestInterface->setChannel('ONLINE');
         $this->paymentConfirmationRequestInterface->setMerchantId($this->config->getClientId());
@@ -288,7 +290,9 @@ class PlaceOrder implements HttpGetActionInterface
      */
     private function getRefId(): string
     {
-        // client_id~~access_token~~requestorId~~timestamp~~transactionId~~userId
+        /**
+         * Format of refId: client_id~~access_token~~requestorId~~timestamp~~transactionId~~userId
+         */
 
         $clientId       = $this->config->getClientId();
         $accessToken    = $this->generateAccessToken->execute();
