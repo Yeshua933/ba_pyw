@@ -104,6 +104,11 @@ class PlaceOrder implements HttpGetActionInterface
             throw new LocalizedException(__('We can\'t initialize the Pay Your Way Checkout.'));
         }
 
+        if ($quote->getIsVirtual()) {
+            $this->response->setStatusHeader(403, '1.1', 'Forbidden');
+            throw new LocalizedException(__('Virtual product are not support by the Pay Your Way Checkout.'));
+        }
+
         if (!$quote->getGrandTotal()) {
             throw new LocalizedException(
                 __(
@@ -160,6 +165,7 @@ class PlaceOrder implements HttpGetActionInterface
         }
 
         $this->quote->getBillingAddress()->setShouldIgnoreValidation(true);
+        $this->quote->setShippingAddress($this->quote->getBillingAddress());
         if (!$this->quote->getIsVirtual()) {
             $this->quote->getShippingAddress()->setShouldIgnoreValidation(true);
         }
@@ -232,6 +238,19 @@ class PlaceOrder implements HttpGetActionInterface
         $paymentConfirmationResponse = json_decode($this->paymentConfirmationLookupInterface->lookup(
             $this->paymentConfirmationRequestInterface
         ));
+
+        if (is_object($paymentConfirmationResponse)) {
+            $this->logger->error(
+                'There is an issue with the payment gateway provider',
+                [
+                    'quote' => $this->quote->getData(),
+                ]
+            );
+            $this->messageManager->addErrorMessage(
+                __('The amount returned from PayYour Way doesn\'t match the amount on the store.')
+            );
+            return false;
+        }
 
         if ($paymentConfirmationResponse->paymentTotal !== $this->quote->getGrandTotal()) {
             $this->logger->error(
