@@ -15,17 +15,18 @@ use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Response\RedirectInterface;
 use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
 use Magento\Quote\Api\CartManagementInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
-use PayYourWay\Pyw\Model\PaymentMethod;
 use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
-use Psr\Log\LoggerInterface;
 use PayYourWay\Pyw\Api\RequestInterface as PaymentConfirmationRequestInterface;
-use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
+use PayYourWay\Pyw\Model\PaymentMethod;
+use Psr\Log\LoggerInterface;
 
 class PlaceOrder implements HttpGetActionInterface
 {
@@ -41,6 +42,7 @@ class PlaceOrder implements HttpGetActionInterface
     private PaymentConfirmationLookupInterface $paymentConfirmationLookupInterface;
     private PaymentConfirmationRequestInterface $paymentConfirmationRequestInterface;
     private MessageManagerInterface $messageManager;
+    private RedirectFactory $redirectFactory;
 
     public function __construct(
         CartManagementInterface $quoteManagement,
@@ -54,7 +56,8 @@ class PlaceOrder implements HttpGetActionInterface
         RequestInterface $request,
         PaymentConfirmationLookupInterface $paymentConfirmationLookupInterface,
         PaymentConfirmationRequestInterface $paymentConfirmationRequestInterface,
-        MessageManagerInterface $messageManager
+        MessageManagerInterface $messageManager,
+        RedirectFactory $redirectFactory
     ) {
         $this->quoteManagement = $quoteManagement;
         $this->quoteRepository = $quoteRepository;
@@ -68,6 +71,7 @@ class PlaceOrder implements HttpGetActionInterface
         $this->paymentConfirmationLookupInterface = $paymentConfirmationLookupInterface;
         $this->paymentConfirmationRequestInterface = $paymentConfirmationRequestInterface;
         $this->messageManager = $messageManager;
+        $this->redirectFactory = $redirectFactory;
     }
 
     /**
@@ -141,8 +145,6 @@ class PlaceOrder implements HttpGetActionInterface
 
     /**
      * Submit the order
-     *
-     * @return void
      */
     public function execute()
     {
@@ -156,6 +158,7 @@ class PlaceOrder implements HttpGetActionInterface
                     'exception' => (string)$exception,
                 ]
             );
+            return;
         }
 
         $quoteId = $this->quote->getId();
@@ -218,7 +221,9 @@ class PlaceOrder implements HttpGetActionInterface
             ->setLastRealOrderId($order->getIncrementId())
             ->setLastOrderStatus($order->getStatus());
 
-        $this->redirect->redirect($this->response, 'checkout/onepage/success', []);
+        $redirect = $this->redirectFactory->create();
+        $redirect->setPath('checkout/onepage/success');
+        return $redirect;
     }
 
     private function checkPaymentConfirmation(): bool
