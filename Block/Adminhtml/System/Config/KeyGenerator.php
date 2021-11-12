@@ -38,7 +38,7 @@ class KeyGenerator extends Field
 
     public function getAjaxUrl(): string
     {
-        return $this->getUrl('payyourway/configuration/generatekey');
+        return $this->getUrl('payyourway/configuration/generateaccesscontroller');
     }
 
     public function getButtonHtml(): string
