@@ -172,10 +172,10 @@ class PlaceOrder implements HttpGetActionInterface
 
         $this->quote->collectTotals();
 
-        if (!$this->checkPaymentConfirmation()) {
+        /**if (!$this->checkPaymentConfirmation()) {
             $this->redirect->redirect($this->response, 'checkout/cart', []);
             return;
-        }
+        }*/
 
         try {
             $this->quote->getPayment()->importData([
@@ -247,7 +247,7 @@ class PlaceOrder implements HttpGetActionInterface
                 ]
             );
             $this->messageManager->addErrorMessage(
-                __('The amount returned from PayYour Way doesn\'t match the amount on the store.')
+                __('There is an issue with the payment gateway provider')
             );
             return false;
         }
