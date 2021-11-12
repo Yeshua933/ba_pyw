@@ -24,6 +24,7 @@ use Magento\Quote\Api\CartManagementInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
+use PayYourWay\Pyw\Api\RefIdBuilderInterface;
 use PayYourWay\Pyw\Model\GenerateAccessToken;
 use PayYourWay\Pyw\Model\PaymentMethod;
 use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
@@ -48,6 +49,7 @@ class PlaceOrder implements HttpGetActionInterface
     private RedirectFactory $redirectFactory;
     private Config $config;
     private GenerateAccessToken $generateAccessToken;
+    private RefIdBuilderInterface $refIdBuilderInterface;
 
     public function __construct(
         CartManagementInterface $quoteManagement,
@@ -64,7 +66,8 @@ class PlaceOrder implements HttpGetActionInterface
         MessageManagerInterface $messageManager,
         RedirectFactory $redirectFactory,
         Config $config,
-        GenerateAccessToken $generateAccessToken
+        GenerateAccessToken $generateAccessToken,
+        RefIdBuilderInterface $refIdBuilderInterface
     ) {
         $this->quoteManagement = $quoteManagement;
         $this->quoteRepository = $quoteRepository;
@@ -81,6 +84,7 @@ class PlaceOrder implements HttpGetActionInterface
         $this->redirectFactory = $redirectFactory;
         $this->config = $config;
         $this->generateAccessToken = $generateAccessToken;
+        $this->refIdBuilderInterface = $refIdBuilderInterface;
     }
 
     /**
@@ -249,7 +253,14 @@ class PlaceOrder implements HttpGetActionInterface
         $this->paymentConfirmationRequestInterface->setTransactionId($this->quote->getId());
         $this->paymentConfirmationRequestInterface->setActionType('READONLY');
         $this->paymentConfirmationRequestInterface->setTransactionType('1P');
-        $this->paymentConfirmationRequestInterface->setRefId($this->getRefId());
+        $this->paymentConfirmationRequestInterface->setRefId($this->refIdBuilderInterface->buildRefId(
+            $this->config->getClientId(),
+            $this->generateAccessToken->execute(),
+            $this->config->getClientId(),
+            time(),
+            $this->quote->getId(),
+            $this->quote->getCustomerEmail()
+        ));
 
         $paymentConfirmationResponse = json_decode($this->paymentConfirmationLookupInterface->lookup(
             $this->paymentConfirmationRequestInterface
@@ -283,41 +294,5 @@ class PlaceOrder implements HttpGetActionInterface
             return false;
         }
         return true;
-    }
-
-    /**
-     * @todo: We need to refactor and move this method. We could use a Builder
-     * since this is a complex object and requires some logic build a request
-     */
-    private function getRefId(): string
-    {
-        /**
-         * Format of refId: client_id~~access_token~~requestorId~~timestamp~~transactionId~~userId
-         */
-
-        $clientId       = $this->config->getClientId();
-        $accessToken    = $this->generateAccessToken->execute();
-        $requestorId    = $this->config->getClientId();
-        $timestamp      = time();
-        $transactionId  = $this->quote->getId();
-        $userId         = $this->quote->getCustomerEmail();
-
-        $refId = $clientId ."~~". $accessToken ."~~". $requestorId
-            ."~~". $timestamp ."~~". $transactionId ."~~". $userId;
-
-        $key = \Sodium\randombytes_buf(\Sodium\CRYPTO_SECRETBOX_KEYBYTES);
-
-        $nonce = \Sodium\randombytes_buf(
-            \Sodium\CRYPTO_SECRETBOX_NONCEBYTES
-        );
-
-        return base64_encode(
-            $nonce.
-            \Sodium\crypto_secretbox(
-                $refId,
-                $nonce,
-                $key
-            )
-        );
     }
 }
