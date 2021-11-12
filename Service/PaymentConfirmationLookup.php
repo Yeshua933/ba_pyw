@@ -36,21 +36,16 @@ class PaymentConfirmationLookup implements PaymentConfirmationLookupInterface
         $scopeType = ScopeInterface::SCOPE_STORE
     ): string {
 
-        /**
-         * @todo: Check whether production mode is enabled or not
-         */
         $paymentConfirmationUrl = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX ?
             self::PAYMENT_CONFIRMATION_URL_UAT : self::PAYMENT_CONFIRMATION_URL_PROD;
 
-        $paymentConfirmationUrl = self::PAYMENT_CONFIRMATION_URL_UAT;
-
-        $this->curl->get($paymentConfirmationUrl);
+        $paymentConfirmationUrl .= "tell/api/checkout/v1/orderpaymentconfirm";
 
         $headers = [
-            "Content-Type" => "application/json",
+            "Accept" => "application/json",
             "channel" => $request->getChannel(),
             "merchantId" => $request->getMerchantId(),
-            "pywid" => $request->getMerchantId(),
+            "pywid" => $request->getPywid(),
             "transactionId" => $request->getTransactionId(),
             "actionType" => $request->getActionType(),
             "transactionType" => $request->getTransactionType(),
@@ -58,28 +53,8 @@ class PaymentConfirmationLookup implements PaymentConfirmationLookupInterface
         ];
 
         $this->curl->setHeaders($headers);
+        $this->curl->get($paymentConfirmationUrl);
 
         return $this->curl->getBody();
-
-        /*
-        return json_encode([
-            'authCode' => 'XYZABC123',
-            'orderDate' => '11-11-2021 09:00:00',
-            'paymentStatus' => 'confirmed',
-            'paymentTotal' => '100.00',
-            'paymentDetails' => [
-                'id' => '0000000023',
-                'type' => 'CREDITCARD',
-                'amount' => '100',
-                'status' => 'complete',
-                'currency' => 'USD',
-                'cardLastFour' => '1111',
-                'cardType' => 'Visa'
-            ],
-            'additionalInfo' => [
-                '4111052212380192'
-            ]
-        ]);
-        */
     }
 }

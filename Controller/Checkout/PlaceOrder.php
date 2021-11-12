@@ -246,7 +246,7 @@ class PlaceOrder implements HttpGetActionInterface
         $this->paymentConfirmationRequestInterface->setPywid($this->request->getParam('pywid'));
         $this->paymentConfirmationRequestInterface->setTransactionId($this->quote->getId());
         $this->paymentConfirmationRequestInterface->setActionType('READONLY');
-        $this->paymentConfirmationRequestInterface->setTransactionType('1p');
+        $this->paymentConfirmationRequestInterface->setTransactionType('1P');
         $this->paymentConfirmationRequestInterface->setRefId($this->getRefId());
 
         $paymentConfirmationResponse = json_decode($this->paymentConfirmationLookupInterface->lookup(
@@ -295,10 +295,12 @@ class PlaceOrder implements HttpGetActionInterface
         $requestorId    = $this->config->getClientId();
         $timestamp      = time();
         $transactionId  = $this->quote->getId();
-        $userId         = $this->quote->getCustomer()->getEmail();
+        $userId         = $this->quote->getCustomerEmail();
 
         $refId = $clientId ."~~". $accessToken ."~~". $requestorId
             ."~~". $timestamp ."~~". $transactionId ."~~". $userId;
+
+        $key = \Sodium\randombytes_buf(\Sodium\CRYPTO_SECRETBOX_KEYBYTES);
 
         $nonce = \Sodium\randombytes_buf(
             \Sodium\CRYPTO_SECRETBOX_NONCEBYTES
@@ -309,7 +311,7 @@ class PlaceOrder implements HttpGetActionInterface
             \Sodium\crypto_secretbox(
                 $refId,
                 $nonce,
-                $this->config->getPrivateKey()
+                $key
             )
         );
     }
