@@ -25,7 +25,6 @@ class GenerateAccessToken implements GenerateAccessTokenInterface {
 
     public function execute(): string
     {
-        //TODO add the generate process; load store configuration
         $header = $this->base64url_encode(json_encode(array('typ' => 'JWT', 'alg' => 'RSA'), JSON_THROW_ON_ERROR));
         $client_id = $this->config->getClientId();
         $privateKey = $this->config->getPrivateKey();

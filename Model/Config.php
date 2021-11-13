@@ -9,14 +9,14 @@ namespace PayYourWay\Pyw\Model;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
-use PayYourWay\Pyw\Api\ConfigInterface;
+use Magento\Framework\App\Config\ConfigResource\ConfigInterface as ResourceConfigInterface;
+use PayYourWay\Pyw\Api\ConfigInterface as PywConfigInterface;
 use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
-
 
 /**
  * Configuration retrieval tool
  */
-class Config implements ConfigInterface
+class Config implements PywConfigInterface
 {
     public const CONFIG_XML_PATH_ENABLE_PAY_YOUR_WAY = 'payment/payyourway/active';
     public const CONFIG_XML_PATH_ENABLE_REFRESH_TOKEN_PROCESS = 'payment/payyourway/enable_refresh_token_process';
@@ -25,15 +25,20 @@ class Config implements ConfigInterface
     public const CONFIG_XML_PATH_ClIENT_ID_SB = 'payment/payyourway/client_id_sb';
     public const CONFIG_XML_PATH_PRIVATE_KEY_PR = 'payment/payyourway/private_key_pr';
     public const CONFIG_XML_PATH_PRIVATE_KEY_SB = 'payment/payyourway/private_key_sb';
+    public const CONFIG_XML_PATH_ACCESS_TOKEN_PR = 'payment/payyourway/access_token_pr';
+    public const CONFIG_XML_PATH_ACCESS_TOKEN_SB = 'payment/payyourway/access_token_sb';
 
     private ScopeConfigInterface $scopeConfig;
+    private ResourceConfigInterface $resourceConfigInterface;
 
     /**
      * @param ScopeConfigInterface $scopeConfig
+     * @param ResourceConfigInterface $resourceConfigInterface
      */
-    public function __construct(ScopeConfigInterface $scopeConfig)
+    public function __construct(ScopeConfigInterface $scopeConfig,ResourceConfigInterface $resourceConfigInterface)
     {
         $this->scopeConfig = $scopeConfig;
+        $this->resourceConfigInterface = $resourceConfigInterface;
     }
 
     /**
@@ -121,4 +126,27 @@ class Config implements ConfigInterface
         $privateKey = chunk_split($privateKey, 64, "\n");
         return "-----BEGIN RSA PRIVATE KEY-----\n$privateKey-----END RSA PRIVATE KEY-----\n";
     }
+
+    /**
+     * Save access token value
+     *
+     * @param string $path
+     * @param string $value
+     * @param string $scope
+     * @param int $scopeId
+     * @return \Magento\Config\Model\ResourceModel\Config
+     */
+    public function saveAccessToken( string $value,string $path=self::CONFIG_XML_PATH_ACCESS_TOKEN_SB, string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT, int $scopeId = 0):ResourceConfigInterface
+    {
+        if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
+            $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_SB;
+            return $this->resourceConfigInterface->saveConfig($path, $value, $scope,$scopeId);
+        }
+
+        $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_PR;
+        return $this->resourceConfigInterface->saveConfig($path, $value, $scope,$scopeId);
+    }
+
+
+
 }
