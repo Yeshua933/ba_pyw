@@ -11,8 +11,7 @@ use Magento\Framework\HTTP\ClientInterface;
 use Magento\Store\Model\ScopeInterface;
 use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
 use PayYourWay\Pyw\Api\RequestInterface;
-use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
-use \PayYourWay\Pyw\Api\ConfigInterface;
+use PayYourWay\Pyw\Api\ConfigInterface;
 
 class PaymentConfirmationLookup implements PaymentConfirmationLookupInterface
 {
@@ -28,9 +27,7 @@ class PaymentConfirmationLookup implements PaymentConfirmationLookupInterface
     }
 
     public function lookup(
-        RequestInterface $request,
-        $scopeCode = null,
-        $scopeType = ScopeInterface::SCOPE_STORE
+        RequestInterface $request
     ): string {
         $this->curl->setHeaders($request->getHeaders());
         $this->curl->get($this->config->getPaymentConfirmationApiEndpoint());

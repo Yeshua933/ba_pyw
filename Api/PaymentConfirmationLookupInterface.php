@@ -29,8 +29,6 @@ interface PaymentConfirmationLookupInterface
      * @return string
      */
     public function lookup(
-        RequestInterface $request,
-        $scopeCode = null,
-        $scopeType = ScopeInterface::SCOPE_STORE
+        RequestInterface $request
     ): string;
 }
