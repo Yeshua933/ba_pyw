@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace PayYourWay\Pyw\Api;
 
-use Magento\Store\Model\ScopeInterface;
-
 /**
  * Payment Confirmation Lookup Service
  *
@@ -24,8 +22,6 @@ interface PaymentConfirmationLookupInterface
      * Look up the payment confirmation for a request
      *
      * @param RequestInterface $request
-     * @param string|null $scopeCode Scope ID
-     * @param string $scopeType
      * @return string
      */
     public function lookup(

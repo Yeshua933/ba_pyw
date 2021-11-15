@@ -8,7 +8,6 @@ declare(strict_types=1);
 namespace PayYourWay\Pyw\Service;
 
 use Magento\Framework\HTTP\ClientInterface;
-use Magento\Store\Model\ScopeInterface;
 use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
 use PayYourWay\Pyw\Api\RequestInterface;
 use PayYourWay\Pyw\Api\ConfigInterface;
