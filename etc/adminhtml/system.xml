@@ -24,12 +24,14 @@
                     <depends>
                         <field id="sandbox_flag">0</field>
                     </depends>
+                    <backend_model>PayYourWay\Pyw\Model\Adminhtml\Config\Backend\ClientId</backend_model>
                 </field>
                 <field id="client_id_sb" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Sandbox Client Id</label>
                     <depends>
                         <field id="sandbox_flag">1</field>
                     </depends>
+                    <backend_model>PayYourWay\Pyw\Model\Adminhtml\Config\Backend\ClientId</backend_model>
                 </field>
                 <field id="generate_key" translate="label" type="button" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Generate Key</label>
