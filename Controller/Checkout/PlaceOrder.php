@@ -43,13 +43,13 @@ class PlaceOrder implements HttpGetActionInterface
     private CartInterface $quote;
     private LoggerInterface $logger;
     private RequestInterface $request;
-    private PaymentConfirmationLookupInterface $paymentConfirmationLookupInterface;
-    private PaymentConfirmationRequestInterface $paymentConfirmationRequestInterface;
+    private PaymentConfirmationLookupInterface $paymentConfirmationLookup;
+    private PaymentConfirmationRequestInterface $paymentConfirmationRequest;
     private MessageManagerInterface $messageManager;
     private RedirectFactory $redirectFactory;
     private Config $config;
     private GenerateAccessToken $generateAccessToken;
-    private RefIdBuilderInterface $refIdBuilderInterface;
+    private RefIdBuilderInterface $refIdBuilder;
 
     public function __construct(
         CartManagementInterface $quoteManagement,
@@ -61,13 +61,13 @@ class PlaceOrder implements HttpGetActionInterface
         RedirectInterface $redirect,
         LoggerInterface $logger,
         RequestInterface $request,
-        PaymentConfirmationLookupInterface $paymentConfirmationLookupInterface,
-        PaymentConfirmationRequestInterface $paymentConfirmationRequestInterface,
+        PaymentConfirmationLookupInterface $paymentConfirmationLookup,
+        PaymentConfirmationRequestInterface $paymentConfirmationRequest,
         MessageManagerInterface $messageManager,
         RedirectFactory $redirectFactory,
         Config $config,
         GenerateAccessToken $generateAccessToken,
-        RefIdBuilderInterface $refIdBuilderInterface
+        RefIdBuilderInterface $refIdBuilder
     ) {
         $this->quoteManagement = $quoteManagement;
         $this->quoteRepository = $quoteRepository;
@@ -78,13 +78,13 @@ class PlaceOrder implements HttpGetActionInterface
         $this->redirect = $redirect;
         $this->logger = $logger;
         $this->request = $request;
-        $this->paymentConfirmationLookupInterface = $paymentConfirmationLookupInterface;
-        $this->paymentConfirmationRequestInterface = $paymentConfirmationRequestInterface;
+        $this->paymentConfirmationLookup = $paymentConfirmationLookup;
+        $this->paymentConfirmationRequest = $paymentConfirmationRequest;
         $this->messageManager = $messageManager;
         $this->redirectFactory = $redirectFactory;
         $this->config = $config;
         $this->generateAccessToken = $generateAccessToken;
-        $this->refIdBuilderInterface = $refIdBuilderInterface;
+        $this->refIdBuilder = $refIdBuilder;
     }
 
     /**
@@ -247,13 +247,13 @@ class PlaceOrder implements HttpGetActionInterface
         /**
          * Make a request to Payment Confirmation API in order to check the payment details
          */
-        $this->paymentConfirmationRequestInterface->setChannel('ONLINE');
-        $this->paymentConfirmationRequestInterface->setMerchantId($this->config->getClientId());
-        $this->paymentConfirmationRequestInterface->setPywid($this->request->getParam('pywid'));
-        $this->paymentConfirmationRequestInterface->setTransactionId($this->quote->getId());
-        $this->paymentConfirmationRequestInterface->setActionType('READONLY');
-        $this->paymentConfirmationRequestInterface->setTransactionType('1P');
-        $this->paymentConfirmationRequestInterface->setRefId($this->refIdBuilderInterface->buildRefId(
+        $this->paymentConfirmationRequest->setChannel('ONLINE');
+        $this->paymentConfirmationRequest->setMerchantId($this->config->getClientId());
+        $this->paymentConfirmationRequest->setPywid($this->request->getParam('pywid'));
+        $this->paymentConfirmationRequest->setTransactionId($this->quote->getId());
+        $this->paymentConfirmationRequest->setActionType('READONLY');
+        $this->paymentConfirmationRequest->setTransactionType('1P');
+        $this->paymentConfirmationRequest->setRefId($this->refIdBuilder->buildRefId(
             $this->config->getClientId(),
             $this->generateAccessToken->execute(),
             $this->config->getClientId(),
@@ -262,8 +262,8 @@ class PlaceOrder implements HttpGetActionInterface
             $this->quote->getCustomerEmail()
         ));
 
-        $paymentConfirmationResponse = json_decode($this->paymentConfirmationLookupInterface->lookup(
-            $this->paymentConfirmationRequestInterface
+        $paymentConfirmationResponse = json_decode($this->paymentConfirmationLookup->lookup(
+            $this->paymentConfirmationRequest
         ));
 
         if (is_object($paymentConfirmationResponse)) {
