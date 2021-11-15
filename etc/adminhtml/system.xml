@@ -35,7 +35,7 @@
                 </field>
                 <field id="generate_key" translate="label" type="button" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Generate Access Token</label>
-                    <frontend_model>PayYourWay\Pyw\Block\Adminhtml\Config\Config\KeyGenerator</frontend_model>
+                    <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\KeyGenerator</frontend_model>
                 </field>
                 <field id="public_key_pr" translate="label" type="obscure" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Public Key</label>
@@ -83,12 +83,12 @@
                 </field>
                 <field id="environment" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Environment</label>
-                    <source_model>PayYourWay\Pyw\Model\Adminhtml\Source\Environment</source_model>
+                    <source_model>PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment</source_model>
                     <config_path>payment/payyourway/environment</config_path>
                 </field>
                 <field id="payment_action" translate="label" type="select" sortOrder='90' showInDefault="1" showInWebsite="1">
                     <label>Payment Action</label>
-                    <source_model>PayYourWay\Pyw\Model\Adminhtml\Source\PaymentAction</source_model>
+                    <source_model>PayYourWay\Pyw\Model\Adminhtml\Config\Source\PaymentAction</source_model>
                     <attribute type="shared">1</attribute>
                 </field>
                 <field id="merchant_name_pr" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">

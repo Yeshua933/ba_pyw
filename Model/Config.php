@@ -10,7 +10,7 @@ namespace PayYourWay\Pyw\Model;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 use PayYourWay\Pyw\Api\ConfigInterface;
-use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
+use PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment;
 
 
 /**

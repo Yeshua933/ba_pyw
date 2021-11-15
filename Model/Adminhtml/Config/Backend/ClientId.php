@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Pyw\Model\Adminhtml\Config\Backend;
+namespace PayYourWay\Pyw\Model\Adminhtml\Config\Backend;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use PayYourWay\Pyw\Api\ConfigInterface;
