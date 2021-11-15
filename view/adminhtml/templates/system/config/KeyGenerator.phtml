@@ -15,7 +15,7 @@
     ], function ($) {
         function generateAccessToken() {
             params = {};
-            new Ajax.Request('<?php echo $block->getAjaxUrl() ?>', {
+            new Ajax.Request('<?php echo $block->getAccessTokenUrl() ?>', {
                 loaderArea: true,
                 asynchronous: true,
                 parameters: params,

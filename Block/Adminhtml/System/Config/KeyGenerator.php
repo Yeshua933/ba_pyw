@@ -36,7 +36,7 @@ class KeyGenerator extends Field
         return $this->_toHtml();
     }
 
-    public function getAjaxUrl(): string
+    public function getAccessTokenUrl(): string
     {
         return $this->getUrl('payyourway/configuration/generateaccess');
     }

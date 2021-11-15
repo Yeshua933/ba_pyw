@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpRedundantOptionalArgumentInspection */
 /**
  * @author    Blue Acorn iCi <code@blueacornici.com>
  * @copyright 2021 Blue Acorn iCi. All Rights Reserved.
@@ -114,7 +114,7 @@ class Config implements PywConfigInterface
                 $scope, $scopeId
             );
             $privateKey = str_replace(array("-----BEGIN PRIVATE KEY-----","-----END PRIVATE KEY-----","\r\n", "\n", "\r"," "), '', $privateKey);
-            $privateKey = chunk_split($privateKey, 64, "\n");
+            $privateKey = chunk_split($privateKey, 64);
             return "-----BEGIN RSA PRIVATE KEY-----\n$privateKey-----END RSA PRIVATE KEY-----\n";
         }
 
@@ -123,7 +123,7 @@ class Config implements PywConfigInterface
             $scope, $scopeId
         );
         $privateKey = str_replace(array("-----BEGIN PRIVATE KEY-----","-----END PRIVATE KEY-----","\r\n", "\n", "\r"," "), '', $privateKey);
-        $privateKey = chunk_split($privateKey, 64, "\n");
+        $privateKey = chunk_split($privateKey, 64);
         return "-----BEGIN RSA PRIVATE KEY-----\n$privateKey-----END RSA PRIVATE KEY-----\n";
     }
 
@@ -136,7 +136,10 @@ class Config implements PywConfigInterface
      * @param int $scopeId
      * @return \Magento\Config\Model\ResourceModel\Config
      */
-    public function saveAccessToken( string $value,string $path=self::CONFIG_XML_PATH_ACCESS_TOKEN_SB, string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT, int $scopeId = 0):ResourceConfigInterface
+    public function saveAccessToken( string $value,
+                                     string $path=self::CONFIG_XML_PATH_ACCESS_TOKEN_SB,
+                                     string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+                                     int $scopeId = 0):ResourceConfigInterface
     {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
             $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_SB;

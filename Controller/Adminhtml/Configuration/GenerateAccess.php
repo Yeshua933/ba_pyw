@@ -5,30 +5,33 @@ namespace PayYourWay\Pyw\Controller\Adminhtml\Configuration;
 use Exception;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use PayYourWay\Pyw\Model\Config;
-use PayYourWay\Pyw\Model\GenerateAccessToken;
+use PayYourWay\pyw\Api\ConfigInterface;
+use PayYourWay\pyw\Api\GenerateAccessTokenInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
+use Psr\Log\LoggerInterface;
 
-class GenerateAccess  implements HttpPostActionInterface
+
+class GenerateAccess implements HttpPostActionInterface
 {
-    private GenerateAccessToken $generateAccessToken;
+    private GenerateAccessTokenInterface $generateAccessToken;
     private JsonFactory $jsonFactory;
+    private LoggerInterface $logger;
+
 
     public function __construct(
         ScopeConfigInterface $scopeConfig,
-        Config $config,
-        GenerateAccessToken $generateAccessToken,
-        JsonFactory         $jsonFactory
+        ConfigInterface $config,
+        GenerateAccessTokenInterface $generateAccessToken,
+        JsonFactory         $jsonFactory,
+        LoggerInterface $logger
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->config = $config;
         $this->generateAccessToken = $generateAccessToken;
         $this->jsonFactory = $jsonFactory;
+        $this->logger = $logger;
     }
 
-    /**
-     * @throws \JsonException
-     */
     public function execute()
     {
         $result = $this->jsonFactory->create();
@@ -36,7 +39,11 @@ class GenerateAccess  implements HttpPostActionInterface
             $accessToken = $this->generateAccessToken->execute();
             $this->config->saveAccessToken($accessToken);
         } catch (Exception $exception) {
-
+            $this->logger->error(
+                'Unable to save access Token',
+                [
+                    'exception' => (string)$exception,
+                ]);
         }
         return $result->setData(['status' => 200]);
     }
