@@ -49,4 +49,24 @@ interface ConfigInterface
      * @return string
      */
     public function getPrivateKey($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE):string;
+
+    /**
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getPaymentConfirmationApiEndpoint(
+        $scopeId = null,
+        string $scope = ScopeInterface::SCOPE_STORE
+    ): string;
+
+    /**
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getPaymentConfirmationUrl(
+        $scopeId = null,
+        string $scope = ScopeInterface::SCOPE_STORE
+    ): string;
 }

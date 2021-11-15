@@ -95,4 +95,18 @@ class Request implements RequestInterface
         $this->refId = $refId;
         return $this;
     }
+
+    public function getHeaders(): array
+    {
+        return [
+            "Accept" => "application/json",
+            "channel" => $this->getChannel(),
+            "merchantId" => $this->getMerchantId(),
+            "pywid" => $this->getPywid(),
+            "transactionId" => $this->getTransactionId(),
+            "actionType" => $this->getActionType(),
+            "transactionType" => $this->getTransactionType(),
+            "refid" => $this->getRefId()
+        ];
+    }
 }

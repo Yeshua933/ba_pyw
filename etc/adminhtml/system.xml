@@ -170,6 +170,21 @@
                     <label>Enable Refresh Token Process</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="payment_confirmation_url_uat" translate="label" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>UAT Payment Confirmation URL</label>
+                    <depends>
+                        <field id="environment">sandbox</field>
+                    </depends>
+                </field>
+                <field id="payment_confirmation_url_production" translate="label" type="text" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Production Payment Confirmation URL</label>
+                    <depends>
+                        <field id="environment">production</field>
+                    </depends>
+                </field>
+                <field id="payment_confirmation_api_endpoint" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Payment Confirmation API Endpoint</label>
+                </field>
             </group>
         </section>
     </system>
