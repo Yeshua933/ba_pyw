@@ -13,8 +13,13 @@
                 <model>PayYourWay\Pyw\Model\PaymentMethod</model>
                 <order_status>processing</order_status>
                 <title>Pay Your Way</title>
+                <environment>sandbox</environment>
                 <payment_action>authorize_capture</payment_action>
                 <enable_refresh_token_process>1</enable_refresh_token_process>
+                <public_key_pr backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <private_key_pr backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <public_key_sb backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <private_key_sb backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
             </payyourway>
         </payment>
     </default>
