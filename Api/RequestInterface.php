@@ -64,6 +64,13 @@ interface RequestInterface
     public function getRefId(): string;
 
     /**
+     * Return the headers
+     *
+     * @return array
+     */
+    public function getHeaders(): array;
+
+    /**
      * Set the Channel
      *
      * @param String $channel

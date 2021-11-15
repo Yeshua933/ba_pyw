@@ -7,24 +7,21 @@ declare(strict_types=1);
 
 namespace PayYourWay\Pyw\Service;
 
-use Magento\Framework\HTTP\Client\Curl;
+use Magento\Framework\HTTP\ClientInterface;
 use Magento\Store\Model\ScopeInterface;
 use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
 use PayYourWay\Pyw\Api\RequestInterface;
 use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
-use PayYourWay\Pyw\Model\Config;
+use \PayYourWay\Pyw\Api\ConfigInterface;
 
 class PaymentConfirmationLookup implements PaymentConfirmationLookupInterface
 {
-    private const PAYMENT_CONFIRMATION_URL_UAT = 'https://checkout.uat.telluride.shopyourway.com/';
-    private const PAYMENT_CONFIRMATION_URL_PROD = 'https://checkout.telluride.shopyourway.com/';
-
-    private Curl $curl;
-    private Config $config;
+    private ClientInterface $curl;
+    private ConfigInterface $config;
 
     public function __construct(
-        Curl $curl,
-        Config $config
+        ClientInterface $curl,
+        ConfigInterface $config
     ) {
         $this->curl = $curl;
         $this->config = $config;
@@ -35,25 +32,8 @@ class PaymentConfirmationLookup implements PaymentConfirmationLookupInterface
         $scopeCode = null,
         $scopeType = ScopeInterface::SCOPE_STORE
     ): string {
-
-        $paymentConfirmationUrl = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX ?
-            self::PAYMENT_CONFIRMATION_URL_UAT : self::PAYMENT_CONFIRMATION_URL_PROD;
-
-        $paymentConfirmationUrl .= "tell/api/checkout/v1/orderpaymentconfirm";
-
-        $headers = [
-            "Accept" => "application/json",
-            "channel" => $request->getChannel(),
-            "merchantId" => $request->getMerchantId(),
-            "pywid" => $request->getPywid(),
-            "transactionId" => $request->getTransactionId(),
-            "actionType" => $request->getActionType(),
-            "transactionType" => $request->getTransactionType(),
-            "refid" => $request->getRefId()
-        ];
-
-        $this->curl->setHeaders($headers);
-        $this->curl->get($paymentConfirmationUrl);
+        $this->curl->setHeaders($request->getHeaders());
+        $this->curl->get($this->config->getPaymentConfirmationApiEndpoint());
 
         return $this->curl->getBody();
     }
