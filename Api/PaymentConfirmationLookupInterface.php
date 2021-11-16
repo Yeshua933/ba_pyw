@@ -9,9 +9,7 @@ namespace PayYourWay\Pyw\Api;
 
 /**
  * Payment Confirmation Lookup Service
- *
  * This message initiates a single Payment Confirmation lookup.
- *
  * Please see {@see RequestInterface} for more information on the fields available.
  *
  * @api
