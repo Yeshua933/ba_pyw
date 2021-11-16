@@ -9,7 +9,7 @@ namespace PayYourWay\Pyw\Api;
 
 use Magento\Store\Model\ScopeInterface;
 
-/**https://app.payyourway.test/
+/**
  * Used for managing the Pay Your Way integration config settings
  *
  * @api
