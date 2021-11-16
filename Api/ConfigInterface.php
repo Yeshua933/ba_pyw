@@ -11,6 +11,7 @@ use Magento\Store\Model\ScopeInterface;
 
 /**
  * Used for managing the Pay Your Way integration config settings
+ *
  * @api
  */
 interface ConfigInterface
@@ -34,21 +35,21 @@ interface ConfigInterface
      * @param string $scope
      * @return string
      */
-    public function getEnvironment($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE):string;
+    public function getEnvironment($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string;
 
     /**
      * @param string|null $scopeId
      * @param string $scope
      * @return string
      */
-    public function getClientId($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE):string;
+    public function getClientId($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string;
 
     /**
      * @param string|null $scopeId
      * @param string $scope
      * @return string
      */
-    public function getPrivateKey($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE):string;
+    public function getPrivateKey($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string;
 
     /**
      * @param string|null $scopeId
@@ -58,7 +59,7 @@ interface ConfigInterface
     public function getPaymentConfirmationApiEndpoint(
         $scopeId = null,
         string $scope = ScopeInterface::SCOPE_STORE
-    ): string;
+    ): ?string;
 
     /**
      * @param string|null $scopeId
@@ -68,5 +69,5 @@ interface ConfigInterface
     public function getPaymentConfirmationUrl(
         $scopeId = null,
         string $scope = ScopeInterface::SCOPE_STORE
-    ): string;
+    ): ?string;
 }

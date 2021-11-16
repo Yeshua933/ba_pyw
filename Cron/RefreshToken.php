@@ -36,8 +36,7 @@ class RefreshToken
         /**
          * @todo: Add a condition to check if is token expired ( > 15 minutes )
          */
-        if ($this->config->isPayYourWayEnabled() && $this->config->isRefreshTokenProcessEnabled())
-        {
+        if ($this->config->isPayYourWayEnabled() && $this->config->isRefreshTokenProcessEnabled()) {
             $accessToken = $this->getAccessToken();
             /**
              * @todo: Save the access token into the store configuration
