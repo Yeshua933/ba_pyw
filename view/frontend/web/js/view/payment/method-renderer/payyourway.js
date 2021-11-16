@@ -24,6 +24,7 @@ define(
             },
 
             openPayYourWay : function () {
+                document.getElementById("overlay").style.display = "block";
                 if (!this.pywLoaded) {
                     this.loadPayYourWay()
                         .then(this._setPywObjectAndOpen.bind(this));
