@@ -74,6 +74,6 @@ interface ConfigInterface
     /**
      * @return string|null
      */
-    public function  getPaymentSdkApiEndpoint(): ?string;
+    public function  getPaymentSdkApiEndpoint(): string;
 
 }
