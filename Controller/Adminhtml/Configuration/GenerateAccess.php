@@ -10,7 +10,6 @@ use PayYourWay\pyw\Api\ConfigInterface;
 use PayYourWay\pyw\Api\GenerateAccessTokenInterface;
 use Psr\Log\LoggerInterface;
 
-
 class GenerateAccess implements HttpPostActionInterface
 {
     private GenerateAccessTokenInterface $generateAccessToken;

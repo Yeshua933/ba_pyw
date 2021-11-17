@@ -11,7 +11,6 @@ use Magento\Framework\App\Config\ConfigResource\ConfigInterface as ResourceConfi
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 
-
 /**
  * Used for managing the Pay Your Way integration config settings
  *
