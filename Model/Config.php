@@ -205,7 +205,7 @@ class Config implements PywConfigInterface
     /**
      * @return string|null
      */
-    public function  getPaymentSdkApiEndpoint(): ?string
+    public function  getPaymentSdkApiEndpoint(): string
     {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
             return $this::CONFIG_XML_PATH_PAYMENT_UAT_SDK_API_ENDPOINT;
