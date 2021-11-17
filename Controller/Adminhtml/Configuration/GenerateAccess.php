@@ -1,10 +1,5 @@
 <?php
 
-/**
- * @author    Blue Acorn iCi <code@blueacornici.com>
- * @copyright 2021 Blue Acorn iCi. All Rights Reserved.
- */
-
 namespace PayYourWay\Pyw\Controller\Adminhtml\Configuration;
 
 use Exception;
