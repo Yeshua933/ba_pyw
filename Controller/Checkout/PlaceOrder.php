@@ -266,7 +266,7 @@ class PlaceOrder implements HttpGetActionInterface
             $this->paymentConfirmationRequest
         ));
 
-        if (is_object($paymentConfirmationResponse)) {
+        if (!is_object($paymentConfirmationResponse)) {
             $this->logger->error(
                 'There is an issue with the payment gateway provider',
                 [
@@ -279,7 +279,7 @@ class PlaceOrder implements HttpGetActionInterface
             return false;
         }
 
-        if ($paymentConfirmationResponse->paymentTotal !== $this->quote->getGrandTotal()) {
+        if ((float)$paymentConfirmationResponse->paymentTotal !== $this->quote->getGrandTotal()) {
             $this->logger->error(
                 'The amount returned from PayYour Way doesn\'t match the amount on the store.',
                 [
