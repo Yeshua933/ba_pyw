@@ -5,9 +5,9 @@ namespace PayYourWay\Pyw\Controller\Adminhtml\Configuration;
 use Exception;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Controller\Result\JsonFactory;
 use PayYourWay\pyw\Api\ConfigInterface;
 use PayYourWay\pyw\Api\GenerateAccessTokenInterface;
-use Magento\Framework\Controller\Result\JsonFactory;
 use Psr\Log\LoggerInterface;
 
 

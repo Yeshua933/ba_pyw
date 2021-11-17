@@ -14,13 +14,14 @@
         'prototype',
     ], function ($) {
         function generateAccessToken() {
-            params = {};
-            new Ajax.Request('<?php echo $block->getAccessTokenUrl() ?>', {
-                loaderArea: true,
-                asynchronous: true,
-                parameters: params,
-                onSuccess: function (transport) {
-                    var response = JSON.parse(transport.responseText);
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $block->getAccessTokenUrl() ?>',
+                dataType: 'json',
+                data: {form_key: '<?php echo $block->getFormKey() ?>'},
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                showLoader:true,
+                success: function() {
                     $('#messages .message-success span.message-text').text('Access Token Saved Successfully');
                     $('#messages .message-success').show();
                     $('#messages .message-success').delay(8000).fadeOut();
@@ -31,7 +32,7 @@
                     $('#messages .message-error').delay(8000).fadeOut();
                     return false;
                 }
-            });
+            })
         }
         $('#generate_access_token').click(function () {
             generateAccessToken();

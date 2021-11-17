@@ -7,13 +7,14 @@ declare(strict_types=1);
 
 namespace PayYourWay\Pyw\Api;
 
+use Magento\Framework\App\Config\ConfigResource\ConfigInterface as ResourceConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
-use Magento\Framework\App\Config\ConfigResource\ConfigInterface as ResourceConfigInterface;
 
 
 /**
  * Used for managing the Pay Your Way integration config settings
+ *
  * @api
  */
 interface ConfigInterface
@@ -37,22 +38,21 @@ interface ConfigInterface
      * @param string $scope
      * @return string
      */
-    public function getEnvironment($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE):string;
+    public function getEnvironment($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string;
 
     /**
      * @param string|null $scopeId
      * @param string $scope
      * @return string
      */
-    public function getClientId($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE):string;
+    public function getClientId($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string;
 
     /**
      * @param string|null $scopeId
      * @param string $scope
      * @return string
      */
-    public function getPrivateKey($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE):string;
-
+    public function getPrivateKey($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string;
 
     /**
      * Save config value to the storage resource
@@ -63,6 +63,30 @@ interface ConfigInterface
      * @param int $scopeId
      * @return ResourceConfigInterface $ResourceConfigInterface
      */
-    public function saveAccessToken(string $value, string $path,string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT, int $scopeId = 0): ResourceConfigInterface;
+    public function saveAccessToken(
+        string $value,
+        string $path,
+        string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+        int    $scopeId = 0
+    ): ResourceConfigInterface;
 
+    /**
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getPaymentConfirmationApiEndpoint(
+        $scopeId = null,
+        string $scope = ScopeInterface::SCOPE_STORE
+    ): ?string;
+
+    /**
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getPaymentConfirmationUrl(
+        $scopeId = null,
+        string $scope = ScopeInterface::SCOPE_STORE
+    ): ?string;
 }

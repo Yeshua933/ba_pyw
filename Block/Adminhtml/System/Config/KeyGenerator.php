@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace PayYourWay\Pyw\Block\Adminhtml\System\Config;
 
-use Magento\Backend\Block\Template\Context;
+use Magento\Backend\Block\Widget\Button;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 
@@ -19,11 +19,6 @@ class KeyGenerator extends Field
 {
     /** Path to block template */
     protected $_template = 'PayYourWay_Pyw::system/config/KeyGenerator.phtml';
-
-    public function __construct(Context $context, array $data = [])
-    {
-        parent::__construct($context, $data);
-    }
 
     public function render(AbstractElement $element): string
     {
@@ -43,7 +38,9 @@ class KeyGenerator extends Field
 
     public function getButtonHtml(): string
     {
-        $button = $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')->setData(['id' => 'generate_access_token', 'label' => __('Generate Access Token'),]);
+        $button = $this->getLayout()
+            ->createBlock(Button::class)
+            ->setData(['id' => 'generate_access_token', 'label' => __('Generate Access Token'),]);
         return $button->toHtml();
     }
 }
