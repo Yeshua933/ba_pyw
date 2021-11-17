@@ -15,6 +15,7 @@ use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Response\RedirectInterface;
 use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -23,10 +24,13 @@ use Magento\Quote\Api\CartManagementInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
-use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
-use PayYourWay\Pyw\Api\RequestInterface as PaymentConfirmationRequestInterface;
+use PayYourWay\Pyw\Api\RefIdBuilderInterface;
+use PayYourWay\Pyw\Model\GenerateAccessToken;
 use PayYourWay\Pyw\Model\PaymentMethod;
+use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
 use Psr\Log\LoggerInterface;
+use PayYourWay\Pyw\Api\RequestInterface as PaymentConfirmationRequestInterface;
+use PayYourWay\Pyw\Model\Config;
 
 class PlaceOrder implements HttpGetActionInterface
 {
@@ -39,10 +43,13 @@ class PlaceOrder implements HttpGetActionInterface
     private CartInterface $quote;
     private LoggerInterface $logger;
     private RequestInterface $request;
-    private PaymentConfirmationLookupInterface $paymentConfirmationLookupInterface;
-    private PaymentConfirmationRequestInterface $paymentConfirmationRequestInterface;
+    private PaymentConfirmationLookupInterface $paymentConfirmationLookup;
+    private PaymentConfirmationRequestInterface $paymentConfirmationRequest;
     private MessageManagerInterface $messageManager;
     private RedirectFactory $redirectFactory;
+    private Config $config;
+    private GenerateAccessToken $generateAccessToken;
+    private RefIdBuilderInterface $refIdBuilder;
 
     public function __construct(
         CartManagementInterface $quoteManagement,
@@ -54,10 +61,13 @@ class PlaceOrder implements HttpGetActionInterface
         RedirectInterface $redirect,
         LoggerInterface $logger,
         RequestInterface $request,
-        PaymentConfirmationLookupInterface $paymentConfirmationLookupInterface,
-        PaymentConfirmationRequestInterface $paymentConfirmationRequestInterface,
+        PaymentConfirmationLookupInterface $paymentConfirmationLookup,
+        PaymentConfirmationRequestInterface $paymentConfirmationRequest,
         MessageManagerInterface $messageManager,
-        RedirectFactory $redirectFactory
+        RedirectFactory $redirectFactory,
+        Config $config,
+        GenerateAccessToken $generateAccessToken,
+        RefIdBuilderInterface $refIdBuilder
     ) {
         $this->quoteManagement = $quoteManagement;
         $this->quoteRepository = $quoteRepository;
@@ -68,10 +78,13 @@ class PlaceOrder implements HttpGetActionInterface
         $this->redirect = $redirect;
         $this->logger = $logger;
         $this->request = $request;
-        $this->paymentConfirmationLookupInterface = $paymentConfirmationLookupInterface;
-        $this->paymentConfirmationRequestInterface = $paymentConfirmationRequestInterface;
+        $this->paymentConfirmationLookup = $paymentConfirmationLookup;
+        $this->paymentConfirmationRequest = $paymentConfirmationRequest;
         $this->messageManager = $messageManager;
         $this->redirectFactory = $redirectFactory;
+        $this->config = $config;
+        $this->generateAccessToken = $generateAccessToken;
+        $this->refIdBuilder = $refIdBuilder;
     }
 
     /**
@@ -145,8 +158,10 @@ class PlaceOrder implements HttpGetActionInterface
 
     /**
      * Submit the order
+     *
+     * @return Redirect
      */
-    public function execute()
+    public function execute(): Redirect
     {
         try {
             $this->initCheckout();
@@ -158,7 +173,6 @@ class PlaceOrder implements HttpGetActionInterface
                     'exception' => (string)$exception,
                 ]
             );
-            return;
         }
 
         $quoteId = $this->quote->getId();
@@ -175,10 +189,11 @@ class PlaceOrder implements HttpGetActionInterface
 
         $this->quote->collectTotals();
 
-        /**if (!$this->checkPaymentConfirmation()) {
-            $this->redirect->redirect($this->response, 'checkout/cart', []);
-            return;
-        }*/
+        if (!$this->checkPaymentConfirmation()) {
+            $redirect = $this->redirectFactory->create();
+            $redirect->setPath('checkout/cart');
+            return $redirect;
+        }
 
         try {
             $this->quote->getPayment()->importData([
@@ -209,13 +224,14 @@ class PlaceOrder implements HttpGetActionInterface
             );
         }
 
+        if (!$order) {
+            $redirect = $this->redirectFactory->create();
+            $redirect->setPath('checkout/cart');
+            return $redirect;
+        }
+
         $this->checkoutSession->clearHelperData();
         $this->checkoutSession->setLastQuoteId($quoteId)->setLastSuccessQuoteId($quoteId);
-
-        if (!$order) {
-            $this->redirect->redirect($this->response, 'checkout/cart', []);
-            return;
-        }
 
         $this->checkoutSession->setLastOrderId($order->getId())
             ->setLastRealOrderId($order->getIncrementId())
@@ -229,19 +245,25 @@ class PlaceOrder implements HttpGetActionInterface
     private function checkPaymentConfirmation(): bool
     {
         /**
-         * Make a request to Payment Confirmation API in order to check and save details from payment
-         * @todo: Grab the values dynamically
+         * Make a request to Payment Confirmation API in order to check the payment details
          */
-        $this->paymentConfirmationRequestInterface->setChannel('mockedChannel');
-        $this->paymentConfirmationRequestInterface->setMerchantId('mockedMerchantId');
-        $this->paymentConfirmationRequestInterface->setPywid($this->request->getParam('pywid'));
-        $this->paymentConfirmationRequestInterface->setTransactionId('mockedTransactionId');
-        $this->paymentConfirmationRequestInterface->setActionType('mockedActionType');
-        $this->paymentConfirmationRequestInterface->setTransactionType('mockedTransactionType');
-        $this->paymentConfirmationRequestInterface->setRefId('mockedRefId');
+        $this->paymentConfirmationRequest->setChannel('ONLINE');
+        $this->paymentConfirmationRequest->setMerchantId($this->config->getClientId());
+        $this->paymentConfirmationRequest->setPywid($this->request->getParam('pywid'));
+        $this->paymentConfirmationRequest->setTransactionId($this->quote->getId());
+        $this->paymentConfirmationRequest->setActionType('READONLY');
+        $this->paymentConfirmationRequest->setTransactionType('1P');
+        $this->paymentConfirmationRequest->setRefId($this->refIdBuilder->buildRefId(
+            $this->config->getClientId(),
+            $this->generateAccessToken->execute(),
+            $this->config->getClientId(),
+            time(),
+            $this->quote->getId(),
+            $this->quote->getCustomerEmail()
+        ));
 
-        $paymentConfirmationResponse = json_decode($this->paymentConfirmationLookupInterface->lookup(
-            $this->paymentConfirmationRequestInterface
+        $paymentConfirmationResponse = json_decode($this->paymentConfirmationLookup->lookup(
+            $this->paymentConfirmationRequest
         ));
 
         if (is_object($paymentConfirmationResponse)) {

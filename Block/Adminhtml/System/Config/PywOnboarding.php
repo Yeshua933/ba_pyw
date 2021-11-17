@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace PayYourWay\Pyw\Block\Adminhtml\System\Config;
 
-use Magento\Backend\Block\Template\Context;
+use Magento\Backend\Block\Widget\Button;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
 
@@ -18,11 +18,6 @@ class PywOnboarding extends Field
 {
     /** Path to block template */
     protected $_template = 'PayYourWay_Pyw::system/config/Onboarding.phtml';
-
-    public function __construct(Context $context, array $data = [])
-    {
-        parent::__construct($context, $data);
-    }
 
     public function render(AbstractElement $element): string
     {
@@ -42,7 +37,9 @@ class PywOnboarding extends Field
 
     public function getButtonHtml(): string
     {
-        $button = $this->getLayout()->createBlock('Magento\Backend\Block\Widget\Button')->setData(['id' => 'sign_up', 'label' => __('SIGN UP FOR PAY YOUR WAY'),]);
+        $button = $this->getLayout()
+            ->createBlock(Button::class)
+            ->setData(['id' => 'sign_up', 'label' => __('SIGN UP FOR PAY YOUR WAY'),]);
         return $button->toHtml();
     }
 }

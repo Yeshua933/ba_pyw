@@ -12,7 +12,6 @@ use Magento\Store\Model\ScopeInterface;
 use PayYourWay\Pyw\Api\ConfigInterface;
 use PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment;
 
-
 /**
  * Configuration retrieval tool
  */
@@ -21,16 +20,18 @@ class Config implements ConfigInterface
     public const CONFIG_XML_PATH_ENABLE_PAY_YOUR_WAY = 'payment/payyourway/active';
     public const CONFIG_XML_PATH_ENABLE_REFRESH_TOKEN_PROCESS = 'payment/payyourway/enable_refresh_token_process';
     public const CONFIG_XML_PATH_ENVIRONMENT = 'payment/payyourway/environment';
-    public const CONFIG_XML_PATH_ClIENT_ID_PR = 'payment/payyourway/client_id_pr';
-    public const CONFIG_XML_PATH_ClIENT_ID_SB = 'payment/payyourway/client_id_sb';
+    public const CONFIG_XML_PATH_CLIENT_ID_PR = 'payment/payyourway/client_id_pr';
+    public const CONFIG_XML_PATH_CLIENT_ID_SB = 'payment/payyourway/client_id_sb';
     public const CONFIG_XML_PATH_PRIVATE_KEY_PR = 'payment/payyourway/private_key_pr';
     public const CONFIG_XML_PATH_PRIVATE_KEY_SB = 'payment/payyourway/private_key_sb';
+    public const CONFIG_XML_PATH_PAYMENT_CONFIRMATION_URL_UAT = 'payment/payyourway/payment_confirmation_url_uat';
+    public const CONFIG_XML_PATH_PAYMENT_CONFIRMATION_URL_PRODUCTION =
+        'payment/payyourway/payment_confirmation_url_production';
+    public const CONFIG_XML_PATH_PAYMENT_CONFIRMATION_API_ENDPOINT =
+        'payment/payyourway/payment_confirmation_api_endpoint';
 
     private ScopeConfigInterface $scopeConfig;
 
-    /**
-     * @param ScopeConfigInterface $scopeConfig
-     */
     public function __construct(ScopeConfigInterface $scopeConfig)
     {
         $this->scopeConfig = $scopeConfig;
@@ -67,7 +68,7 @@ class Config implements ConfigInterface
      * @param string $scope
      * @return string
      */
-    public function getEnvironment($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): string
+    public function getEnvironment($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string
     {
         return $this->scopeConfig->getValue(self::CONFIG_XML_PATH_ENVIRONMENT, $scope, $scopeId);
     }
@@ -79,17 +80,19 @@ class Config implements ConfigInterface
      * @param string $scope
      * @return string
      */
-    public function getClientId($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE):string
+    public function getClientId($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string
     {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
             return $this->scopeConfig->getValue(
-                self::CONFIG_XML_PATH_ClIENT_ID_SB,
-                $scope, $scopeId
+                self::CONFIG_XML_PATH_CLIENT_ID_SB,
+                $scope,
+                $scopeId
             );
         }
         return $this->scopeConfig->getValue(
-            self::CONFIG_XML_PATH_ClIENT_ID_PR,
-            $scope, $scopeId
+            self::CONFIG_XML_PATH_CLIENT_ID_PR,
+            $scope,
+            $scopeId
         );
     }
 
@@ -100,25 +103,64 @@ class Config implements ConfigInterface
      * @param string $scope
      * @return string
      */
-    public function getPrivateKey($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE):string
+    public function getPrivateKey($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string
     {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
 
             $privateKey = $this->scopeConfig->getValue(
                 self::CONFIG_XML_PATH_PRIVATE_KEY_SB,
-                $scope, $scopeId
+                $scope,
+                $scopeId
             );
-            $privateKey = str_replace(array("-----BEGIN PRIVATE KEY-----","-----END PRIVATE KEY-----","\r\n", "\n", "\r"," "), '', $privateKey);
+            $privateKey = str_replace(
+                ["-----BEGIN PRIVATE KEY-----","-----END PRIVATE KEY-----","\r\n", "\n", "\r"," "],
+                '',
+                $privateKey
+            );
             $privateKey = chunk_split($privateKey, 64, "\n");
             return "-----BEGIN RSA PRIVATE KEY-----\n$privateKey-----END RSA PRIVATE KEY-----\n";
         }
 
         $privateKey = $this->scopeConfig->getValue(
             self::CONFIG_XML_PATH_PRIVATE_KEY_PR,
-            $scope, $scopeId
+            $scope,
+            $scopeId
         );
-        $privateKey = str_replace(array("-----BEGIN PRIVATE KEY-----","-----END PRIVATE KEY-----","\r\n", "\n", "\r"," "), '', $privateKey);
+        $privateKey = str_replace(
+            ["-----BEGIN PRIVATE KEY-----","-----END PRIVATE KEY-----","\r\n", "\n", "\r"," "],
+            '',
+            $privateKey
+        );
         $privateKey = chunk_split($privateKey, 64, "\n");
         return "-----BEGIN RSA PRIVATE KEY-----\n$privateKey-----END RSA PRIVATE KEY-----\n";
+    }
+
+    /**
+     * @param null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getPaymentConfirmationApiEndpoint(
+        $scopeId = null,
+        string $scope = ScopeInterface::SCOPE_STORE
+    ): ?string {
+        return
+            $this->getPaymentConfirmationUrl($scopeId, $scope) .
+            $this->scopeConfig->getValue(self::CONFIG_XML_PATH_PAYMENT_CONFIRMATION_API_ENDPOINT, $scope, $scopeId);
+    }
+
+    public function getPaymentConfirmationUrl(
+        $scopeId = null,
+        string $scope = ScopeInterface::SCOPE_STORE
+    ): ?string {
+        if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
+            return $this->scopeConfig->getValue(self::CONFIG_XML_PATH_PAYMENT_CONFIRMATION_URL_UAT, $scope, $scopeId);
+        }
+
+        return $this->scopeConfig->getValue(
+            self::CONFIG_XML_PATH_PAYMENT_CONFIRMATION_URL_PRODUCTION,
+            $scope,
+            $scopeId
+        );
     }
 }
