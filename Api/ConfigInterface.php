@@ -88,4 +88,10 @@ interface ConfigInterface
         $scopeId = null,
         string $scope = ScopeInterface::SCOPE_STORE
     ): ?string;
+
+    /**
+     * @return string|null
+     */
+    public function  getPaymentSdkApiEndpoint(): string;
+
 }

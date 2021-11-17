@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace PayYourWay\Pyw\Model;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use PayYourWay\Pyw\Api\ConfigInterface;
 
 class CheckoutConfigProvider implements ConfigProviderInterface
@@ -17,13 +18,20 @@ class CheckoutConfigProvider implements ConfigProviderInterface
     /** @var ConfigInterface */
     private ConfigInterface $scopeConfig;
 
-    public function __construct(ConfigInterface $scopeConfig)
+    /** @var StoreManagerInterface */
+    private StoreManagerInterface $storeManager;
+
+
+    public function __construct(ConfigInterface $scopeConfig,StoreManagerInterface $storeManager)
     {
         $this->scopeConfig = $scopeConfig;
+        $this->storeManager = $storeManager;
     }
 
     /**
      * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getConfig(): array
     {
@@ -34,11 +42,11 @@ class CheckoutConfigProvider implements ConfigProviderInterface
             'payment' => [
                 'payyourway' => [
                     'refid' => self::REF_ID_QA,
-                    'sdkUrl' => 'https://pywweb.uat.telluride.shopyourway.com/pyw_library/scripts/pywscript',
+                    'sdkUrl' => $this->scopeConfig->getPaymentSdkApiEndpoint(),
                     'isActive' => $this->scopeConfig->isPayYourWayEnabled(),
                     'clientId' => $this->scopeConfig->getClientId(),
                     'environment' => $this->scopeConfig->getEnvironment(),
-                    'currency' => 'US Dollar'
+                    'currency' => $this->storeManager->getStore()->getCurrentCurrency()->getCode()
                 ]
             ]
         ];
