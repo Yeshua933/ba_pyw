@@ -31,16 +31,16 @@ class KeyGenerator extends Field
         return $this->_toHtml();
     }
 
-    public function getCustomUrl(): string
+    public function getAccessTokenUrl(): string
     {
-        return $this->getUrl('router/controller/action');
+        return $this->getUrl('payyourway/configuration/generateaccess');
     }
 
     public function getButtonHtml(): string
     {
         $button = $this->getLayout()
             ->createBlock(Button::class)
-            ->setData(['id' => 'generate_key', 'label' => __('Generate Key'),]);
+            ->setData(['id' => 'generate_access_token', 'label' => __('Generate Access Token'),]);
         return $button->toHtml();
     }
 }
