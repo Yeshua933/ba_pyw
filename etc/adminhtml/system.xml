@@ -186,6 +186,16 @@
                     <label>Enable Refresh Token Process</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="access_token_pr" translate="label" type="text" sortOrder="70" showInDefault="0" showInWebsite="0" showInStore="0" canRestore="1">
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                </field>
+                <field id="access_token_sb" translate="label" type="text" sortOrder="70" showInDefault="0" showInWebsite="0" showInStore="0" canRestore="0">
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <label>Access Token</label>
+                    <depends>
+                        <field id="environment">production</field>
+                    </depends>
+                </field>
                 <field id="payment_confirmation_url_uat" translate="label" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>UAT Payment Confirmation URL</label>
                     <depends>
