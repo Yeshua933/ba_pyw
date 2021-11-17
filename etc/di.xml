@@ -18,6 +18,11 @@
             <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
         </arguments>
     </type>
+    <type name="PayYourWay\Pyw\ViewModel\UpdateSectionViewModel">
+        <arguments>
+            <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
     <preference for="PayYourWay\Pyw\Api\ConfigInterface" type="PayYourWay\Pyw\Model\Config"/>
     <preference for="PayYourWay\Pyw\Api\GenerateAccessTokenInterface" type="PayYourWay\Pyw\Model\GenerateAccessToken"/>
     <preference for="PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface" type="PayYourWay\Pyw\Service\PaymentConfirmationLookup"/>
