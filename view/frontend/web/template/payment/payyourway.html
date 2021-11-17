@@ -8,17 +8,17 @@
 <div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
     <div class="payment-method-title field choice">
         <p class="unlock" data-bind="i18n: 'Unlock your rewards, your way.'"></p>
-        <div class="payYourWaySection">
+        <div class="payyourwaysection">
             <input type="radio"
                 name="payment[method]"
-                class="radio radioSYW"
+                class="radio radiosyw"
                 data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
-            <img data-bind="attr: { src: require.toUrl('PayYourWay_Pyw/images/syw-logo.png') }" alt="SYW Brand Image" class="imgSYW">      
-            <label data-bind="attr: {'for': getCode()}" class="label sloganLearnMore">
+            <img data-bind="attr: { src: require.toUrl('PayYourWay_Pyw/images/syw-logo.png') }" alt="SYW Brand Image" class="imgsyw">      
+            <label data-bind="attr: {'for': getCode()}" class="label sloganlearnmore">
                 <span data-bind="text: getTitle()"></span>
                 <span class="slogan" data-bind="html: 'Shop Your Way MasterCard<sup>®</sup>'"></span>
                 <span data-bind="i18n: 'is the best way to shop now and earn rewards.'">&nbsp;</span>
-                <a href="https://www.shopyourway.com/card" class="learnMore" target="_blank">
+                <a href="https://www.shopyourway.com/card" target="_blank">
                     <span data-bind="i18n: 'Learn More'"></span>
                 </a>
             </label>
@@ -40,7 +40,7 @@
         </div>
         <div class="actions-toolbar">
             <div class="primary">
-                <button class="action primary payCheckout"
+                <button class="action primary paycheckout"
                         type="submit"
                         data-bind="
                         click: openPayYourWay,
