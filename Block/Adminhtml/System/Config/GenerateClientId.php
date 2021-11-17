@@ -32,7 +32,7 @@ class GenerateClientId extends Field
 
     public function getGenerateClientIdUrl(): string
     {
-        return $this->getUrl('payyourway/configuration/generateclientidcontroller');
+        return $this->getUrl('payyourway/configuration/generateclient');
     }
 
     public function getButtonHtml(): string

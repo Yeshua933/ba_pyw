@@ -47,6 +47,8 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
             ], JSON_THROW_ON_ERROR)
         );
 
+        //Todo add try catch if privatekey null
+
         openssl_sign(
             $header.".".$claim,
             $jwtSig,

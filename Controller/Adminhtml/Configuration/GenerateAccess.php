@@ -46,6 +46,7 @@ class GenerateAccess implements HttpPostActionInterface
                 [
                     'exception' => (string)$exception,
                 ]);
+            return $result->setData(['status' => 400]);
         }
         return $result->setData(['status' => 200]);
     }
