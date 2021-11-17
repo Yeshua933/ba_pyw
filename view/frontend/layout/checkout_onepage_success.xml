@@ -8,7 +8,13 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="order.success.additional.info">
-            <block name="onepage.success.update.section" template="PayYourWay_Pyw::checkout/onepage/success/update_section.phtml"/>
+            <block name="onepage.success.update.section" template="PayYourWay_Pyw::checkout/onepage/success/update_section.phtml">
+                <arguments>
+                    <argument name="update_section_view_model" xsi:type="object">
+                        PayYourWay\Pyw\ViewModel\UpdateSectionViewModel
+                    </argument>
+                </arguments>
+            </block>
         </referenceContainer>
     </body>
 </page>
