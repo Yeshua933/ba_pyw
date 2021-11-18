@@ -17,6 +17,7 @@ define(
             pywLoaded : false,
             baseUrl:  window.BASE_URL,
             isPopupTriggered: false,
+            returnController: 'payyourway/checkout/return',
 
             initialize : function () {
                 this._super();
@@ -58,7 +59,7 @@ define(
 
             openPopup : function () {
                 let grandTotal = parseFloat(this.getGrandTotal());
-                let returnUrl = this.baseUrl + 'payyourway/checkout/return';
+                let returnUrl = this.baseUrl + this.returnController;
                 this.isPopupTriggered = true;
 
                 preparePayment(this.paymentConfig.refid, grandTotal, returnUrl);
@@ -70,9 +71,11 @@ define(
 
             handleHash: function () {
                 let hash = window.location.hash;
+                let paymentHash = '#payment';
 
-                if (this.isPopupTriggered && hash !== '#payment') {
-                    window.location.href = urlBuilder.build('payyourway/checkout/return');
+                if (this.isPopupTriggered && hash !== paymentHash) {
+                    childwin.close();
+                    window.location.href = urlBuilder.build(this.returnController);
                 }
             }
         });
