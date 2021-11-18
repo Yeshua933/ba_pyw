@@ -39,15 +39,9 @@ class GenerateClient implements HttpPostActionInterface
         try {
             $clientId = $this->config->generateClientId();
             $this->config->saveClientId($clientId);
+            return $result->setData(['success'=>true]);
         } catch (Exception $exception) {
-            $this->logger->error(
-                'Unable to save to generate Client Id',
-                [
-                    'exception' => (string)$exception,
-                ]
-            );
-            return $result->setData(['status' => 400]);
+            return $result->setHttpResponseCode(404);
         }
-        return $result->setData(['status' => 200]);
     }
 }

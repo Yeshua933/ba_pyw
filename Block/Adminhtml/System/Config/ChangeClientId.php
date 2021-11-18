@@ -17,7 +17,7 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 class ChangeClientId extends Field
 {
     /** Path to block template */
-    protected $_template = 'PayYourWay_Pyw::system/config/GenerateClientId.phtml';
+    protected $_template = 'PayYourWay_Pyw::system/config/ChangeClientId.phtml';
 
     public function render(AbstractElement $element): string
     {
@@ -30,9 +30,9 @@ class ChangeClientId extends Field
         return $this->_toHtml();
     }
 
-    public function getGenerateClientIdUrl(): string
+    public function getChangeClientIdUrl(): string
     {
-        return $this->getUrl('payyourway/configuration/generateclient');
+        return $this->getUrl('payyourway/configuration/changeclientid');
     }
 
     public function getButtonHtml(): string

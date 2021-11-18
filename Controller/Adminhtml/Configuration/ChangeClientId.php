@@ -11,7 +11,7 @@ use Exception;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
-use PayYourWay\pyw\Api\ConfigInterface;
+use PayYourWay\Pyw\Api\ConfigInterface;
 use Psr\Log\LoggerInterface;
 
 class ChangeClientId implements HttpPostActionInterface
@@ -37,16 +37,11 @@ class ChangeClientId implements HttpPostActionInterface
     {
         $result = $this->jsonFactory->create();
         try {
+            //todo Get value from frontend
             $this->config->saveClientId('Test');
+            return $result->setData(['status' => 200]);
         } catch (Exception $exception) {
-            $this->logger->error(
-                'Unable to save to generate Client Id',
-                [
-                    'exception' => (string)$exception,
-                ]
-            );
-            return $result->setData(['status' => 400]);
+            return $result->setHttpResponseCode(404);
         }
-        return $result->setData(['status' => 200]);
     }
 }

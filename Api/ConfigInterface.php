@@ -78,7 +78,7 @@ interface ConfigInterface
      * @param int $scopeId
      * @return \Magento\Config\Model\ResourceModel\Config
      */
-    public function  saveClientId(
+    public function saveClientId(
         string $value,
         string $path,
         string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
@@ -107,7 +107,7 @@ interface ConfigInterface
     /**
      * @return string|null
      */
-    public function  getPaymentSdkApiEndpoint(): string;
+    public function getPaymentSdkApiEndpoint(): string;
 
     /**
     * Get Merchant Id/ Client Id

@@ -23,14 +23,14 @@ use PayYourWay\Pyw\Block\Adminhtml\System\Config\ChangeClientId;
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 showLoader:true,
                 success: function() {
-                    let messageSuccess = $('messages-changeclientId .message-success');
-                    $('#messages-changeclientId .message-success span.message-text').text('Client Id generated');
+                    let messageSuccess = $('#messages-clientid-change .message-success');
+                    $('#messages-clientid-change .message-error span.message-text').text('success');
                     messageSuccess.show();
                     messageSuccess.delay(8000).fadeOut();
             },
                 onFailure: function() {
-                    let messageError = $('messages-changeclientId .message-error');
-                    $('#messages-changeclientId .message-error span.message-text').text('Failed');
+                    let messageError = $('#messages-clientid-change .message-error');
+                    $('#messages-clientid-change .message-error span.message-text').text('Failed');
                     messageError.show();
                     messageError.delay(8000).fadeOut();
                     return false;
@@ -43,7 +43,7 @@ use PayYourWay\Pyw\Block\Adminhtml\System\Config\ChangeClientId;
 });
 </script>
 
-<div id="messages-changeclientId" >
+<div id="messages-clientid-change" >
     <div class="messages">
         <div class="message message-success success" style="display: none;">
             <div data-ui-id="messages-message-success">
@@ -58,4 +58,3 @@ use PayYourWay\Pyw\Block\Adminhtml\System\Config\ChangeClientId;
     </div>
 </div>
 <?php echo $block->getButtonHtml() ?>
-
