@@ -2,9 +2,10 @@ define(
     [
         'Magento_Checkout/js/view/payment/default',
         'PayYourWay_Pyw/js/pyw-sdk',
-        'Magento_Checkout/js/model/quote'
+        'Magento_Checkout/js/model/quote',
+        'mage/url'
     ],
-    function (Component, pywSdk, quote) {
+    function (Component, pywSdk, quote, urlBuilder) {
         'use strict';
 
         return Component.extend({
@@ -15,9 +16,13 @@ define(
             payyourway: null,
             pywLoaded : false,
             baseUrl:  window.BASE_URL,
+            isPopupTriggered: false,
 
             initialize : function () {
                 this._super();
+
+                window.addEventListener('hashchange', _.bind(this.handleHash, this));
+
                 if (!this.pywLoaded) {
                     this.loadPayYourWay()
                         .then(this._setPywObject.bind(this));
@@ -54,11 +59,21 @@ define(
             openPopup : function () {
                 let grandTotal = parseFloat(this.getGrandTotal());
                 let returnUrl = this.baseUrl + 'payyourway/checkout/return';
+                this.isPopupTriggered = true;
+
                 preparePayment(this.paymentConfig.refid, grandTotal, returnUrl);
             },
 
             getGrandTotal : function () {
                 return quote.totals()['base_grand_total'];
+            },
+
+            handleHash: function () {
+                let hash = window.location.hash;
+
+                if (this.isPopupTriggered && hash !== '#payment') {
+                    window.location.href = urlBuilder.build('payyourway/checkout/return');
+                }
             }
         });
     }
