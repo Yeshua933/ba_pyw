@@ -19,7 +19,6 @@ class GenerateAccess implements HttpPostActionInterface
     private JsonFactory $jsonFactory;
     private LoggerInterface $logger;
 
-
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         ConfigInterface $config,
@@ -45,7 +44,8 @@ class GenerateAccess implements HttpPostActionInterface
                 'Unable to save access Token',
                 [
                     'exception' => (string)$exception,
-                ]);
+                ]
+            );
         }
         return $result->setData(['status' => 200]);
     }

@@ -16,6 +16,8 @@ use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
  */
 class GenerateAccessToken implements GenerateAccessTokenInterface
 {
+    private const OAUTH_UAT = 'https://oauth.uat.telluride.transformco.com/oauthAS/service/oAuth/token.json';
+    private const OAUTH_PRD = 'https://oauth.telluride.transformco.com/oauthAS/service/oAuth/token.json';
 
     private Config $config;
 
@@ -34,8 +36,8 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
         $client_id = $this->config->getClientId();
         $privateKey = $this->config->getPrivateKey();
         $aud = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX ?
-            "https://oauth.uat.telluride.transformco.com/oauthAS/service/oAuth/token.json" :
-            "https://oauth.telluride.transformco.com/oauthAS/service/oAuth/token.json";
+            self::OAUTH_UAT :
+            self::OAUTH_PRD;
 
         $claim = $this->getEncoded(
             json_encode([

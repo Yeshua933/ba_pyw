@@ -2,8 +2,9 @@ define(
     [
         'Magento_Checkout/js/view/payment/default',
         'PayYourWay_Pyw/js/pyw-sdk',
+        'Magento_Checkout/js/model/quote'
     ],
-    function (Component,pywSdk) {
+    function (Component, pywSdk, quote) {
         'use strict';
 
         return Component.extend({
@@ -51,10 +52,13 @@ define(
             },
 
             openPopup : function () {
-                let total = 500;
+                let grandTotal = parseFloat(this.getGrandTotal());
                 let returnUrl = this.baseUrl + 'payyourway/checkout/return';
+                preparePayment(this.paymentConfig.refid, grandTotal, returnUrl);
+            },
 
-                preparePayment(this.paymentConfig.refid, total, returnUrl);
+            getGrandTotal : function () {
+                return quote.totals()['base_grand_total'];
             }
         });
     }
