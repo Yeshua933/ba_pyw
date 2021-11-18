@@ -24,14 +24,12 @@
                     <depends>
                         <field id="environment">production</field>
                     </depends>
-<!--                    <backend_model>PayYourWay\Pyw\Model\Adminhtml\Config\Backend\ClientId</backend_model>-->
                 </field>
                 <field id="client_id_sb" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Sandbox Client Id</label>
                     <depends>
                         <field id="environment">sandbox</field>
                     </depends>
-<!--                    <backend_model>PayYourWay\Pyw\Model\Adminhtml\Config\Backend\ClientId</backend_model>-->
                 </field>
                 <field id="generate_client_id" translate="label" type="button" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Generate Client ID</label>

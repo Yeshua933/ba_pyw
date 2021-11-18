@@ -44,7 +44,8 @@ class GenerateClient implements HttpPostActionInterface
                 'Unable to save to generate Client Id',
                 [
                     'exception' => (string)$exception,
-                ]);
+                ]
+            );
             return $result->setData(['status' => 400]);
         }
         return $result->setData(['status' => 200]);

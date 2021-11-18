@@ -23,14 +23,16 @@ use PayYourWay\Pyw\Block\Adminhtml\System\Config\GenerateClientId;
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 showLoader:true,
                 success: function() {
-                    $('#messages .message-success span.message-text').text('Access Token Saved Successfully');
-                    $('#messages .message-success').show();
-                    $('#messages .message-success').delay(8000).fadeOut();
+                    let messageSuccess = $('messages-clientId .message-success');
+                    $('#messages-clientId .message-success span.message-text').text('Client Id generated');
+                    messageSuccess.show();
+                    messageSuccess.delay(8000).fadeOut();
             },
                 onFailure: function() {
-                    $('#messages .message-error span.message-text').text('Failed');
-                    $('#messages .message-error').show();
-                    $('#messages .message-error').delay(8000).fadeOut();
+                    let messageError = $('messages-clientId .message-error');
+                    $('#messages-clientId .message-error span.message-text').text('Failed');
+                    messageError.show();
+                    messageError.delay(8000).fadeOut();
                     return false;
                 }
             })
@@ -41,7 +43,7 @@ use PayYourWay\Pyw\Block\Adminhtml\System\Config\GenerateClientId;
 });
 </script>
 
-<div id="messages" >
+<div id="messages-clientId" >
     <div class="messages">
         <div class="message message-success success" style="display: none;">
             <div data-ui-id="messages-message-success">

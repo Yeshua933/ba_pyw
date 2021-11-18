@@ -17,7 +17,7 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 class GenerateClientId extends Field
 {
     /** Path to block template */
-    protected $_template = 'PayYourWay_Pyw::system/config/ClientId.phtml';
+    protected $_template = 'PayYourWay_Pyw::system/config/GenerateClientId.phtml';
 
     public function render(AbstractElement $element): string
     {
