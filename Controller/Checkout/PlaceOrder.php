@@ -246,7 +246,7 @@ class PlaceOrder implements HttpGetActionInterface
     {
         $merchantId = $this->config->getClientId();
 
-        if ($merchantId !== null) {
+        if ($merchantId === null) {
             $this->logger->error(
                 'There is an issue with the merchant account',
                 [
