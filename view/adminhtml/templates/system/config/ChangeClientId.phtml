@@ -1,0 +1,61 @@
+<?php
+/**
+ * @author    Blue Acorn iCi <code@blueacornici.com>
+ * @copyright 2021 Blue Acorn iCi. All Rights Reserved.
+ */
+
+use PayYourWay\Pyw\Block\Adminhtml\System\Config\ChangeClientId;
+
+/**
+* @var ChangeClientId $block
+*/
+?>
+<script>
+    require([
+        'jquery'
+    ], function ($) {
+        function changeClientIdButton() {
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo $block->getChangeClientIdUrl() ?>',
+                dataType: 'json',
+                data: {form_key: '<?php echo $block->getFormKey() ?>'},
+                contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+                showLoader:true,
+                success: function() {
+                    let messageSuccess = $('messages-changeclientId .message-success');
+                    $('#messages-changeclientId .message-success span.message-text').text('Client Id generated');
+                    messageSuccess.show();
+                    messageSuccess.delay(8000).fadeOut();
+            },
+                onFailure: function() {
+                    let messageError = $('messages-changeclientId .message-error');
+                    $('#messages-changeclientId .message-error span.message-text').text('Failed');
+                    messageError.show();
+                    messageError.delay(8000).fadeOut();
+                    return false;
+                }
+            })
+        }
+        $('#change_client_id').click(function () {
+            changeClientIdButton();
+        });
+});
+</script>
+
+<div id="messages-changeclientId" >
+    <div class="messages">
+        <div class="message message-success success" style="display: none;">
+            <div data-ui-id="messages-message-success">
+                <span class="message-text"></span>
+            </div>
+        </div>
+        <div class="message message-error error" style="display: none;">
+            <div data-ui-id="messages-message-error">
+                <span class="message-text"></span>
+            </div>
+        </div>
+    </div>
+</div>
+<?php echo $block->getButtonHtml() ?>
+
