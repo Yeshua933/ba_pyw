@@ -59,7 +59,7 @@ class CheckoutConfigProvider implements ConfigProviderInterface
             $this->scopeConfig->getClientId(),
             time(),
             $quote->getId(),
-            $quote->getCustomerEmail(),
+            $quote->getCustomerEmail() ?? '',
             $sandboxMode
         );
         return [

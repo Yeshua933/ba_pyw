@@ -274,7 +274,7 @@ class PlaceOrder implements HttpGetActionInterface
             $this->config->getClientId(),
             time(),
             $this->quote->getId(),
-            $this->quote->getCustomerEmail()
+            $this->quote->getCustomerEmail() ?? ''
         ));
 
         $paymentConfirmationResponse = json_decode($this->paymentConfirmationLookup->lookup(
