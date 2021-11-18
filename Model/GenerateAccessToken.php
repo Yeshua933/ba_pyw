@@ -16,6 +16,8 @@ use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
  */
 class GenerateAccessToken implements GenerateAccessTokenInterface
 {
+    private const OAUTH_UAT = 'https://oauth.uat.telluride.transformco.com/oauthAS/service/oAuth/token.json';
+    private const OAUTH_PRD = 'https://oauth.telluride.transformco.com/oauthAS/service/oAuth/token.json';
 
     private Config $config;
 

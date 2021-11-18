@@ -8,45 +8,69 @@ declare(strict_types=1);
 namespace PayYourWay\Pyw\Model;
 
 use Magento\Checkout\Model\ConfigProviderInterface;
+use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Store\Model\StoreManagerInterface;
 use PayYourWay\Pyw\Api\ConfigInterface;
+use PayYourWay\Pyw\Api\RefIdBuilderInterface;
+use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
 
 class CheckoutConfigProvider implements ConfigProviderInterface
 {
-    private const REF_ID_QA = 'oC4EbwWObOxb8FJtv8aWdaMhkYq3G7Tj6dP5kw1W+NQB4/XJH/pcbHcWVOw2IcO0HN4sq1Avg7Aq9y9XfiTiSbrZGxmY3BFJoiVWnFdGAFFK7xHO1dMllWbN+C6Fk7gOl4ofFMPZmtMi/txc7Xme25sdxAjR2NWkx59hT5J9hFmDeKFjT1DokvKUkilAo6IQr1kbtU5CZSeL56m9BfTQfFY0C3VF0FHAWV0d+lDE4RfWa5hp4TVLOVYIeLDwSB8cIu9pmfyE4aLpS+eO8bSHrE+D6KQleNNbrLySo8KbUOuer0D/dMZYgvP36Kv9HtS9FFeOOVAiEstYByvAgiy2Cw=='; //phpcs:ignore
-
-    /** @var ConfigInterface */
     private ConfigInterface $scopeConfig;
 
-    /** @var StoreManagerInterface */
     private StoreManagerInterface $storeManager;
 
+    private GenerateAccessToken $generateAccessToken;
 
-    public function __construct(ConfigInterface $scopeConfig,StoreManagerInterface $storeManager)
-    {
+    private RefIdBuilderInterface $refIdBuilder;
+
+    private CheckoutSession $checkoutSession;
+
+    public function __construct(
+        ConfigInterface $scopeConfig,
+        StoreManagerInterface $storeManager,
+        GenerateAccessToken $generateAccessToken,
+        RefIdBuilderInterface $refIdBuilder,
+        CheckoutSession $checkoutSession
+    ) {
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
+        $this->generateAccessToken = $generateAccessToken;
+        $this->refIdBuilder = $refIdBuilder;
+        $this->checkoutSession = $checkoutSession;
     }
 
     /**
      * @return array
      * @throws \Magento\Framework\Exception\LocalizedException
      * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \JsonException
      */
     public function getConfig(): array
     {
+        $quote = $this->checkoutSession->getQuote();
         /**
          * TODO: Change sdkURL depending on sandbox mode config
          */
+        $sandboxMode = $this->scopeConfig->getEnvironment() === Environment::ENVIRONMENT_SANDBOX;
+        $refId = $this->refIdBuilder->buildRefId(
+            $this->scopeConfig->getClientId(),
+            $this->generateAccessToken->execute(),
+            $this->scopeConfig->getClientId(),
+            time(),
+            $quote->getId(),
+            $quote->getCustomerEmail(),
+            $sandboxMode
+        );
         return [
             'payment' => [
                 'payyourway' => [
-                    'refid' => self::REF_ID_QA,
+                    'refid' => $refId,
                     'sdkUrl' => $this->scopeConfig->getPaymentSdkApiEndpoint(),
                     'isActive' => $this->scopeConfig->isPayYourWayEnabled(),
                     'clientId' => $this->scopeConfig->getClientId(),
                     'environment' => $this->scopeConfig->getEnvironment(),
-                    'currency' => $this->storeManager->getStore()->getCurrentCurrency()->getCode()
+                    'currency' => $this->storeManager->getStore()->getCurrentCurrency()->getCode(),
                 ]
             ]
         ];

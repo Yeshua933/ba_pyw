@@ -20,7 +20,8 @@ interface RefIdBuilderInterface
      * @param string $requestorId
      * @param int $timestamp
      * @param string $transactionId
-     * @param string $userId
+     * @param string|null $userId
+     * @param bool $sandbox
      * @return string
      */
     public function buildRefId(
@@ -29,6 +30,7 @@ interface RefIdBuilderInterface
         string $requestorId,
         int $timestamp,
         string $transactionId,
-        string $userId
+        string $userId = '',
+        bool $sandbox = false
     ): string;
 }

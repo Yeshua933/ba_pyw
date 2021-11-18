@@ -30,7 +30,7 @@ pipelines:
   branches:
     master:
       - step:
-                name: 7.4composer2 & 2.4.3-ee
+        name: "7.4composer2 & 2.4.3-ee"
                 size: 2x
                 script: [
                     export AUTO_IMAGE_TYPE=7.4composer2,

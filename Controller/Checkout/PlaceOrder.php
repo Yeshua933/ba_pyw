@@ -244,6 +244,21 @@ class PlaceOrder implements HttpGetActionInterface
 
     private function checkPaymentConfirmation(): bool
     {
+        $merchantId = $this->config->getClientId();
+
+        if ($merchantId !== null) {
+            $this->logger->error(
+                'There is an issue with the merchant account',
+                [
+                    'quote' => $this->quote->getData(),
+                ]
+            );
+            $this->messageManager->addErrorMessage(
+                __('There is an issue with the merchant account')
+            );
+            return false;
+        }
+
         /**
          * Make a request to Payment Confirmation API in order to check the payment details
          */

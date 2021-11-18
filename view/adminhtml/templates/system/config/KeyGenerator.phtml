@@ -15,20 +15,22 @@
         function generateAccessToken() {
             $.ajax({
                 type: 'POST',
-                url: '<?php echo $block->getAccessTokenUrl() ?>',
+                url: '<?=  /* @noEscape */ $block->getAccessTokenUrl() ?>',
                 dataType: 'json',
-                data: {form_key: '<?php echo $block->getFormKey() ?>'},
+                data: {form_key: '<?= /* @noEscape */ $block->getFormKey() ?>'},
                 contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
                 showLoader:true,
                 success: function() {
+                    let messageSuccess = $('#messages .message-success');
                     $('#messages .message-success span.message-text').text('Access Token Saved Successfully');
-                    $('#messages .message-success').show();
-                    $('#messages .message-success').delay(8000).fadeOut();
+                    messageSuccess.show();
+                    messageSuccess.delay(8000).fadeOut();
                 },
                 onFailure: function() {
+                    let messageError =  $('#messages .message-error');
                     $('#messages .message-error span.message-text').text('Failed');
-                    $('#messages .message-error').show();
-                    $('#messages .message-error').delay(8000).fadeOut();
+                    messageError.show();
+                    messageError.delay(8000).fadeOut();
                     return false;
                 }
             })
@@ -53,4 +55,4 @@
         </div>
     </div>
 </div>
-<?php echo $block->getButtonHtml() ?>
+<?= /* @noEscape */ $block->getButtonHtml() ?>
