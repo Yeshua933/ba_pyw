@@ -59,6 +59,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
 
         $jwtAssertion = $header.".".$claim.".".$jwtSig;
 
+        $this->config->saveAccessToken($jwtAssertion);
         return $jwtAssertion;
     }
 

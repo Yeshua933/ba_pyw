@@ -13,31 +13,31 @@ use Magento\Store\Model\StoreManagerInterface;
 use PayYourWay\Pyw\Api\ConfigInterface;
 use PayYourWay\Pyw\Api\RefIdBuilderInterface;
 use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
+use Psr\Log\LoggerInterface;
 
 class CheckoutConfigProvider implements ConfigProviderInterface
 {
     private ConfigInterface $scopeConfig;
-
     private StoreManagerInterface $storeManager;
-
     private GenerateAccessToken $generateAccessToken;
-
     private RefIdBuilderInterface $refIdBuilder;
-
     private CheckoutSession $checkoutSession;
+    private LoggerInterface $logger;
 
     public function __construct(
         ConfigInterface $scopeConfig,
         StoreManagerInterface $storeManager,
         GenerateAccessToken $generateAccessToken,
         RefIdBuilderInterface $refIdBuilder,
-        CheckoutSession $checkoutSession
+        CheckoutSession $checkoutSession,
+        LoggerInterface $logger
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
         $this->generateAccessToken = $generateAccessToken;
         $this->refIdBuilder = $refIdBuilder;
         $this->checkoutSession = $checkoutSession;
+        $this->logger = $logger;
     }
 
     /**
@@ -53,15 +53,28 @@ class CheckoutConfigProvider implements ConfigProviderInterface
          * TODO: Change sdkURL depending on sandbox mode config
          */
         $sandboxMode = $this->scopeConfig->getEnvironment() === Environment::ENVIRONMENT_SANDBOX;
+        $accessToken =  $this->generateAccessToken->execute();
+
         $refId = $this->refIdBuilder->buildRefId(
             $this->scopeConfig->getClientId(),
-            $this->generateAccessToken->execute(),
+            $accessToken,
             $this->scopeConfig->getClientId(),
             time(),
             $quote->getId(),
             $quote->getCustomerEmail() ?? '',
             $sandboxMode
         );
+        $debug = [
+            'client_id'=>$this->scopeConfig->getClientId(),
+            'access_token'=>$accessToken,
+            'requestor_id'=>$this->scopeConfig->getClientId(),
+            'timestamp'=>time(),
+            'transaction_id'=>$quote->getId(),
+            'user_id'=>$quote->getCustomerEmail() ?? '',
+            'sandbox_mode'=>$sandboxMode,
+            'ref_id'=>$refId
+        ];
+        $this->logger->debug(json_encode($debug));
         return [
             'payment' => [
                 'payyourway' => [

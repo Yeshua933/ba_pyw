@@ -25,6 +25,7 @@ use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
 use PayYourWay\Pyw\Api\RefIdBuilderInterface;
+use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
 use PayYourWay\Pyw\Model\GenerateAccessToken;
 use PayYourWay\Pyw\Model\PaymentMethod;
 use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
@@ -262,24 +263,40 @@ class PlaceOrder implements HttpGetActionInterface
         /**
          * Make a request to Payment Confirmation API in order to check the payment details
          */
+        $accessToken =  $this->generateAccessToken->execute();
+        $sandboxMode = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX;
         $this->paymentConfirmationRequest->setChannel('ONLINE');
         $this->paymentConfirmationRequest->setMerchantId($this->config->getClientId());
         $this->paymentConfirmationRequest->setPywid($this->request->getParam('pywid'));
         $this->paymentConfirmationRequest->setTransactionId($this->quote->getId());
         $this->paymentConfirmationRequest->setActionType('READONLY');
         $this->paymentConfirmationRequest->setTransactionType('1P');
-        $this->paymentConfirmationRequest->setRefId($this->refIdBuilder->buildRefId(
+        $refId = $this->refIdBuilder->buildRefId(
             $this->config->getClientId(),
-            $this->generateAccessToken->execute(),
+            $accessToken,
             $this->config->getClientId(),
             time(),
             $this->quote->getId(),
-            $this->quote->getCustomerEmail() ?? ''
-        ));
+            $this->quote->getCustomerEmail() ?? '',
+            $sandboxMode
+        );
+        $this->paymentConfirmationRequest->setRefId($refId);
 
         $paymentConfirmationResponse = json_decode($this->paymentConfirmationLookup->lookup(
             $this->paymentConfirmationRequest
         ));
+
+        $debug = [
+            'client_id'=>$this->config->getClientId(),
+            'access_token'=>$accessToken,
+            'requestor_id'=>$this->config->getClientId(),
+            'timestamp'=>time(),
+            'transaction_id'=>$this->quote->getId(),
+            'user_id'=>$this->quote->getCustomerEmail() ?? '',
+            'sandbox_mode'=>$sandboxMode,
+            'ref_id'=>$refId
+        ];
+        $this->logger->debug(json_encode($debug));
 
         if (!is_object($paymentConfirmationResponse)) {
             $this->logger->error(
@@ -293,6 +310,8 @@ class PlaceOrder implements HttpGetActionInterface
             );
             return false;
         }
+
+        $this->logger->debug(json_encode($paymentConfirmationResponse));
 
         if ((float)$paymentConfirmationResponse->paymentTotal !== $this->quote->getGrandTotal()) {
             $this->logger->error(

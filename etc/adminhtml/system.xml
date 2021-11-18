@@ -195,6 +195,10 @@
                 <field id="payment_confirmation_api_endpoint" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Payment Confirmation API Endpoint</label>
                 </field>
+                <field id="debug" translate="label" type="select" sortOrder="150" showInDefault="1" showInWebsite="1" canRestore="1">
+                    <label>Enabled</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
         </section>
     </system>
