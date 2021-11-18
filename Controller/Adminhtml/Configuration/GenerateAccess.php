@@ -7,9 +7,7 @@ namespace PayYourWay\Pyw\Controller\Adminhtml\Configuration;
 
 use Exception;
 use Magento\Framework\App\Action\HttpPostActionInterface;
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
-use PayYourWay\pyw\Api\ConfigInterface;
 use PayYourWay\pyw\Api\GenerateAccessTokenInterface;
 use Psr\Log\LoggerInterface;
 
@@ -20,14 +18,10 @@ class GenerateAccess implements HttpPostActionInterface
     private LoggerInterface $logger;
 
     public function __construct(
-        ScopeConfigInterface $scopeConfig,
-        ConfigInterface $config,
         GenerateAccessTokenInterface $generateAccessToken,
-        JsonFactory         $jsonFactory,
+        JsonFactory $jsonFactory,
         LoggerInterface $logger
     ) {
-        $this->scopeConfig = $scopeConfig;
-        $this->config = $config;
         $this->generateAccessToken = $generateAccessToken;
         $this->jsonFactory = $jsonFactory;
         $this->logger = $logger;
@@ -38,7 +32,6 @@ class GenerateAccess implements HttpPostActionInterface
         $result = $this->jsonFactory->create();
         try {
             $accessToken = $this->generateAccessToken->execute();
-            $this->config->saveAccessToken($accessToken);
         } catch (Exception $exception) {
             $this->logger->error(
                 'Unable to save access Token',
