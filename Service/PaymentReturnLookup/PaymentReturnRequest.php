@@ -9,7 +9,7 @@ namespace PayYourWay\Pyw\Service\PaymentReturnLookup;
 
 use PayYourWay\Pyw\Api\PaymentReturnRequestInterface;
 
-class Request implements PaymentReturnRequestInterface
+class PaymentReturnRequest implements PaymentReturnRequestInterface
 {
     private string $contentType;
     private string $accept;
