@@ -1,0 +1,28 @@
+<?php
+/**
+ * @author    Blue Acorn iCi <code@blueacornici.com>
+ * @copyright 2021 Blue Acorn iCi. All Rights Reserved.
+ */
+
+/**
+ * We are updating the section like so due to the GET request from PYW
+ * Ideally, the use of sections.xml is preferable.
+ */
+
+/** @var \Magento\Framework\View\Helper\SecureHtmlRenderer $secureRenderer */
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \PayYourWay\Pyw\ViewModel\UpdateSectionViewModel $updateSectionViewModel */
+$updateSectionViewModel = $block->getUpdateSectionViewModel();
+?>
+<?php if ($updateSectionViewModel->isLastOrderPayYourWay()): ?>
+    <?php $scriptString = <<<script
+        require([
+            'Magento_Customer/js/customer-data',
+            'domReady!'
+        ], function(customerData) {
+            customerData.reload(['cart'], false);
+        });
+    script;
+    ?>
+    <?= /* @noEscape */ $secureRenderer->renderTag('script', [], $scriptString, false); ?>
+<?php endif; ?>

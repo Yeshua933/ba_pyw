@@ -40,7 +40,6 @@ class Config implements PywConfigInterface
     public const CONFIG_XML_PATH_CLIENT_NAME_PR = 'payment/payyourway/merchant_name_pr';
     public const CONFIG_XML_PATH_CLIENT_NAME_SB = 'payment/payyourway/merchant_name_sb';
 
-
     private ScopeConfigInterface $scopeConfig;
     private ResourceConfigInterface $resourceConfigInterface;
 
@@ -48,8 +47,10 @@ class Config implements PywConfigInterface
      * @param ScopeConfigInterface $scopeConfig
      * @param ResourceConfigInterface $resourceConfigInterface
      */
-    public function __construct(ScopeConfigInterface $scopeConfig,ResourceConfigInterface $resourceConfigInterface)
-    {
+    public function __construct(
+        ScopeConfigInterface $scopeConfig,
+        ResourceConfigInterface $resourceConfigInterface
+    ) {
         $this->scopeConfig = $scopeConfig;
         $this->resourceConfigInterface = $resourceConfigInterface;
     }
@@ -184,18 +185,19 @@ class Config implements PywConfigInterface
      * @param int $scopeId
      * @return \Magento\Config\Model\ResourceModel\Config
      */
-    public function saveAccessToken( string $value,
-                                     string $path=self::CONFIG_XML_PATH_ACCESS_TOKEN_SB,
-                                     string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
-                                     int $scopeId = 0):ResourceConfigInterface
-    {
+    public function saveAccessToken(
+        string $value,
+        string $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_SB,
+        string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+        int $scopeId = 0
+    ): ResourceConfigInterface {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
             $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_SB;
-            return $this->resourceConfigInterface->saveConfig($path, $value, $scope,$scopeId);
+            return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
         }
 
         $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_PR;
-        return $this->resourceConfigInterface->saveConfig($path, $value, $scope,$scopeId);
+        return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
     }
 
     /**
@@ -230,7 +232,7 @@ class Config implements PywConfigInterface
     /**
      * @return string|null
      */
-    public function  getPaymentSdkApiEndpoint(): string
+    public function getPaymentSdkApiEndpoint(): string
     {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
             return $this::CONFIG_XML_PATH_PAYMENT_UAT_SDK_API_ENDPOINT;

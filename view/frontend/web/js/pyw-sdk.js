@@ -13,7 +13,8 @@ define([
      * Loads the Pyw SDK object
      * @param {String} pywUrl - the url of the Pyw SDK
      */
-    return function loadPywScript(pywUrl) {
+    return function loadPywScript(pywUrl)
+    {
         //configuration for loaded PYW script
         require.config({
             paths: {

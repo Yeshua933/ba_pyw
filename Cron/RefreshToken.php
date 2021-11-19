@@ -7,23 +7,19 @@ declare(strict_types=1);
 
 namespace PayYourWay\Pyw\Cron;
 
-use Magento\Framework\Encryption\Encryptor;
-use PayYourWay\Pyw\Model\Config;
 use PayYourWay\Pyw\Api\GenerateAccessTokenInterface;
+use PayYourWay\Pyw\Model\Config;
 
 class RefreshToken
 {
     private Config $config;
-    private Encryptor $encryptor;
     private GenerateAccessTokenInterface $generateAccessToken;
 
     public function __construct(
         Config $config,
-        Encryptor $encryptor,
         GenerateAccessTokenInterface $generateAccessToken
     ) {
         $this->config = $config;
-        $this->encryptor= $encryptor;
         $this->generateAccessToken = $generateAccessToken;
     }
 
@@ -38,11 +34,9 @@ class RefreshToken
          */
         if ($this->config->isPayYourWayEnabled() && $this->config->isRefreshTokenProcessEnabled()) {
             $accessToken = $this->getAccessToken();
-            /**
-             * @todo: Save the access token into the store configuration
-             */
         }
     }
+
     /**
      * This is a work in progress
      */

@@ -11,7 +11,7 @@ use Exception;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
-use PayYourWay\pyw\Api\ConfigInterface;
+use PayYourWay\Pyw\Api\ConfigInterface;
 use Psr\Log\LoggerInterface;
 
 class GenerateClient implements HttpPostActionInterface

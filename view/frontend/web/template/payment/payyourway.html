@@ -4,13 +4,25 @@
  * @copyright 2021 Blue Acorn iCi. All Rights Reserved.
  */
 -->
+<div id="overlay" style="display:none"></div>
 <div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
     <div class="payment-method-title field choice">
-        <input type="radio"
-               name="payment[method]"
-               class="radio"
-               data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
-        <label data-bind="attr: {'for': getCode()}" class="label"><span data-bind="text: getTitle()"></span></label>
+        <p class="unlock" data-bind="i18n: 'Unlock your rewards, your way.'"></p>
+        <div class="payyourwaysection">
+            <input type="radio"
+                name="payment[method]"
+                class="radio radiosyw"
+                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
+            <img data-bind="attr: { src: require.toUrl('PayYourWay_Pyw/images/syw-logo.png') }" alt="SYW Brand Image" class="imgsyw">      
+            <label data-bind="attr: {'for': getCode()}" class="label sloganlearnmore">
+                <span data-bind="text: getTitle()"></span>
+                <span class="slogan" data-bind="html: 'Shop Your Way MasterCard<sup>®</sup>'"></span>
+                <span data-bind="i18n: 'is the best way to shop now and earn rewards.'">&nbsp;</span>
+                <a href="https://www.shopyourway.com/card" target="_blank">
+                    <span data-bind="i18n: 'Learn More'"></span>
+                </a>
+            </label>
+        </div>
     </div>
     <div class="payment-method-content">
         <!-- ko foreach: getRegion('messages') -->
@@ -28,7 +40,7 @@
         </div>
         <div class="actions-toolbar">
             <div class="primary">
-                <button class="action primary checkout"
+                <button class="action primary paycheckout"
                         type="submit"
                         data-bind="
                         click: openPayYourWay,
@@ -37,11 +49,12 @@
                         enable: (getCode() == isChecked())
                         "
                         disabled>
-                    <span data-bind="i18n: 'Pay Your Way'"></span>
+                    <span class="padding" data-bind="i18n: 'Pay with Shop Your Way'"></span>
                 </button>
-            </div>
+            </div>            
         </div>
         <div id="pywpopup" class="backdrop">
         </div>
     </div>
 </div>
+

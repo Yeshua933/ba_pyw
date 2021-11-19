@@ -122,4 +122,5 @@ interface ConfigInterface
      * @throws Exception
      */
     public function generateClientId(): string;
+
 }

@@ -12,34 +12,29 @@ use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use PayYourWay\Pyw\Api\ConfigInterface;
-use Psr\Log\LoggerInterface;
 
 class ChangeClientId implements HttpPostActionInterface
 {
     private JsonFactory $jsonFactory;
-    private LoggerInterface $logger;
     private ConfigInterface $config;
-
 
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         ConfigInterface      $config,
-        JsonFactory          $jsonFactory,
-        LoggerInterface      $logger
+        JsonFactory          $jsonFactory
     )
     {
         $this->scopeConfig = $scopeConfig;
         $this->config = $config;
         $this->jsonFactory = $jsonFactory;
-        $this->logger = $logger;
     }
 
     public function execute()
     {
         $result = $this->jsonFactory->create();
         try {
-            //todo Get value from frontend
-            $this->config->saveClientId('Test');
+
+            $this->config->saveClientId($this->config->getMerchantName());
             return $result->setData(['status' => 200]);
         } catch (Exception $exception) {
             return $result->setHttpResponseCode(404);
