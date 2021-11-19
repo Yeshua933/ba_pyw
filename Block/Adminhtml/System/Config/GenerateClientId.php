@@ -25,11 +25,6 @@ class GenerateClientId extends Field
         return parent::render($element);
     }
 
-    protected function _getElementHtml(AbstractElement $element): string
-    {
-        return $this->_toHtml();
-    }
-
     public function getGenerateClientIdUrl(): string
     {
         return $this->getUrl('payyourway/configuration/generateclient');
@@ -41,5 +36,10 @@ class GenerateClientId extends Field
             ->createBlock(Button::class)
             ->setData(['id' => 'generate_client_id', 'label' => __('Generate Client Id'),]);
         return $button->toHtml();
+    }
+
+    protected function _getElementHtml(AbstractElement $element): string
+    {
+        return $this->_toHtml();
     }
 }

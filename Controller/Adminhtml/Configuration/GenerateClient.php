@@ -23,10 +23,11 @@ class GenerateClient implements HttpPostActionInterface
 
     public function __construct(
         ScopeConfigInterface $scopeConfig,
-        ConfigInterface $config,
-        JsonFactory         $jsonFactory,
-        LoggerInterface $logger
-    ) {
+        ConfigInterface      $config,
+        JsonFactory          $jsonFactory,
+        LoggerInterface      $logger
+    )
+    {
         $this->scopeConfig = $scopeConfig;
         $this->config = $config;
         $this->jsonFactory = $jsonFactory;
@@ -39,7 +40,7 @@ class GenerateClient implements HttpPostActionInterface
         try {
             $clientId = $this->config->generateClientId();
             $this->config->saveClientId($clientId);
-            return $result->setData(['success'=>true]);
+            return $result->setData(['success' => true]);
         } catch (Exception $exception) {
             return $result->setHttpResponseCode(404);
         }

@@ -25,11 +25,6 @@ class ChangeClientId extends Field
         return parent::render($element);
     }
 
-    protected function _getElementHtml(AbstractElement $element): string
-    {
-        return $this->_toHtml();
-    }
-
     public function getChangeClientIdUrl(): string
     {
         return $this->getUrl('payyourway/configuration/changeclientid');
@@ -41,5 +36,10 @@ class ChangeClientId extends Field
             ->createBlock(Button::class)
             ->setData(['id' => 'change_client_id', 'label' => __('Change Client Id'),]);
         return $button->toHtml();
+    }
+
+    protected function _getElementHtml(AbstractElement $element): string
+    {
+        return $this->_toHtml();
     }
 }
