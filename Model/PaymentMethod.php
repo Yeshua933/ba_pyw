@@ -38,4 +38,22 @@ class PaymentMethod extends AbstractMethod
         $payment->setLastTransId($additionalInformation['pywid']);
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function canRefund(): bool
+    {
+        return $this->_canRefund;
+    }
+
+    /**
+     * @param InfoInterface $payment
+     * @param float $amount
+     * @return $this|PaymentMethod
+     */
+    public function refund(InfoInterface $payment, $amount): PaymentMethod
+    {
+        return $this;
+    }
 }
