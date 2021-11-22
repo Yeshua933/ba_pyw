@@ -36,6 +36,7 @@ class Config implements PywConfigInterface
         'https://pywweb.uat.telluride.shopyourway.com/pyw_library/scripts/pywscript';
     private const CONFIG_XML_PATH_PAYMENT_SDK_API_ENDPOINT =
         'https://pywweb.telluride.shopyourway.com/pyw_library/scripts/pywscript';
+    public const CONFIG_XML_PATH_DEBUG_PAY_YOUR_WAY = 'payment/payyourway/debug';
 
     private ScopeConfigInterface $scopeConfig;
     private ResourceConfigInterface $resourceConfigInterface;
@@ -213,5 +214,17 @@ class Config implements PywConfigInterface
             return $this::CONFIG_XML_PATH_PAYMENT_UAT_SDK_API_ENDPOINT;
         }
         return  $this::CONFIG_XML_PATH_PAYMENT_SDK_API_ENDPOINT;
+    }
+
+    /**
+     * Determine if Pay Your Way has been enabled
+     *
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return bool
+     */
+    public function isDebugMode($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): bool
+    {
+        return $this->scopeConfig->isSetFlag(self::CONFIG_XML_PATH_DEBUG_PAY_YOUR_WAY, $scope, $scopeId);
     }
 }
