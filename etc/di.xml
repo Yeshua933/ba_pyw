@@ -48,6 +48,11 @@
             <argument name="logger" xsi:type="object">PywLogger</argument>
         </arguments>
     </type>
+    <type name="PayYourWay\Pyw\Model\PaymentMethod">
+        <arguments>
+            <argument name="pywLogger" xsi:type="object">PywLogger</argument>
+        </arguments>
+    </type>
     <!-- Interfaces preferences -->
     <preference for="PayYourWay\Pyw\Api\ConfigInterface" type="PayYourWay\Pyw\Model\Config"/>
     <preference for="PayYourWay\Pyw\Api\GenerateAccessTokenInterface" type="PayYourWay\Pyw\Model\GenerateAccessToken"/>
