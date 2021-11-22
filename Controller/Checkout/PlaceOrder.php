@@ -20,19 +20,20 @@ use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
+use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Quote\Api\CartManagementInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Quote\Model\Quote;
+use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
 use PayYourWay\Pyw\Api\RefIdBuilderInterface;
+use PayYourWay\Pyw\Api\RequestInterfaceFactory as PaymentConfirmationRequestInterfaceFactory;
 use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
+use PayYourWay\Pyw\Model\Config;
 use PayYourWay\Pyw\Model\GenerateAccessToken;
 use PayYourWay\Pyw\Model\PaymentMethod;
-use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
 use PayYourWay\Pyw\Model\PaymentMethod as PayYourWayPaymentMethod;
 use Psr\Log\LoggerInterface;
-use PayYourWay\Pyw\Api\RequestInterface as PaymentConfirmationRequestInterface;
-use PayYourWay\Pyw\Model\Config;
 
 class PlaceOrder implements HttpGetActionInterface
 {
@@ -46,12 +47,13 @@ class PlaceOrder implements HttpGetActionInterface
     private LoggerInterface $logger;
     private RequestInterface $request;
     private PaymentConfirmationLookupInterface $paymentConfirmationLookup;
-    private PaymentConfirmationRequestInterface $paymentConfirmationRequest;
+    private PaymentConfirmationRequestInterfaceFactory $paymentConfirmationRequestFactory;
     private MessageManagerInterface $messageManager;
     private RedirectFactory $redirectFactory;
     private Config $config;
     private GenerateAccessToken $generateAccessToken;
     private RefIdBuilderInterface $refIdBuilder;
+    private SerializerInterface $serializer;
 
     public function __construct(
         CartManagementInterface $quoteManagement,
@@ -64,11 +66,12 @@ class PlaceOrder implements HttpGetActionInterface
         LoggerInterface $logger,
         RequestInterface $request,
         PaymentConfirmationLookupInterface $paymentConfirmationLookup,
-        PaymentConfirmationRequestInterface $paymentConfirmationRequest,
+        PaymentConfirmationRequestInterfaceFactory $paymentConfirmationRequestFactory,
         MessageManagerInterface $messageManager,
         RedirectFactory $redirectFactory,
         Config $config,
         GenerateAccessToken $generateAccessToken,
+        SerializerInterface $serializer,
         RefIdBuilderInterface $refIdBuilder
     ) {
         $this->quoteManagement = $quoteManagement;
@@ -81,12 +84,13 @@ class PlaceOrder implements HttpGetActionInterface
         $this->logger = $logger;
         $this->request = $request;
         $this->paymentConfirmationLookup = $paymentConfirmationLookup;
-        $this->paymentConfirmationRequest = $paymentConfirmationRequest;
+        $this->paymentConfirmationRequestFactory = $paymentConfirmationRequestFactory;
         $this->messageManager = $messageManager;
         $this->redirectFactory = $redirectFactory;
         $this->config = $config;
         $this->generateAccessToken = $generateAccessToken;
         $this->refIdBuilder = $refIdBuilder;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -259,6 +263,9 @@ class PlaceOrder implements HttpGetActionInterface
         return $redirect;
     }
 
+    /**
+     * @throws \JsonException
+     */
     private function checkPaymentConfirmation(): bool
     {
         $merchantId = $this->config->getClientId();
@@ -279,42 +286,18 @@ class PlaceOrder implements HttpGetActionInterface
         /**
          * Make a request to Payment Confirmation API in order to check the payment details
          */
-        $accessToken =  $this->generateAccessToken->execute();
-        $sandboxMode = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX;
-        $this->paymentConfirmationRequest->setChannel('ONLINE');
-        $this->paymentConfirmationRequest->setMerchantId($this->config->getClientId());
-        $this->paymentConfirmationRequest->setPywid($this->request->getParam('pywid'));
-        $this->paymentConfirmationRequest->setTransactionId($this->quote->getId());
-        $this->paymentConfirmationRequest->setActionType('READONLY');
-        $this->paymentConfirmationRequest->setTransactionType('1P');
-        $refId = $this->refIdBuilder->buildRefId(
-            $this->config->getClientId(),
-            $accessToken,
-            $this->config->getClientId(),
-            time(),
-            $this->quote->getId(),
-            $this->quote->getCustomerEmail() ?? '',
-            $sandboxMode
+
+        $paymentConfirmationResponse = $this->paymentConfirmationLookup->lookup(
+            $this->createPaymentConfirmationRequest()
         );
-        $this->paymentConfirmationRequest->setRefId($refId);
 
-        $paymentConfirmationResponse = json_decode($this->paymentConfirmationLookup->lookup(
-            $this->paymentConfirmationRequest
-        ));
+        if ($this->config->isDebugMode()) {
+            $this->logger->info($paymentConfirmationResponse);
+        }
 
-        $debug = [
-            'client_id'=>$this->config->getClientId(),
-            'access_token'=>$accessToken,
-            'requestor_id'=>$this->config->getClientId(),
-            'timestamp'=>time(),
-            'transaction_id'=>$this->quote->getId(),
-            'user_id'=>$this->quote->getCustomerEmail() ?? '',
-            'sandbox_mode'=>$sandboxMode,
-            'ref_id'=>$refId
-        ];
-        $this->logger->debug(json_encode($debug));
+        $paymentConfirmationResponseDecode = $this->serializer->unserialize($paymentConfirmationResponse);
 
-        if (!is_object($paymentConfirmationResponse)) {
+        if (!is_array($paymentConfirmationResponseDecode)) {
             $this->logger->error(
                 'There is an issue with the payment gateway provider',
                 [
@@ -327,13 +310,11 @@ class PlaceOrder implements HttpGetActionInterface
             return false;
         }
 
-        $this->logger->debug(json_encode($paymentConfirmationResponse));
-
-        if ((float)$paymentConfirmationResponse->paymentTotal !== $this->quote->getGrandTotal()) {
+        if ((float)$paymentConfirmationResponseDecode['payment_total'] !== $this->quote->getGrandTotal()) {
             $this->logger->error(
                 'The amount returned from PayYour Way doesn\'t match the amount on the store.',
                 [
-                    'paymentResponse' => $paymentConfirmationResponse,
+                    'paymentResponse' => $paymentConfirmationResponseDecode,
                     'quote' => $this->quote->getData(),
                     'pywid' => $this->request->getParam('pywid')
                 ]
@@ -344,5 +325,72 @@ class PlaceOrder implements HttpGetActionInterface
             return false;
         }
         return true;
+    }
+
+    /**
+     * @throws \JsonException
+     */
+    private function createPaymentConfirmationRequest(): \PayYourWay\Pyw\Api\RequestInterface
+    {
+        $accessToken =  $this->generateAccessToken->execute();
+        $sandboxMode = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX;
+        $quoteId = (string) $this->quote->getId();
+        $customerEmail = $this->quote->getCustomerEmail() ?? '';
+
+        $refId = $this->getRefId($accessToken, $quoteId, $customerEmail, $sandboxMode);
+
+        /** @var \PayYourWay\Pyw\Api\RequestInterface $paymentConfirmationRequest */
+        $paymentConfirmationRequest = $this->paymentConfirmationRequestFactory->create();
+        $paymentConfirmationRequest->setChannel('ONLINE');
+        $paymentConfirmationRequest->setMerchantId($this->config->getClientId());
+        $paymentConfirmationRequest->setPywid($this->request->getParam('pywid'));
+        $paymentConfirmationRequest->setTransactionId($this->quote->getId());
+        $paymentConfirmationRequest->setActionType('READONLY');
+        $paymentConfirmationRequest->setTransactionType('1P');
+        $paymentConfirmationRequest->setRefId($refId);
+
+        return $paymentConfirmationRequest;
+    }
+
+    /**
+     * Generates RefId
+     *
+     * @param string $accessToken
+     * @param string $quoteId
+     * @param string $customerEmail
+     * @param bool $sandboxMode
+     * @return string
+     */
+    private function getRefId(
+        string $accessToken,
+        string $quoteId,
+        string $customerEmail = '',
+        bool $sandboxMode = false
+    ): string {
+        $refId = $this->refIdBuilder->buildRefId(
+            $this->config->getClientId(),
+            $accessToken,
+            $this->config->getClientId(),
+            time(),
+            $quoteId,
+            $customerEmail,
+            $sandboxMode
+        );
+
+        if ($this->config->isDebugMode()) {
+            $debug = [
+                'client_id'=>$this->config->getClientId(),
+                'access_token'=>$accessToken,
+                'requestor_id'=>$this->config->getClientId(),
+                'timestamp'=>time(),
+                'transaction_id'=>$quoteId,
+                'user_id'=>$customerEmail ?? '',
+                'sandbox_mode'=>$sandboxMode,
+                'ref_id'=>$refId
+            ];
+            $this->logger->info($this->serializer->serialize($debug));
+        }
+
+        return $refId;
     }
 }

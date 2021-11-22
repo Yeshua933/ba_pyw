@@ -109,4 +109,11 @@ interface ConfigInterface
      * @return string|null
      */
     public function getPaymentSdkApiEndpoint(): string;
+
+    /**
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return bool
+     */
+    public function isDebugMode($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): bool;
 }

@@ -8,7 +8,7 @@ declare(strict_types=1);
 namespace PayYourWay\Pyw\Api;
 
 /**
- * Used for creating/renewing the Pay Your Way
+ * Used for creating/renewing the Pay Your Way Access Token
  *
  * @api
  */
@@ -17,6 +17,7 @@ interface GenerateAccessTokenInterface
 
     /**
      * Generate the OAUTH token for PYW server
+     *
      * @return string
      */
     public function execute(): string;
