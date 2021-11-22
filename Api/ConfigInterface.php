@@ -70,6 +70,22 @@ interface ConfigInterface
     ): ResourceConfigInterface;
 
     /**
+     * Save config value to the storage resource
+     *
+     * @param string $path
+     * @param string $value
+     * @param string $scope
+     * @param int $scopeId
+     * @return ResourceConfigInterface $ResourceConfigInterface
+     */
+    public function saveSecretKey(
+        string $value,
+        string $path,
+        string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+        int    $scopeId = 0
+    ): ResourceConfigInterface;
+
+    /**
      * @param string|null $scopeId
      * @param string $scope
      * @return string

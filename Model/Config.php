@@ -11,7 +11,7 @@ use Magento\Framework\App\Config\ConfigResource\ConfigInterface as ResourceConfi
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 use PayYourWay\Pyw\Api\ConfigInterface as PywConfigInterface;
-use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
+use PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment;
 
 /**
  * Configuration retrieval tool
@@ -25,6 +25,8 @@ class Config implements PywConfigInterface
     public const CONFIG_XML_PATH_CLIENT_ID_SB = 'payment/payyourway/client_id_sb';
     public const CONFIG_XML_PATH_PRIVATE_KEY_PR = 'payment/payyourway/private_key_pr';
     public const CONFIG_XML_PATH_PRIVATE_KEY_SB = 'payment/payyourway/private_key_sb';
+    public const CONFIG_XML_PATH_SECRET_KEY_PR = 'payment/payyourway/secret_key_pr';
+    public const CONFIG_XML_PATH_SECRET_KEY_SB = 'payment/payyourway/secret_key_sb';
     public const CONFIG_XML_PATH_ACCESS_TOKEN_PR = 'payment/payyourway/access_token_pr';
     public const CONFIG_XML_PATH_ACCESS_TOKEN_SB = 'payment/payyourway/access_token_sb';
     public const CONFIG_XML_PATH_PAYMENT_CONFIRMATION_URL_UAT = 'payment/payyourway/payment_confirmation_url_uat';
@@ -172,6 +174,30 @@ class Config implements PywConfigInterface
         }
 
         $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_PR;
+        return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
+    }
+
+    /**
+     * Save access token value
+     *
+     * @param string $path
+     * @param string $value
+     * @param string $scope
+     * @param int $scopeId
+     * @return \Magento\Config\Model\ResourceModel\Config
+     */
+    public function saveSecretKey(
+        string $value,
+        string $path = self::CONFIG_XML_PATH_SECRET_KEY_SB,
+        string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+        int $scopeId = 0
+    ): ResourceConfigInterface {
+        if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
+            $path = self::CONFIG_XML_PATH_SECRET_KEY_SB;
+            return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
+        }
+
+        $path = self::CONFIG_XML_PATH_SECRET_KEY_PR;
         return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
     }
 
