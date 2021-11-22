@@ -29,6 +29,7 @@ use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
 use PayYourWay\Pyw\Model\GenerateAccessToken;
 use PayYourWay\Pyw\Model\PaymentMethod;
 use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
+use PayYourWay\Pyw\Model\PaymentMethod as PayYourWayPaymentMethod;
 use Psr\Log\LoggerInterface;
 use PayYourWay\Pyw\Api\RequestInterface as PaymentConfirmationRequestInterface;
 use PayYourWay\Pyw\Model\Config;
@@ -117,6 +118,13 @@ class PlaceOrder implements HttpGetActionInterface
     {
         $quote = $this->getQuote();
 
+        if ($quote->getPayment()->getMethod() !== PayYourWayPaymentMethod::METHOD_CODE) {
+            $this->response->setStatusHeader(403, '1.1', 'Forbidden');
+            throw new LocalizedException(
+                __('We can\'t initialize the Pay Your Way Checkout due to a payment method mismatch.')
+            );
+        }
+
         if (!$quote->hasItems()) {
             $this->response->setStatusHeader(403, '1.1', 'Forbidden');
             throw new LocalizedException(__('We can\'t initialize the Pay Your Way Checkout.'));
@@ -174,6 +182,14 @@ class PlaceOrder implements HttpGetActionInterface
                     'exception' => (string)$exception,
                 ]
             );
+
+            $this->messageManager->addErrorMessage(
+                __('Something went wrong with the Pay Your Way Checkout.')
+            );
+
+            $redirect = $this->redirectFactory->create();
+            $redirect->setPath('checkout/cart');
+            return $redirect;
         }
 
         $quoteId = $this->quote->getId();
