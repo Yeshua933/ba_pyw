@@ -7,6 +7,7 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Session Proxies -->
     <type name="PayYourWay\Pyw\Model\CheckoutConfigProvider">
         <arguments>
             <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
@@ -28,6 +29,26 @@
             <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
         </arguments>
     </type>
+    <!-- Handlers for pyw logger -->
+    <virtualType name="PywLogger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="info" xsi:type="object">PayYourWay\Pyw\Logger\Handler\PywInfoHandler</item>
+                <item name="error" xsi:type="object">PayYourWay\Pyw\Logger\Handler\PywErrorHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="PayYourWay\Pyw\Model\CheckoutConfigProvider">
+        <arguments>
+            <argument name="logger" xsi:type="object">PywLogger</argument>
+        </arguments>
+    </type>
+    <type name="PayYourWay\Pyw\Controller\Checkout\PlaceOrder">
+        <arguments>
+            <argument name="logger" xsi:type="object">PywLogger</argument>
+        </arguments>
+    </type>
+    <!-- Interfaces preferences -->
     <preference for="PayYourWay\Pyw\Api\ConfigInterface" type="PayYourWay\Pyw\Model\Config"/>
     <preference for="PayYourWay\Pyw\Api\GenerateAccessTokenInterface" type="PayYourWay\Pyw\Model\GenerateAccessToken"/>
     <preference for="PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface" type="PayYourWay\Pyw\Service\PaymentConfirmationLookup"/>
