@@ -18,6 +18,7 @@ class PaymentMethod extends AbstractMethod
     /** @var string */
     protected $_code = self::METHOD_CODE;
     protected $_canCapture = true;
+    protected $_canRefund = true;
 
     public function assignData(DataObject $data): PaymentMethod
     {

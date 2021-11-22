@@ -140,7 +140,7 @@ class RefundOrderPlugin
         $sandboxMode = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX;
         $this->paymentConfirmationRequest->setChannel('ONLINE');
         $this->paymentConfirmationRequest->setMerchantId($merchantId);
-        $this->paymentConfirmationRequest->setPywid($order->getPayment()->getPywid());
+        $this->paymentConfirmationRequest->setPywid($order->getPayment()->getTransactionId());
         $this->paymentConfirmationRequest->setTransactionId($order->getId());
         $this->paymentConfirmationRequest->setActionType('READONLY');
         $this->paymentConfirmationRequest->setTransactionType('1P');
