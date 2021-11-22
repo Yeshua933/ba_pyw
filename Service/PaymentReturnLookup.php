@@ -29,7 +29,7 @@ class PaymentReturnLookup implements PaymentReturnLookupInterface
         PaymentReturnRequestInterface $request
     ): string {
         $this->curl->setHeaders($request->getHeaders());
-        $this->curl->get($this->config->getPaymentReturnApiEndpoint());
+        $this->curl->post($this->config->getPaymentReturnApiEndpoint(), json_encode($request->getBody()));
 
         return $this->curl->getBody();
     }

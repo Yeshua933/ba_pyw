@@ -64,6 +64,34 @@ interface PaymentReturnRequestInterface
     public function getHeaders(): array;
 
     /**
+     * Return the Auth Code
+     *
+     * @return string
+     */
+    public function getAuthCode(): string;
+
+    /**
+     * Return the Return Amount
+     *
+     * @return string
+     */
+    public function getReturnAmount(): string;
+
+    /**
+     * Return the Return Payments
+     *
+     * @return array
+     */
+    public function getReturnPayments(): ?array;
+
+    /**
+     * Return the body
+     *
+     * @return array
+     */
+    public function getBody(): array;
+
+    /**
      * Set the Content-Type
      *
      * @param String $contentType
@@ -110,4 +138,28 @@ interface PaymentReturnRequestInterface
      * @return PaymentReturnRequestInterface
      */
     public function setRefId(string $refId): PaymentReturnRequestInterface;
+
+    /**
+     * Set the Auth Code
+     *
+     * @param String $authCode
+     * @return PaymentReturnRequestInterface
+     */
+    public function setAuthCode(string $authCode): PaymentReturnRequestInterface;
+
+    /**
+     * Set the Return Amount
+     *
+     * @param String $returnAmount
+     * @return PaymentReturnRequestInterface
+     */
+    public function setReturnAmount(string $returnAmount): PaymentReturnRequestInterface;
+
+    /**
+     * Set the Return Payments
+     *
+     * @param null|array $returnPayments
+     * @return PaymentReturnRequestInterface
+     */
+    public function setReturnPayments(?array $returnPayments): PaymentReturnRequestInterface;
 }

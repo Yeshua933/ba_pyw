@@ -17,6 +17,9 @@ class PaymentReturnRequest implements PaymentReturnRequestInterface
     private string $clientId;
     private string $transactionId;
     private string $refId;
+    private string $authCode;
+    private string $returnAmount;
+    private array $returnPayments;
 
     public function getContentType(): string
     {
@@ -93,6 +96,48 @@ class PaymentReturnRequest implements PaymentReturnRequestInterface
     public function setRefId(string $refId): PaymentReturnRequestInterface
     {
         $this->refId = $refId;
+        return $this;
+    }
+
+    public function getAuthCode(): string
+    {
+        return $this->authCode;
+    }
+
+    public function getReturnAmount(): string
+    {
+        return $this->returnAmount;
+    }
+
+    public function getReturnPayments(): ?array
+    {
+        return $this->returnPayments;
+    }
+
+    public function getBody(): array
+    {
+        return [
+            'authCode' => $this->getAuthCode(),
+            'returnAmount' => $this->getReturnAmount(),
+            'returnPayments' => $this->getReturnPayments()
+        ];
+    }
+
+    public function setAuthCode(string $authCode): PaymentReturnRequestInterface
+    {
+        $this->authCode = $authCode;
+        return $this;
+    }
+
+    public function setReturnAmount(string $returnAmount): PaymentReturnRequestInterface
+    {
+        $this->returnAmount = $returnAmount;
+        return $this;
+    }
+
+    public function setReturnPayments(?array $returnPayments): PaymentReturnRequestInterface
+    {
+        $this->returnPayments = $returnPayments;
         return $this;
     }
 }
