@@ -56,8 +56,4 @@
     <preference for="PayYourWay\Pyw\Api\PaymentReturnLookupInterface" type="PayYourWay\Pyw\Service\PaymentReturnLookup"/>
     <preference for="PayYourWay\Pyw\Api\PaymentReturnRequestInterface" type="PayYourWay\Pyw\Service\PaymentReturnLookup\PaymentReturnRequest"/>
     <preference for="PayYourWay\Pyw\Api\RefIdBuilderInterface" type="PayYourWay\Pyw\Model\RefIdBuilder"/>
-    <type name="Magento\Sales\Api\RefundOrderInterface">
-        <plugin name="PayYourWayRefundOrderPlugin"
-                type="PayYourWay\Pyw\Plugin\RefundOrderPlugin"/>
-    </type>
 </config>
