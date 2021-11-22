@@ -48,9 +48,10 @@ class Config implements PywConfigInterface
      * @param ResourceConfigInterface $resourceConfigInterface
      */
     public function __construct(
-        ScopeConfigInterface $scopeConfig,
+        ScopeConfigInterface    $scopeConfig,
         ResourceConfigInterface $resourceConfigInterface
-    ) {
+    )
+    {
         $this->scopeConfig = $scopeConfig;
         $this->resourceConfigInterface = $resourceConfigInterface;
     }
@@ -80,18 +81,6 @@ class Config implements PywConfigInterface
     }
 
     /**
-     * Get environment
-     *
-     * @param string|null $scopeId
-     * @param string $scope
-     * @return string
-     */
-    public function getEnvironment($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string
-    {
-        return $this->scopeConfig->getValue(self::CONFIG_XML_PATH_ENVIRONMENT, $scope, $scopeId);
-    }
-
-    /**
      * Get Client Id
      *
      * @param string|null $scopeId
@@ -115,6 +104,41 @@ class Config implements PywConfigInterface
     }
 
     /**
+     * Get environment
+     *
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getEnvironment($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string
+    {
+        return $this->scopeConfig->getValue(self::CONFIG_XML_PATH_ENVIRONMENT, $scope, $scopeId);
+    }
+
+    /**
+     * Get Access Token
+     *
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getAccessToken($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string
+    {
+        if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
+            return $this->scopeConfig->getValue(
+                self::CONFIG_XML_PATH_ACCESS_TOKEN_SB,
+                $scope,
+                $scopeId
+            );
+        }
+        return $this->scopeConfig->getValue(
+            self::CONFIG_XML_PATH_ACCESS_TOKEN_PR,
+            $scope,
+            $scopeId
+        );
+    }
+
+    /**
      * Get Private Key
      *
      * @param string|null $scopeId
@@ -131,7 +155,7 @@ class Config implements PywConfigInterface
                 $scopeId
             );
             $privateKey = str_replace(
-                ["-----BEGIN PRIVATE KEY-----","-----END PRIVATE KEY-----","\r\n", "\n", "\r"," "],
+                ["-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----", "\r\n", "\n", "\r", " "],
                 '',
                 $privateKey
             );
@@ -145,13 +169,38 @@ class Config implements PywConfigInterface
             $scopeId
         );
         $privateKey = str_replace(
-            ["-----BEGIN PRIVATE KEY-----","-----END PRIVATE KEY-----","\r\n", "\n", "\r"," "],
+            ["-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----", "\r\n", "\n", "\r", " "],
             '',
             $privateKey
         );
         $privateKey = chunk_split($privateKey, 64);
 
         return "-----BEGIN RSA PRIVATE KEY-----\n$privateKey-----END RSA PRIVATE KEY-----\n";
+    }
+
+    /**
+     * Save private key
+     *
+     * @param string $path
+     * @param string $value
+     * @param string $scope
+     * @param int $scopeId
+     * @return \Magento\Config\Model\ResourceModel\Config
+     */
+    public function savePrivateKey(
+        string $value,
+        string $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_SB,
+        string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+        int    $scopeId = 0
+    ): ResourceConfigInterface
+    {
+        if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
+            $path = self::CONFIG_XML_PATH_PRIVATE_KEY_SB;
+            return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
+        }
+
+        $path = self::CONFIG_XML_PATH_PRIVATE_KEY_PR;
+        return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
     }
 
     /**
@@ -167,8 +216,9 @@ class Config implements PywConfigInterface
         string $value,
         string $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_SB,
         string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
-        int $scopeId = 0
-    ): ResourceConfigInterface {
+        int    $scopeId = 0
+    ): ResourceConfigInterface
+    {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
             $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_SB;
             return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
@@ -191,8 +241,9 @@ class Config implements PywConfigInterface
         string $value,
         string $path = self::CONFIG_XML_PATH_SECRET_KEY_SB,
         string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
-        int $scopeId = 0
-    ): ResourceConfigInterface {
+        int    $scopeId = 0
+    ): ResourceConfigInterface
+    {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
             $path = self::CONFIG_XML_PATH_SECRET_KEY_SB;
             return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
@@ -210,7 +261,8 @@ class Config implements PywConfigInterface
     public function getPaymentConfirmationApiEndpoint(
         $scopeId = null,
         string $scope = ScopeInterface::SCOPE_STORE
-    ): ?string {
+    ): ?string
+    {
         return
             $this->getPaymentConfirmationUrl($scopeId, $scope) .
             $this->scopeConfig->getValue(self::CONFIG_XML_PATH_PAYMENT_CONFIRMATION_API_ENDPOINT, $scope, $scopeId);
@@ -219,7 +271,8 @@ class Config implements PywConfigInterface
     public function getPaymentConfirmationUrl(
         $scopeId = null,
         string $scope = ScopeInterface::SCOPE_STORE
-    ): ?string {
+    ): ?string
+    {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
             return $this->scopeConfig->getValue(self::CONFIG_XML_PATH_PAYMENT_CONFIRMATION_URL_UAT, $scope, $scopeId);
         }
@@ -239,7 +292,7 @@ class Config implements PywConfigInterface
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
             return $this::CONFIG_XML_PATH_PAYMENT_UAT_SDK_API_ENDPOINT;
         }
-        return  $this::CONFIG_XML_PATH_PAYMENT_SDK_API_ENDPOINT;
+        return $this::CONFIG_XML_PATH_PAYMENT_SDK_API_ENDPOINT;
     }
 
     /**

@@ -46,6 +46,7 @@ class OnboardingController implements HttpPostActionInterface
      */
     public function execute(): ResultInterface
     {
+        //todo refactor controller: separate business logic.
         $clientName = $this->request->getParam('client_name');
         $clientEmail = $this->request->getParam('email');
         $clientId = $this->request->getParam('client_id');
@@ -57,21 +58,22 @@ class OnboardingController implements HttpPostActionInterface
         $storeId = $this->request->getParam('storeId', 0);
         $environment = $this->request->getParam('environment');
 
-        $privateKey = str_replace(
-            ["-----BEGIN PRIVATE KEY-----","-----END PRIVATE KEY-----","\r\n", "\n", "\r"," "],
-            '',
-            $privateKey
-        );
-        $privateKey = chunk_split($privateKey, 64);
-        $privateKey = "-----BEGIN RSA PRIVATE KEY-----\n$privateKey-----END RSA PRIVATE KEY-----\n";
-
         $publicKey = str_replace(
-            ["-----BEGIN CERTIFICATE-----","-----END CERTIFICATE-----","\r\n", "\n", "\r"," "],
+            ["-----BEGIN CERTIFICATE-----", "-----END CERTIFICATE-----", "\r\n", "\n", "\r", " "],
             '',
             $publicKey
         );
         $publicKey = chunk_split($publicKey, 64);
         $publicKey = "-----BEGIN CERTIFICATE-----\n$publicKey-----END CERTIFICATE-----\n";
+
+        $privateKey = str_replace(
+            ["-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----", "\r\n", "\n", "\r", " "],
+            '',
+            $privateKey
+        );
+        $privateKey = chunk_split($privateKey, 64);
+        $privateKey = "-----BEGIN RSA PRIVATE KEY-----\n$privateKey-----END RSA PRIVATE KEY-----\n";
+        $this->config->savePrivateKey($privateKey);
 
         $params = ([
             "clientName" => $clientName,
@@ -84,7 +86,7 @@ class OnboardingController implements HttpPostActionInterface
             "publicKey" => $publicKey
         ]);
 
-        $accessToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSU0EifQ.eyJpc3MiOiJNR19CTFVFQUNPUk5JQ0lfUUEiLCJzY29wZSI6IiIsImF1ZCI6Imh0dHBzOlwvXC9vYXV0aC51YXQudGVsbHVyaWRlLnRyYW5zZm9ybWNvLmNvbVwvb2F1dGhBU1wvc2VydmljZVwvb0F1dGhcL3Rva2VuLmpzb24iLCJleHAiOjE2MzczNDMxNzUyMTYsImlhdCI6MTYzNzMzNTk3NTIxNn0.P8fOCTWCQBMG6bdAohkXBDvzScZRCXtyRcnlscCmk5N3_aC6IMhpSBaTpf9zcQR_VeCJs_SbaEI4paV29t94kSneBbEYShLfBE27CquYiPteGjqukDikEV2Q1Z4shcnBvqsHbJRPmy6fY8SOA5DgUwHoeHn5VRKxlkQy7VJ3c9C_jh6IAqshanjtyTmQ4F5Lt6zmbTOytbBi0exTpd3E6rbYys638lolaBUZGu9j7zAYPz8BFS2BOrZ8G_ei3L74tWg-rLxCWRILfyjBxZajWaS1Bhu1y0037Zbc2pFWT25tAwDMUdY0IUrBoxkrP22YDWLk8aSLPqg4J4YQ7IorbQ';
+        $accessToken = $this->config->getAccessToken();
         $url = 'https://oauthweb.uat.telluride.transformco.com/oauthUI/register/registerClient';
         $this->_curl->addHeader("Content-Type", "application/json");
         $this->_curl->addHeader("Authorization", "Bearer " . $accessToken);
@@ -94,6 +96,8 @@ class OnboardingController implements HttpPostActionInterface
 
         $response = $this->jsonFactory->create();
 
+        //todo encrypt keys when saving and retrieving
+
         try {
             $this->_curl->post($url, $params);
             $resultBody = $this->_curl->getBody();
@@ -101,8 +105,8 @@ class OnboardingController implements HttpPostActionInterface
                 throw new Exception("Something went wrong.");
             }
 
-            if (str_contains($resultBody, 'status":"SUCCESS') ) {
-                $jsonDecoded = json_decode($resultBody,true);
+            if (str_contains($resultBody, 'status":"SUCCESS')) {
+                $jsonDecoded = json_decode($resultBody, true);
                 $secretCode = $jsonDecoded['data']['secretCode'];
                 $this->config->saveSecretKey($secretCode);
             }

@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace PayYourWay\Pyw\Api;
 
+use Magento\Config\Model\ResourceModel\Config;
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface as ResourceConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
@@ -47,11 +48,36 @@ interface ConfigInterface
     public function getClientId($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string;
 
     /**
+     * Get Access Token
+     *
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getAccessToken($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string;
+
+    /**
      * @param string|null $scopeId
      * @param string $scope
      * @return string
      */
     public function getPrivateKey($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string;
+
+    /**
+     * Save private key
+     *
+     * @param string $path
+     * @param string $value
+     * @param string $scope
+     * @param int $scopeId
+     * @return Config
+     */
+    public function savePrivateKey(
+        string $value,
+        string $path,
+        string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+        int    $scopeId = 0
+    ): ResourceConfigInterface;
 
     /**
      * Save config value to the storage resource

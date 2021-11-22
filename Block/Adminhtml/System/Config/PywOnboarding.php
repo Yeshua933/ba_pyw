@@ -28,7 +28,8 @@ class PywOnboarding extends Field
 
     protected function _getElementHtml(AbstractElement $element): string
     {
-        $title = __('Validate Credentials');
+        //todo fix title
+        $title = __('Register');
         $envId = 'select-groups-payyourway-fields-environment-value';
         $storeId = 0;
 
