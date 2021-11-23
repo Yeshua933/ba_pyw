@@ -310,7 +310,7 @@ class PlaceOrder implements HttpGetActionInterface
             return false;
         }
 
-        if ((float)$paymentConfirmationResponseDecode['payment_total'] !== $this->quote->getGrandTotal()) {
+        if ((float)$paymentConfirmationResponseDecode['paymentTotal'] !== $this->quote->getGrandTotal()) {
             $this->logger->error(
                 'The amount returned from PayYour Way doesn\'t match the amount on the store.',
                 [
