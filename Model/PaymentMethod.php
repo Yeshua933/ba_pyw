@@ -188,7 +188,7 @@ class PaymentMethod extends AbstractMethod
         $sandboxMode = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX;
         $this->paymentConfirmationRequest->setChannel('ONLINE');
         $this->paymentConfirmationRequest->setMerchantId($merchantId);
-        $this->paymentConfirmationRequest->setPywid((string)$payment->getTransactionId());
+        $this->paymentConfirmationRequest->setPywid((string)$payment->getLastTransId());
         $this->paymentConfirmationRequest->setTransactionId($order->getId());
         $this->paymentConfirmationRequest->setActionType('READONLY');
         $this->paymentConfirmationRequest->setTransactionType('1P');
