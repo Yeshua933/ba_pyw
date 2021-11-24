@@ -19,6 +19,7 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use Magento\Quote\Api\CartManagementInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Model\Quote;
+use Magento\Quote\Model\Quote\Address;
 use Magento\Sales\Model\Order\Payment;
 use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
 use PayYourWay\Pyw\Api\RefIdBuilderInterface;
@@ -112,6 +113,14 @@ class PlaceOrderTest extends TestCase
             ->willReturn(self::CLIENT_ID);
     }
 
+    private function getCustomerSessionMock(): void
+    {
+        $this->customerSession = $this->createMock(CustomerSession::class);
+        $this->customerSession->expects($this->any())
+            ->method('isLoggedIn')
+            ->willReturn(false);
+    }
+
     private function getPlaceOrderControllerObject(): void
     {
         $this->placeOrderController = $this->objectManager->getObject(
@@ -140,7 +149,19 @@ class PlaceOrderTest extends TestCase
 
     private function getQuoteMock()
     {
-        $this->quote = $this->createMock(Quote::class);
+        $this->quote = $this->getMockBuilder(Quote::class)
+            ->setMethods([
+                'getGrandTotal',
+                'hasItems',
+                'getMethod',
+                'getPayment',
+                'getIsVirtual',
+                'getId',
+                'getBillingAddress'
+            ])
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->quote
             ->expects($this->any())
             ->method('hasItems')
@@ -164,6 +185,37 @@ class PlaceOrderTest extends TestCase
             ->expects($this->any())
             ->method('getIsVirtual')
             ->willReturn(false);
+
+        $this->quote
+            ->expects($this->any())
+            ->method('getGrandTotal')
+            ->willReturn(50);
+
+        $this->quote
+            ->expects($this->any())
+            ->method('getId')
+            ->willReturn(null, 10);
+
+        $billingAddressMock = $this->getMockBuilder(Address::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'getOrigData',
+                'getEmail'
+            ])
+            ->getMock();
+
+        $billingAddressMock->expects($this->any())
+            ->method('getOrigData')
+            ->willReturn(null);
+
+        $billingAddressMock->expects($this->any())
+            ->method('getEmail')
+            ->willReturn('john@doe.com');
+
+        $this->quote
+            ->expects($this->any())
+            ->method('getBillingAddress')
+            ->willReturn($billingAddressMock);
     }
 
     private function getQuoteRepositoryMock(): void
@@ -180,7 +232,6 @@ class PlaceOrderTest extends TestCase
         $this->objectManager = new ObjectManager($this);
 
         $this->quoteManagement = $this->createMock(CartManagementInterface::class);
-        $this->customerSession = $this->createMock(CustomerSession::class);
         $this->response = $this->createMock(ResponseInterface::class);
         $this->redirect = $this->createMock(RedirectInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
@@ -193,6 +244,7 @@ class PlaceOrderTest extends TestCase
         $this->refIdBuilder = $this->createMock(RefIdBuilderInterface::class);
         $this->serializer = $this->createMock(SerializerInterface::class);
 
+        $this->getCustomerSessionMock();
         $this->getQuoteMock();
         $this->getCheckoutSessionMock();
         $this->getQuoteRepositoryMock();
