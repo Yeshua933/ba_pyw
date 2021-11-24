@@ -32,6 +32,8 @@ class Config implements PywConfigInterface
         'payment/payyourway/payment_confirmation_url_production';
     public const CONFIG_XML_PATH_PAYMENT_CONFIRMATION_API_ENDPOINT =
         'payment/payyourway/payment_confirmation_api_endpoint';
+    public const CONFIG_XML_PATH_PAYMENT_RETURN_API_ENDPOINT =
+        'payment/payyourway/payment_return_api_endpoint';
     private const CONFIG_XML_PATH_PAYMENT_UAT_SDK_API_ENDPOINT =
         'https://pywweb.uat.telluride.shopyourway.com/pyw_library/scripts/pywscript';
     private const CONFIG_XML_PATH_PAYMENT_SDK_API_ENDPOINT =
@@ -203,6 +205,20 @@ class Config implements PywConfigInterface
             $scope,
             $scopeId
         );
+    }
+
+    /**
+     * @param null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getPaymentReturnApiEndpoint(
+        $scopeId = null,
+        string $scope = ScopeInterface::SCOPE_STORE
+    ): ?string {
+        return
+            $this->getPaymentConfirmationUrl($scopeId, $scope) .
+            $this->scopeConfig->getValue(self::CONFIG_XML_PATH_PAYMENT_RETURN_API_ENDPOINT, $scope, $scopeId);
     }
 
     /**
