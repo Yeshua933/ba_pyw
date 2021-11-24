@@ -35,6 +35,11 @@ use Psr\Log\LoggerInterface;
 class PlaceOrderTest extends TestCase
 {
     private const CLIENT_ID = 'PYW';
+    private const QUOTE_ID = 50;
+    private const GRAND_TOTAL = 199.99;
+    private const CUSTOMER_EMAIL = 'john@doe.com';
+    private const ACCESS_TOKEN = 'WTFvrq5BS5isEuQJqXQuAjVp';
+    private const ENVIRONMENT = 'sandbox';
 
     /** @var CartManagementInterface|MockObject */
     private $quoteManagement;
@@ -96,29 +101,47 @@ class PlaceOrderTest extends TestCase
     private function getCheckoutSessionMock(): void
     {
         $this->checkoutSession = $this->createMock(CheckoutSession::class);
-        $this->checkoutSession->expects($this->any())
+        $this->checkoutSession
+            ->expects($this->any())
             ->method('getQuote')
             ->willReturn($this->quote);
 
-        $this->checkoutSession->expects($this->any())
+        $this->checkoutSession
+            ->expects($this->any())
             ->method('getQuoteId')
-            ->willReturn(50);
+            ->willReturn(self::QUOTE_ID);
     }
 
     private function getConfigMock(): void
     {
         $this->config = $this->createMock(Config::class);
-        $this->config->expects($this->any())
+        $this->config
+            ->expects($this->any())
             ->method('getClientId')
             ->willReturn(self::CLIENT_ID);
+
+        $this->config
+            ->expects($this->any())
+            ->method('getEnvironment')
+            ->willReturn(self::ENVIRONMENT);
     }
 
     private function getCustomerSessionMock(): void
     {
         $this->customerSession = $this->createMock(CustomerSession::class);
-        $this->customerSession->expects($this->any())
+        $this->customerSession
+            ->expects($this->any())
             ->method('isLoggedIn')
             ->willReturn(false);
+    }
+
+    private function getGenerateAccessTokenMock(): void
+    {
+        $this->generateAccessToken = $this->createMock(GenerateAccessToken::class);
+        $this->generateAccessToken
+            ->expects($this->any())
+            ->method('execute')
+            ->willReturn(self::ACCESS_TOKEN);
     }
 
     private function getPlaceOrderControllerObject(): void
@@ -157,7 +180,11 @@ class PlaceOrderTest extends TestCase
                 'getPayment',
                 'getIsVirtual',
                 'getId',
-                'getBillingAddress'
+                'getBillingAddress',
+                'setShippingAddress',
+                'getShippingAddress',
+                'setShouldIgnoreValidation',
+                'collectTotals'
             ])
             ->disableOriginalConstructor()
             ->getMock();
@@ -189,12 +216,12 @@ class PlaceOrderTest extends TestCase
         $this->quote
             ->expects($this->any())
             ->method('getGrandTotal')
-            ->willReturn(50);
+            ->willReturn(self::GRAND_TOTAL);
 
         $this->quote
             ->expects($this->any())
             ->method('getId')
-            ->willReturn(null, 10);
+            ->willReturn(null, self::QUOTE_ID);
 
         $billingAddressMock = $this->getMockBuilder(Address::class)
             ->disableOriginalConstructor()
@@ -204,18 +231,30 @@ class PlaceOrderTest extends TestCase
             ])
             ->getMock();
 
-        $billingAddressMock->expects($this->any())
+        $billingAddressMock
+            ->expects($this->any())
             ->method('getOrigData')
             ->willReturn(null);
 
-        $billingAddressMock->expects($this->any())
+        $billingAddressMock
+            ->expects($this->any())
             ->method('getEmail')
-            ->willReturn('john@doe.com');
+            ->willReturn(self::CUSTOMER_EMAIL);
 
         $this->quote
             ->expects($this->any())
             ->method('getBillingAddress')
             ->willReturn($billingAddressMock);
+
+        $this->quote
+            ->expects($this->any())
+            ->method('getShippingAddress')
+            ->willReturn($billingAddressMock);
+
+        $this->quote
+            ->expects($this->once())
+            ->method('collectTotals')
+            ->willReturnSelf();
     }
 
     private function getQuoteRepositoryMock(): void
@@ -240,10 +279,10 @@ class PlaceOrderTest extends TestCase
         $this->paymentConfirmationRequestFactory = $this->createMock(PaymentConfirmationRequestInterfaceFactory::class);
         $this->messageManager = $this->createMock(MessageManagerInterface::class);
         $this->redirectFactory = $this->createMock(RedirectFactory::class);
-        $this->generateAccessToken = $this->createMock(GenerateAccessToken::class);
         $this->refIdBuilder = $this->createMock(RefIdBuilderInterface::class);
         $this->serializer = $this->createMock(SerializerInterface::class);
 
+        $this->getGenerateAccessTokenMock();
         $this->getCustomerSessionMock();
         $this->getQuoteMock();
         $this->getCheckoutSessionMock();
