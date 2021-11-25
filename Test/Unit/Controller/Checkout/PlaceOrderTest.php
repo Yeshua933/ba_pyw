@@ -255,61 +255,54 @@ class PlaceOrderTest extends TestCase
     private function getPaymentConfirmationRequestFactoryMock(): void
     {
         $paymentConfirmationRequest = $this->createMock(PaymentConfirmationRequestInterface::class);
+        $paymentConfirmationRequest
+            ->expects($this->exactly(1))
+            ->method('setChannel')
+            ->willReturnSelf();
+
+        $paymentConfirmationRequest
+            ->expects($this->exactly(1))
+            ->method('setMerchantId')
+            ->willReturnSelf();
+
+        $paymentConfirmationRequest
+            ->expects($this->exactly(1))
+            ->method('setPywid')
+            ->willReturnSelf();
+
+        $paymentConfirmationRequest
+            ->expects($this->exactly(1))
+            ->method('setTransactionId')
+            ->willReturnSelf();
+
+        $paymentConfirmationRequest
+            ->expects($this->exactly(1))
+            ->method('setActionType')
+            ->willReturnSelf();
+
+        $paymentConfirmationRequest
+            ->expects($this->exactly(1))
+            ->method('setTransactionType')
+            ->willReturnSelf();
+
+        $paymentConfirmationRequest
+            ->expects($this->exactly(1))
+            ->method('setRefId')
+            ->willReturnSelf();
 
         $this->paymentConfirmationRequestFactory = $this->getMockBuilder(
             PaymentConfirmationRequestInterfaceFactory::class
         )
             ->setMethods([
                 'create',
-                'setChannel',
-                'setMerchantId',
-                'setPywid',
-                'setTransactionId',
-                'setActionType',
-                'setTransactionType',
-                'setRefId'
             ])
             ->disableOriginalConstructor()
             ->getMock();
 
         $this->paymentConfirmationRequestFactory
+            ->expects($this->exactly(1))
             ->method('create')
             ->willReturn($paymentConfirmationRequest);
-
-        $this->paymentConfirmationRequestFactory
-            ->expects($this->any())
-            ->method('setChannel')
-            ->willReturnSelf();
-
-        $this->paymentConfirmationRequestFactory
-            ->expects($this->any())
-            ->method('setMerchantId')
-            ->willReturnSelf();
-
-        $this->paymentConfirmationRequestFactory
-            ->expects($this->any())
-            ->method('setPywid')
-            ->willReturnSelf();
-
-        $this->paymentConfirmationRequestFactory
-            ->expects($this->any())
-            ->method('setTransactionId')
-            ->willReturnSelf();
-
-        $this->paymentConfirmationRequestFactory
-            ->expects($this->any())
-            ->method('setActionType')
-            ->willReturnSelf();
-
-        $this->paymentConfirmationRequestFactory
-            ->expects($this->any())
-            ->method('setTransactionType')
-            ->willReturnSelf();
-
-        $this->paymentConfirmationRequestFactory
-            ->expects($this->any())
-            ->method('setRefId')
-            ->willReturnSelf();
     }
 
     private function getPlaceOrderControllerObject(): void
