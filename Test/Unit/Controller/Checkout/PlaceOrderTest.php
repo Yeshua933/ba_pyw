@@ -243,6 +243,16 @@ class PlaceOrderTest extends TestCase
             ->willReturn(self::ACCESS_TOKEN);
     }
 
+    private function getLoggerMock(): void
+    {
+        $this->logger = $this->createMock(LoggerInterface::class);
+    }
+
+    private function getMessageManagerMock(): void
+    {
+        $this->messageManager = $this->createMock(MessageManagerInterface::class);
+    }
+
     private function getPaymentConfirmationLookupMock(): void
     {
         $this->paymentConfirmationLookup = $this->createMock(PaymentConfirmationLookupInterface::class);
@@ -482,6 +492,11 @@ class PlaceOrderTest extends TestCase
             ->willReturn($redirect);
     }
 
+    private function getRedirectMock(): void
+    {
+        $this->redirect = $this->createMock(RedirectInterface::class);
+    }
+
     private function getRefIdBuilderMock(): void
     {
         $this->refIdBuilder = $this->createMock(RefIdBuilderInterface::class);
@@ -501,6 +516,11 @@ class PlaceOrderTest extends TestCase
             ->willReturn(self::PYW_ID);
     }
 
+    private function getResponseMock(): void
+    {
+        $this->response = $this->createMock(ResponseInterface::class);
+    }
+
     private function getSerializerMock(): void
     {
         $this->serializer = $this->createMock(SerializerInterface::class);
@@ -514,11 +534,10 @@ class PlaceOrderTest extends TestCase
     {
         $this->objectManager = new ObjectManager($this);
 
-        $this->response = $this->createMock(ResponseInterface::class);
-        $this->redirect = $this->createMock(RedirectInterface::class);
-        $this->logger = $this->createMock(LoggerInterface::class);
-        $this->messageManager = $this->createMock(MessageManagerInterface::class);
-
+        $this->getResponseMock();
+        $this->getRedirectMock();
+        $this->getLoggerMock();
+        $this->getMessageManagerMock();
         $this->getRedirectFactoryMock();
         $this->getQuoteManagementMock();
         $this->getSerializerMock();
