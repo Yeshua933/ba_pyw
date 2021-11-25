@@ -40,6 +40,7 @@ class PlaceOrderTest extends TestCase
     private const CUSTOMER_EMAIL = 'john@doe.com';
     private const ACCESS_TOKEN = 'WTFvrq5BS5isEuQJqXQuAjVp';
     private const ENVIRONMENT = 'sandbox';
+    private const REF_ID = '428ZvUu6gFP76Lhm8t1co2joIsGgurfQY82SjTB1yG0Mi3p7PZQCJwxIgbq';
 
     /** @var CartManagementInterface|MockObject */
     private $quoteManagement;
@@ -221,7 +222,11 @@ class PlaceOrderTest extends TestCase
         $this->quote
             ->expects($this->any())
             ->method('getId')
-            ->willReturn(null, self::QUOTE_ID);
+            ->willReturn(
+                null,
+                self::QUOTE_ID,
+                self::QUOTE_ID
+            );
 
         $billingAddressMock = $this->getMockBuilder(Address::class)
             ->disableOriginalConstructor()
@@ -261,9 +266,18 @@ class PlaceOrderTest extends TestCase
     {
         $this->quoteRepository = $this->createMock(CartRepositoryInterface::class);
 
-        $this->quoteRepository->expects($this->any())
+        $this->quoteRepository
+            ->expects($this->any())
             ->method('get')
             ->willReturn($this->quote);
+    }
+
+    private function getRefIdBuilderMock(): void
+    {
+        $this->refIdBuilder = $this->createMock(RefIdBuilderInterface::class);
+        $this->refIdBuilder
+            ->method('buildRefId')
+            ->willReturn(self::REF_ID);
     }
 
     protected function setUp(): void
@@ -279,9 +293,9 @@ class PlaceOrderTest extends TestCase
         $this->paymentConfirmationRequestFactory = $this->createMock(PaymentConfirmationRequestInterfaceFactory::class);
         $this->messageManager = $this->createMock(MessageManagerInterface::class);
         $this->redirectFactory = $this->createMock(RedirectFactory::class);
-        $this->refIdBuilder = $this->createMock(RefIdBuilderInterface::class);
         $this->serializer = $this->createMock(SerializerInterface::class);
 
+        $this->getRefIdBuilderMock();
         $this->getGenerateAccessTokenMock();
         $this->getCustomerSessionMock();
         $this->getQuoteMock();
