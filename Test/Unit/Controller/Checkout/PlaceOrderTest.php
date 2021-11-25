@@ -23,6 +23,7 @@ use Magento\Quote\Model\Quote\Address;
 use Magento\Sales\Model\Order\Payment;
 use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
 use PayYourWay\Pyw\Api\RefIdBuilderInterface;
+use PayYourWay\Pyw\Api\RequestInterface as PaymentConfirmationRequestInterface;
 use PayYourWay\Pyw\Api\RequestInterfaceFactory as PaymentConfirmationRequestInterfaceFactory;
 use PayYourWay\Pyw\Controller\Checkout\PlaceOrder;
 use PayYourWay\Pyw\Model\Config;
@@ -143,6 +144,66 @@ class PlaceOrderTest extends TestCase
             ->expects($this->any())
             ->method('execute')
             ->willReturn(self::ACCESS_TOKEN);
+    }
+
+    private function getPaymentConfirmationRequestFactoryMock(): void
+    {
+        $paymentConfirmationRequest = $this->createMock(PaymentConfirmationRequestInterface::class);
+
+        $this->paymentConfirmationRequestFactory = $this->getMockBuilder(
+            PaymentConfirmationRequestInterfaceFactory::class
+        )
+            ->setMethods([
+                'create',
+                'setChannel',
+                'setMerchantId',
+                'setPywid',
+                'setTransactionId',
+                'setActionType',
+                'setTransactionType',
+                'setRefId'
+            ])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->paymentConfirmationRequestFactory
+            ->method('create')
+            ->willReturn($paymentConfirmationRequest);
+
+        $this->paymentConfirmationRequestFactory
+            ->expects($this->any())
+            ->method('setChannel')
+            ->willReturnSelf();
+
+        $this->paymentConfirmationRequestFactory
+            ->expects($this->any())
+            ->method('setMerchantId')
+            ->willReturnSelf();
+
+        $this->paymentConfirmationRequestFactory
+            ->expects($this->any())
+            ->method('setPywid')
+            ->willReturnSelf();
+
+        $this->paymentConfirmationRequestFactory
+            ->expects($this->any())
+            ->method('setTransactionId')
+            ->willReturnSelf();
+
+        $this->paymentConfirmationRequestFactory
+            ->expects($this->any())
+            ->method('setActionType')
+            ->willReturnSelf();
+
+        $this->paymentConfirmationRequestFactory
+            ->expects($this->any())
+            ->method('setTransactionType')
+            ->willReturnSelf();
+
+        $this->paymentConfirmationRequestFactory
+            ->expects($this->any())
+            ->method('setRefId')
+            ->willReturnSelf();
     }
 
     private function getPlaceOrderControllerObject(): void
@@ -290,11 +351,11 @@ class PlaceOrderTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->request = $this->createMock(RequestInterface::class);
         $this->paymentConfirmationLookup = $this->createMock(PaymentConfirmationLookupInterface::class);
-        $this->paymentConfirmationRequestFactory = $this->createMock(PaymentConfirmationRequestInterfaceFactory::class);
         $this->messageManager = $this->createMock(MessageManagerInterface::class);
         $this->redirectFactory = $this->createMock(RedirectFactory::class);
         $this->serializer = $this->createMock(SerializerInterface::class);
 
+        $this->getPaymentConfirmationRequestFactoryMock();
         $this->getRefIdBuilderMock();
         $this->getGenerateAccessTokenMock();
         $this->getCustomerSessionMock();
