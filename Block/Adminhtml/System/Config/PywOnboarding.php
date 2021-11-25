@@ -51,10 +51,9 @@ class PywOnboarding extends Field
                 onclick="pywValidator.call(this, '{$endpoint}', '{$envId}')">
                 <span>{$title}</span>
             </button>
-TEXT;
-        // @codingStandardsIgnoreEnd
-
-        return $html;    }
+        TEXT;
+        return $html;
+    }
 
     public function getOnboardingUrl(): string
     {
