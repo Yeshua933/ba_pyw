@@ -154,7 +154,20 @@ class PlaceOrderTest extends TestCase
 
     private function getCheckoutSessionMock(): void
     {
-        $this->checkoutSession = $this->createMock(CheckoutSession::class);
+        $this->checkoutSession = $this->getMockBuilder(CheckoutSession::class)
+            ->setMethods([
+                'getQuote',
+                'getQuoteId',
+                'clearHelperData',
+                'setLastRealOrderId',
+                'setLastQuoteId',
+                'setLastSuccessQuoteId',
+                'setLastOrderId',
+                'setLastOrderStatus'
+            ])
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->checkoutSession
             ->expects($this->any())
             ->method('getQuote')
@@ -164,6 +177,37 @@ class PlaceOrderTest extends TestCase
             ->expects($this->any())
             ->method('getQuoteId')
             ->willReturn(self::QUOTE_ID);
+
+        $this->checkoutSession
+            ->expects($this->exactly(1))
+            ->method('clearHelperData');
+
+        $this->checkoutSession
+            ->expects($this->exactly(1))
+            ->method('setLastRealOrderId')
+            ->willReturnSelf();
+
+        $this->checkoutSession
+            ->expects($this->exactly(1))
+            ->method('setLastQuoteId')
+            ->with($this->checkoutSession->getQuoteId())
+            ->willReturnSelf();
+
+        $this->checkoutSession
+            ->expects($this->exactly(1))
+            ->method('setLastSuccessQuoteId')
+            ->with($this->checkoutSession->getQuoteId())
+            ->willReturnSelf();
+
+        $this->checkoutSession
+            ->expects($this->exactly(1))
+            ->method('setLastOrderId')
+            ->willReturnSelf();
+
+        $this->checkoutSession
+            ->expects($this->exactly(1))
+            ->method('setLastOrderStatus')
+            ->willReturnSelf();
     }
 
     private function getConfigMock(): void
