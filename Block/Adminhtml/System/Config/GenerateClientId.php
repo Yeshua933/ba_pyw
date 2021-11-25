@@ -17,17 +17,12 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 class GenerateClientId extends Field
 {
     /** Path to block template */
-    protected $_template = 'PayYourWay_Pyw::system/config/GenerateClientId.phtml';
+    protected $_template = 'PayYourWay_Pyw::system/config/generate_client_id.phtml';
 
     public function render(AbstractElement $element): string
     {
         $element->unsScope()->unsCanUseWebsiteValue()->unsCanUseDefaultValue();
         return parent::render($element);
-    }
-
-    public function getGenerateClientIdUrl(): string
-    {
-        return $this->getUrl('payyourway/configuration/generateclient');
     }
 
     public function getButtonHtml(): string

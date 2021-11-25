@@ -15,28 +15,37 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\HTTP\Client\Curl;
 use PayYourWay\Pyw\Api\ConfigInterface;
+use PayYourWay\Pyw\Api\OnboardingLookupInterface;
+use PayYourWay\Pyw\Api\OnboardingRequestInterface;
+use PayYourWay\Pyw\Api\OnboardingRequestInterfaceFactory;
 use Psr\Log\LoggerInterface;
 
 class OnboardingController implements HttpPostActionInterface
 {
-
-    protected ConfigInterface $config;
-    protected Curl $_curl;
-    protected ResultInterface $result;
+    private ConfigInterface $config;
+    private Curl $_curl;
     private LoggerInterface $logger;
+    private JsonFactory $jsonFactory;
+    private RequestInterface $request;
+    private OnboardingLookupInterface $onboardingLookup;
+    private OnboardingRequestInterfaceFactory $onboardingRequestFactory;
 
     public function __construct(
-        JsonFactory      $jsonFactory,
-        LoggerInterface  $logger,
-        ConfigInterface  $config,
+        JsonFactory $jsonFactory,
+        LoggerInterface $logger,
+        ConfigInterface $config,
         Curl $curl,
-        RequestInterface $request
+        RequestInterface $request,
+        OnboardingLookupInterface $onboardingLookup,
+        OnboardingRequestInterfaceFactory $onboardingRequestFactory
     ) {
         $this->config = $config;
         $this->jsonFactory = $jsonFactory;
         $this->_curl = $curl;
         $this->logger = $logger;
         $this->request = $request;
+        $this->onboardingLookup = $onboardingLookup;
+        $this->onboardingRequestFactory = $onboardingRequestFactory;
     }
 
     /**
@@ -44,16 +53,11 @@ class OnboardingController implements HttpPostActionInterface
      */
     public function execute(): ResultInterface
     {
-        //todo refactor controller: separate business logic.
         $clientName = $this->request->getParam('client_name');
         $clientEmail = $this->request->getParam('email');
         $clientId = $this->request->getParam('client_id');
         $phoneNumber = $this->request->getParam('phone_number');
-        $passwordFlag = 'false';
-        $secretCodeFlag = 'true';
         $publicKey = $this->request->getParam('public_key');
-        $privateKey = $this->request->getParam('private_key');
-        $storeId = $this->request->getParam('storeId', 0);
         $environment = $this->request->getParam('environment');
 
         $publicKey = str_replace(
@@ -64,32 +68,18 @@ class OnboardingController implements HttpPostActionInterface
         $publicKey = chunk_split($publicKey, 64);
         $publicKey = "-----BEGIN CERTIFICATE-----\n$publicKey-----END CERTIFICATE-----\n";
 
-        $privateKey = str_replace(
-            ["-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----", "\r\n", "\n", "\r", " "],
-            '',
-            $privateKey
-        );
-        $privateKey = chunk_split($privateKey, 64);
-        $privateKey = "-----BEGIN RSA PRIVATE KEY-----\n$privateKey-----END RSA PRIVATE KEY-----\n";
-        $this->config->savePrivateKey($privateKey);
+        /** @var \PayYourWay\Pyw\Api\OnboardingRequestInterface $onboardingRequest */
+        $onboardingRequest = $this->onboardingRequestFactory->create();
+        $onboardingRequest->setEnvironment($environment);
+        $onboardingRequest->setClientName($clientName);
+        $onboardingRequest->setClientEmail($clientEmail);
+        $onboardingRequest->setClientId($clientId);
+        $onboardingRequest->setPhoneNumber($phoneNumber);
+        $onboardingRequest->setPublicKey($publicKey);
+        $onboardingRequest->setEnvironment($environment);
+        $onboardingRequest->setContentType('application/json');
 
-        $params = ([
-            "clientName" => $clientName,
-            "clientEmail" => $clientEmail,
-            "clientId" => $clientId,
-            "phoneNumber" => $phoneNumber,
-            "password" => "",
-            "passwordFlag" => $passwordFlag,
-            "secretCodeFlag" => $secretCodeFlag,
-            "publicKey" => $publicKey
-        ]);
-
-        $accessToken = $this->config->getAccessToken();
-        $url = 'https://oauthweb.uat.telluride.transformco.com/oauthUI/register/registerClient';
-        $this->_curl->addHeader("Content-Type", "application/json");
-        $this->_curl->addHeader("Authorization", "Bearer " . $accessToken);
-
-        $params = json_encode($params, JSON_THROW_ON_ERROR);
+        $result = $this->registerClient($onboardingRequest);
 
         $response = $this->jsonFactory->create();
 
@@ -123,5 +113,11 @@ class OnboardingController implements HttpPostActionInterface
         }
 
         return $response;
+    }
+
+    private function registerClient(
+        OnboardingRequestInterface $onboardingRequest
+    ): string {
+        return $this->onboardingLookup->execute($onboardingRequest);
     }
 }

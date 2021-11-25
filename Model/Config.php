@@ -269,8 +269,7 @@ class Config implements PywConfigInterface
         string $path = self::CONFIG_XML_PATH_SECRET_KEY_SB,
         string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
         int    $scopeId = 0
-    ): ResourceConfigInterface
-    {
+    ): ResourceConfigInterface {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
             $path = self::CONFIG_XML_PATH_SECRET_KEY_SB;
             return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
@@ -288,8 +287,7 @@ class Config implements PywConfigInterface
     public function getPaymentConfirmationApiEndpoint(
         $scopeId = null,
         string $scope = ScopeInterface::SCOPE_STORE
-    ): ?string
-    {
+    ): ?string {
         return
             $this->getPaymentConfirmationUrl($scopeId, $scope) .
             $this->scopeConfig->getValue(self::CONFIG_XML_PATH_PAYMENT_CONFIRMATION_API_ENDPOINT, $scope, $scopeId);
@@ -298,8 +296,7 @@ class Config implements PywConfigInterface
     public function getPaymentConfirmationUrl(
         $scopeId = null,
         string $scope = ScopeInterface::SCOPE_STORE
-    ): ?string
-    {
+    ): ?string {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
             return $this->scopeConfig->getValue(self::CONFIG_XML_PATH_PAYMENT_CONFIRMATION_URL_UAT, $scope, $scopeId);
         }
@@ -344,19 +341,21 @@ class Config implements PywConfigInterface
      * @param int $scopeId
      * @return \Magento\Config\Model\ResourceModel\Config
      */
-    public function  saveClientId(
+    public function saveClientId(
         string $value,
-        string $path=self::CONFIG_XML_PATH_CLIENT_ID_SB,
+        string $path = self::CONFIG_XML_PATH_CLIENT_ID_SB,
         string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
-        int $scopeId = 0):ResourceConfigInterface
-    {
+        int $scopeId = 0
+    ): ResourceConfigInterface {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
-            $path = self::CONFIG_XML_PATH_CLIENT_ID_SB;
-            return $this->resourceConfigInterface->saveConfig($path, $value, $scope,$scopeId);
+            return $this->resourceConfigInterface->saveConfig(
+                self::CONFIG_XML_PATH_CLIENT_ID_SB,
+                $value,
+                $scope,
+                $scopeId
+            );
         }
-
-        $path = self::CONFIG_XML_PATH_CLIENT_ID_PR;
-        return $this->resourceConfigInterface->saveConfig($path, $value, $scope,$scopeId);
+        return $this->resourceConfigInterface->saveConfig(self::CONFIG_XML_PATH_CLIENT_ID_PR, $value, $scope, $scopeId);
     }
 
     /**
@@ -366,7 +365,7 @@ class Config implements PywConfigInterface
     public function generateClientId():string
     {
         $merchantName = $this->getMerchantName();
-        $merchantName = strtoupper(str_replace(' ', '',$merchantName));
+        $merchantName = strtoupper(str_replace(' ', '', $merchantName));
         if (!empty($merchantName) && isset($merchantName)) {
             if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
                 return 'MG_'.$merchantName.'_QA';

@@ -45,10 +45,6 @@
                             <field id="*/*/*/environment">sandbox</field>
                         </depends>
                     </field>
-                    <field id="change_client_id" translate="label" type="button" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                        <label>Change Client ID</label>
-                        <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\ChangeClientId</frontend_model>
-                    </field>
                     <field id="private_key_pr" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                         <label>Private Key</label>
                         <config_path>payment/payyourway/private_key_pr</config_path>

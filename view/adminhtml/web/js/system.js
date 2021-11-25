@@ -13,21 +13,20 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
         var public_key = '';
         var private_key = '';
 
-        //todo validate public key and private key
         if (env_id === 'sandbox') {
-            client_name = $('[data-ui-id="text-groups-payyourway-fields-merchant-name-sb-value"]').val();
-            email = $('[data-ui-id="text-groups-payyourway-fields-merchant-email-sb-value"]').val();
-            client_id = $('[data-ui-id="text-groups-payyourway-fields-client-id-sb-value"]').val();
-            phone_number = $('[data-ui-id="text-groups-payyourway-fields-merchant-phone-sb-value"]').val();
-            public_key = $('[data-ui-id="text-groups-payyourway-fields-public-key-sb-value"]').val();
-            private_key = $('[data-ui-id="text-groups-payyourway-fields-private-key-sb-value"]').val();
+            client_name = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-merchant-name-sb-value"]').val();
+            email = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-merchant-email-sb-value"]').val();
+            client_id = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-client-id-sb-value"]').val();
+            phone_number = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-merchant-phone-sb-value"]').val();
+            public_key = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-public-key-sb-value"]').val();
+            private_key = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-private-key-sb-value"]').val();
         } else {
-            client_name = $('[data-ui-id="text-groups-payyourway-fields-merchant-name-pr-value"]').val();
-            email = $('[data-ui-id="text-groups-payyourway-fields-merchant-email-pr-value"]').val();
-            client_id = $('[data-ui-id="text-groups-payyourway-fields-client-id-pr-value"]').val();
-            phone_number = $('[data-ui-id="text-groups-payyourway-fields-merchant-phone-pr-value"]').val();
-            public_key = $('[data-ui-id="text-groups-payyourway-fields-public-key-pr-value"]').val();
-            private_key = $('[data-ui-id="text-groups-payyourway-fields-private-key-pr-value"]').val();
+            client_name = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-merchant-name-pr-value"]').val();
+            email = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-merchant-email-pr-value"]').val();
+            client_id = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-client-id-pr-value"]').val();
+            phone_number = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-merchant-phone-pr-value"]').val();
+            public_key = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-public-key-pr-value"]').val();
+            private_key = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-private-key-pr-value"]').val();
         }
 
         /* Remove previous success message if present */
