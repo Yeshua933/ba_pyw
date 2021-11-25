@@ -37,68 +37,20 @@ use Psr\Log\LoggerInterface;
 
 class PlaceOrderTest extends TestCase
 {
-    /** @var CartManagementInterface|MockObject */
-    private $quoteManagement;
-
-    /** @var CheckoutSession|MockObject */
-    private $checkoutSession;
-
-    /** @var CustomerSession|MockObject */
-    private $customerSession;
-
-    /** @var Config|MockObject */
-    private $config;
-
-    /** @var GenerateAccessToken|MockObject */
-    private $generateAccessToken;
-
-    /** @var LoggerInterface|MockObject */
-    private $logger;
-
-    /** @var MessageManagerInterface|MockObject */
-    private $messageManager;
-
-    /** @var PaymentConfirmationLookupInterface|MockObject */
-    private $paymentConfirmationLookup;
-
-    /** @var PaymentConfirmationRequestInterfaceFactory|MockObject */
-    private $paymentConfirmationRequestFactory;
-
     /** @var PlaceOrder */
     private $placeOrderController;
-
-    /** @var RefIdBuilderInterface|MockObject */
-    private $refIdBuilder;
-
-    /** @var RedirectInterface|MockObject */
-    private $redirect;
-
-    /** @var RedirectFactory|MockObject */
-    private $redirectFactory;
-
-    /** @var ResponseInterface|MockObject */
-    private $response;
-
-    /** @var RequestInterface|MockObject */
-    private $request;
 
     /** @var Quote|MockObject */
     private $quote;
 
-    /** @var CartRepositoryInterface|MockObject */
-    private $quoteRepository;
-
     /**@var ObjectManager|MockObject */
     private $objectManager;
 
-    /** @var SerializerInterface|MockObject */
-    private $serializer;
-
-    private function getCheckoutSessionMock(): void
+    private function getCheckoutSessionMock(): CheckoutSession
     {
         $quoteId = 50;
 
-        $this->checkoutSession = $this->getMockBuilder(CheckoutSession::class)
+        $checkoutSession = $this->getMockBuilder(CheckoutSession::class)
             ->setMethods([
                 'getQuote',
                 'getQuoteId',
@@ -112,107 +64,117 @@ class PlaceOrderTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->checkoutSession
-            ->expects($this->exactly(4))
+        $checkoutSession
+            ->expects($this->exactly(2))
             ->method('getQuoteId')
             ->willReturn($quoteId);
 
-        $this->checkoutSession
+        $checkoutSession
             ->expects($this->once())
             ->method('clearHelperData');
 
-        $this->checkoutSession
+        $checkoutSession
             ->expects($this->once())
             ->method('setLastRealOrderId')
             ->willReturnSelf();
 
-        $this->checkoutSession
+        $checkoutSession
             ->expects($this->once())
             ->method('setLastQuoteId')
-            ->with($this->checkoutSession->getQuoteId())
+            ->with($quoteId)
             ->willReturnSelf();
 
-        $this->checkoutSession
+        $checkoutSession
             ->expects($this->once())
             ->method('setLastSuccessQuoteId')
-            ->with($this->checkoutSession->getQuoteId())
+            ->with($quoteId)
             ->willReturnSelf();
 
-        $this->checkoutSession
+        $checkoutSession
             ->expects($this->once())
             ->method('setLastOrderId')
             ->willReturnSelf();
 
-        $this->checkoutSession
+        $checkoutSession
             ->expects($this->once())
             ->method('setLastOrderStatus')
             ->willReturnSelf();
+
+        return $checkoutSession;
     }
 
-    private function getConfigMock(): void
+    private function getConfigMock(): Config
     {
         $clientId = 'PYW';
         $environment = 'sandbox';
 
-        $this->config = $this->createMock(Config::class);
-        $this->config
+        $config = $this->createMock(Config::class);
+        $config
             ->expects($this->exactly(6))
             ->method('getClientId')
             ->willReturn($clientId);
 
-        $this->config
+        $config
             ->expects($this->once())
             ->method('getEnvironment')
             ->willReturn($environment);
 
-        $this->config
+        $config
             ->expects($this->exactly(2))
             ->method('isDebugMode')
             ->willReturn(true);
+
+        return $config;
     }
 
-    private function getCustomerSessionMock(): void
+    private function getCustomerSessionMock(): CustomerSession
     {
-        $this->customerSession = $this->createMock(CustomerSession::class);
-        $this->customerSession
+        $customerSession = $this->createMock(CustomerSession::class);
+        $customerSession
             ->expects($this->once())
             ->method('isLoggedIn')
             ->willReturn(false);
+
+        return $customerSession;
     }
 
-    private function getGenerateAccessTokenMock(): void
+    private function getGenerateAccessTokenMock(): GenerateAccessToken
     {
         $accessToken = 'WTFvrq5BS5isEuQJqXQuAjVp';
 
-        $this->generateAccessToken = $this->createMock(GenerateAccessToken::class);
-        $this->generateAccessToken
+        $generateAccessToken = $this->createMock(GenerateAccessToken::class);
+        $generateAccessToken
             ->expects($this->once())
             ->method('execute')
             ->willReturn($accessToken);
+
+        return $generateAccessToken;
     }
 
-    private function getLoggerMock(): void
+    private function getLoggerMock(): LoggerInterface
     {
-        $this->logger = $this->createMock(LoggerInterface::class);
+        return $this->createMock(LoggerInterface::class);
     }
 
-    private function getMessageManagerMock(): void
+    private function getMessageManagerMock(): MessageManagerInterface
     {
-        $this->messageManager = $this->createMock(MessageManagerInterface::class);
+        return $this->createMock(MessageManagerInterface::class);
     }
 
-    private function getPaymentConfirmationLookupMock(): void
+    private function getPaymentConfirmationLookupMock(): PaymentConfirmationLookupInterface
     {
         $paymentConfirmationReturnJson = '{"authCode":"09180-20211117-843154488","orderDate":"11-17-2021 04:28:52","paymentStatus":"PENDING","paymentTotal":"500.00","paymentDetails":[{"id":"12e28334-4dd4-4510-a40e-bf8d2c39ef55","type":"CREDITCARD","amount":"500.00","status":"SUCCESS","currency":"USD","cardLastFour":"9699","cardType":"Sears"},{"id":"16371463","type":"SYWR","amount":"0.0","status":"NOT_PROCESSED","currency":"USD"}]}'; //phpcs:ignore
 
-        $this->paymentConfirmationLookup = $this->createMock(PaymentConfirmationLookupInterface::class);
-        $this->paymentConfirmationLookup
+        $paymentConfirmationLookup = $this->createMock(PaymentConfirmationLookupInterface::class);
+        $paymentConfirmationLookup
             ->expects($this->once())
             ->method('lookup')
             ->willReturn($paymentConfirmationReturnJson);
+
+        return $paymentConfirmationLookup;
     }
 
-    private function getPaymentConfirmationRequestFactoryMock(): void
+    private function getPaymentConfirmationRequestFactoryMock(): PaymentConfirmationRequestInterfaceFactory
     {
         $paymentConfirmationRequest = $this->createMock(PaymentConfirmationRequestInterface::class);
         $paymentConfirmationRequest
@@ -250,7 +212,7 @@ class PlaceOrderTest extends TestCase
             ->method('setRefId')
             ->willReturnSelf();
 
-        $this->paymentConfirmationRequestFactory = $this->getMockBuilder(
+        $paymentConfirmationRequestFactory = $this->getMockBuilder(
             PaymentConfirmationRequestInterfaceFactory::class
         )
             ->setMethods([
@@ -259,56 +221,76 @@ class PlaceOrderTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->paymentConfirmationRequestFactory
+        $paymentConfirmationRequestFactory
             ->expects($this->once())
             ->method('create')
             ->willReturn($paymentConfirmationRequest);
+
+        return $paymentConfirmationRequestFactory;
     }
 
-    private function getPlaceOrderControllerObject(): void
-    {
+    private function getPlaceOrderControllerObject(
+        ResponseInterface $response,
+        RedirectInterface $redirect,
+        LoggerInterface $logger,
+        MessageManagerInterface $messageManager,
+        RedirectFactory $redirectFactory,
+        CartManagementInterface $quoteManagement,
+        SerializerInterface $serializer,
+        PaymentConfirmationLookupInterface $paymentConfirmationLookup,
+        RequestInterface $request,
+        PaymentConfirmationRequestInterfaceFactory $paymentConfirmationRequestFactory,
+        RefIdBuilderInterface $refIdBuilder,
+        GenerateAccessToken $generateAccessToken,
+        CustomerSession $customerSession,
+        Config $config,
+        CartRepositoryInterface $quoteRepository,
+        CheckoutSession $checkoutSession
+    ): void {
         $this->placeOrderController = $this->objectManager->getObject(
             PlaceOrder::class,
             [
-                'quoteManagement' => $this->quoteManagement,
-                'quoteRepository' => $this->quoteRepository,
+                'quoteManagement' => $quoteManagement,
+                'quoteRepository' => $quoteRepository,
                 'quote' => $this->quote,
-                'checkoutSession' => $this->checkoutSession,
-                'customerSession' => $this->customerSession,
-                'response' => $this->response,
-                'redirect' => $this->redirect,
-                'logger' => $this->logger,
-                'request' => $this->request,
-                'paymentConfirmationLookup' => $this->paymentConfirmationLookup,
-                'paymentConfirmationRequestFactory' => $this->paymentConfirmationRequestFactory,
-                'messageManager' => $this->messageManager,
-                'redirectFactory' => $this->redirectFactory,
-                'config' => $this->config,
-                'generateAccessToken' => $this->generateAccessToken,
-                'refIdBuilder' => $this->refIdBuilder,
-                'serializer' => $this->serializer
+                'checkoutSession' => $checkoutSession,
+                'customerSession' => $customerSession,
+                'response' => $response,
+                'redirect' => $redirect,
+                'logger' => $logger,
+                'request' => $request,
+                'paymentConfirmationLookup' => $paymentConfirmationLookup,
+                'paymentConfirmationRequestFactory' => $paymentConfirmationRequestFactory,
+                'messageManager' => $messageManager,
+                'redirectFactory' => $redirectFactory,
+                'config' => $config,
+                'generateAccessToken' => $generateAccessToken,
+                'refIdBuilder' => $refIdBuilder,
+                'serializer' => $serializer
             ]
         );
     }
 
-    private function getQuoteManagementMock(): void
+    private function getQuoteManagementMock(): CartManagementInterface
     {
         $orderMock = $this->createPartialMock(
             Order::class,
             ['getId', 'getIncrementId', 'getStatus']
         );
 
-        $this->quoteManagement = $this->getMockBuilder(CartManagementInterface::class)
+        $quoteManagement = $this->getMockBuilder(CartManagementInterface::class)
             ->setMethods([
                'submit'
             ])
             ->disableOriginalConstructor()
             ->getMockForAbstractClass();
 
-        $this->quoteManagement
+        $quoteManagement
             ->expects($this->once())
             ->method('submit')
             ->willReturn($orderMock);
+
+        return $quoteManagement;
     }
 
     private function getQuoteMock()
@@ -418,19 +400,21 @@ class PlaceOrderTest extends TestCase
             ->willReturnSelf();
     }
 
-    private function getQuoteRepositoryMock(): void
+    private function getQuoteRepositoryMock(): CartRepositoryInterface
     {
-        $this->quoteRepository = $this->createMock(CartRepositoryInterface::class);
+        $quoteRepository = $this->createMock(CartRepositoryInterface::class);
 
-        $this->quoteRepository
+        $quoteRepository
             ->expects($this->once())
             ->method('get')
             ->willReturn($this->quote);
+
+        return $quoteRepository;
     }
 
-    private function getRedirectFactoryMock(): void
+    private function getRedirectFactoryMock(): RedirectFactory
     {
-        $this->redirectFactory = $this->getMockBuilder(RedirectFactory::class)
+        $redirectFactory = $this->getMockBuilder(RedirectFactory::class)
             ->setMethods([
                 'create',
                 'setPath'
@@ -440,78 +424,104 @@ class PlaceOrderTest extends TestCase
 
         $redirect = $this->createMock(Redirect::class);
 
-        $this->redirectFactory
+        $redirectFactory
             ->expects($this->once())
             ->method('create')
             ->willReturn($redirect);
+
+        return $redirectFactory;
     }
 
-    private function getRedirectMock(): void
+    private function getRedirectMock(): RedirectInterface
     {
-        $this->redirect = $this->createMock(RedirectInterface::class);
+        return $this->createMock(RedirectInterface::class);
     }
 
-    private function getRefIdBuilderMock(): void
+    private function getRefIdBuilderMock(): RefIdBuilderInterface
     {
         $refId = '428ZvUu6gFP76Lhm8t1co2joIsGgurfQY82SjTB1yG0Mi3p7PZQCJwxIgbq';
 
-        $this->refIdBuilder = $this->createMock(RefIdBuilderInterface::class);
-        $this->refIdBuilder
+        $refIdBuilder = $this->createMock(RefIdBuilderInterface::class);
+        $refIdBuilder
             ->expects($this->once())
             ->method('buildRefId')
             ->willReturn($refId);
+
+        return $refIdBuilder;
     }
 
-    private function getRequestMock(): void
+    private function getRequestMock(): RequestInterface
     {
         $pywId = '12e28334-4dd4-4510-a40e-bf8d2c39ef55';
 
-        $this->request = $this->createMock(RequestInterface::class);
-        $this->request
+        $request = $this->createMock(RequestInterface::class);
+        $request
             ->expects($this->exactly(2))
             ->method('getParam')
             ->with('pywid')
             ->willReturn($pywId);
+
+        return $request;
     }
 
-    private function getResponseMock(): void
+    private function getResponseMock(): ResponseInterface
     {
-        $this->response = $this->createMock(ResponseInterface::class);
+        return $this->createMock(ResponseInterface::class);
     }
 
-    private function getSerializerMock(): void
+    private function getSerializerMock(): SerializerInterface
     {
         $paymentConfirmationReturnArray = ["authCode"=>"09180-20211117-843154488","orderDate"=>"11-17-2021 04:28:52","paymentStatus"=>"PENDING","paymentTotal"=>"500.00","paymentDetails"=>[["id"=>"8ce531e3-5240-4ce4-9401-ad966b532b7e","type"=>"CREDITCARD","amount"=>"500.00","status"=>"SUCCESS","currency"=>"USD","cardLastFour"=>"9699","cardType"=>"Sears"],["id"=>"16371463","type"=>"SYWR","amount"=>"0.0","status"=>"NOT_PROCESSED","currency"=>"USD"]]]; //phpcs:ignore
 
-        $this->serializer = $this->createMock(SerializerInterface::class);
-        $this->serializer
+        $serializer = $this->createMock(SerializerInterface::class);
+        $serializer
             ->expects($this->once())
             ->method('unserialize')
             ->willReturn($paymentConfirmationReturnArray);
+
+        return $serializer;
     }
 
     protected function setUp(): void
     {
         $this->objectManager = new ObjectManager($this);
 
-        $this->getResponseMock();
-        $this->getRedirectMock();
-        $this->getLoggerMock();
-        $this->getMessageManagerMock();
-        $this->getRedirectFactoryMock();
-        $this->getQuoteManagementMock();
-        $this->getSerializerMock();
-        $this->getPaymentConfirmationLookupMock();
-        $this->getRequestMock();
-        $this->getPaymentConfirmationRequestFactoryMock();
-        $this->getRefIdBuilderMock();
-        $this->getGenerateAccessTokenMock();
-        $this->getCustomerSessionMock();
+        $responseMock = $this->getResponseMock();
+        $redirectMock = $this->getRedirectMock();
+        $loggerMock = $this->getLoggerMock();
+        $messageManagerMock = $this->getMessageManagerMock();
+        $redirectFactoryMock = $this->getRedirectFactoryMock();
+        $quoteManagementMock = $this->getQuoteManagementMock();
+        $serializerMock = $this->getSerializerMock();
+        $paymentConfirmationLookupMock = $this->getPaymentConfirmationLookupMock();
+        $requestMock = $this->getRequestMock();
+        $paymentConfirmationRequestFactoryMock = $this->getPaymentConfirmationRequestFactoryMock();
+        $refIdBuilderMock = $this->getRefIdBuilderMock();
+        $generateAccessTokenMock = $this->getGenerateAccessTokenMock();
+        $customerSessionMock = $this->getCustomerSessionMock();
         $this->getQuoteMock();
-        $this->getCheckoutSessionMock();
-        $this->getQuoteRepositoryMock();
-        $this->getConfigMock();
-        $this->getPlaceOrderControllerObject();
+        $checkoutSessionMock = $this->getCheckoutSessionMock();
+        $quoteRepositoryMock = $this->getQuoteRepositoryMock();
+        $configMock = $this->getConfigMock();
+
+        $this->getPlaceOrderControllerObject(
+            $responseMock,
+            $redirectMock,
+            $loggerMock,
+            $messageManagerMock,
+            $redirectFactoryMock,
+            $quoteManagementMock,
+            $serializerMock,
+            $paymentConfirmationLookupMock,
+            $requestMock,
+            $paymentConfirmationRequestFactoryMock,
+            $refIdBuilderMock,
+            $generateAccessTokenMock,
+            $customerSessionMock,
+            $configMock,
+            $quoteRepositoryMock,
+            $checkoutSessionMock
+        );
     }
 
     public function testPlaceOrderControllerRedirect()
