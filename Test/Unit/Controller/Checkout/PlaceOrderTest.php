@@ -229,7 +229,7 @@ class PlaceOrderTest extends TestCase
     {
         $this->customerSession = $this->createMock(CustomerSession::class);
         $this->customerSession
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('isLoggedIn')
             ->willReturn(false);
     }
