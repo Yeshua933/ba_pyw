@@ -372,41 +372,45 @@ class PlaceOrderTest extends TestCase
             ->getMock();
 
         $this->quote
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('hasItems')
             ->willReturn(true);
 
         $paymentMock = $this->getMockBuilder(Payment::class)
+            ->setMethods([
+                'getMethod',
+                'importData'
+            ])
             ->disableOriginalConstructor()
             ->getMock();
 
         $paymentMock
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('getMethod')
             ->willReturn(PayYourWayPaymentMethod::METHOD_CODE);
 
-        $this->quote
-            ->expects($this->any())
-            ->method('getPayment')
-            ->willReturn($paymentMock);
-
-        $this->quote
-            ->expects($this->any())
-            ->method('getIsVirtual')
-            ->willReturn(false);
-
-        $this->quote
-            ->expects($this->any())
-            ->method('getGrandTotal')
-            ->willReturn(self::GRAND_TOTAL);
-
-        $this->quote
-            ->expects($this->any())
+        $paymentMock
+            ->expects($this->exactly(1))
             ->method('importData')
             ->willReturnSelf();
 
         $this->quote
-            ->expects($this->any())
+            ->expects($this->exactly(2))
+            ->method('getPayment')
+            ->willReturn($paymentMock);
+
+        $this->quote
+            ->expects($this->exactly(2))
+            ->method('getIsVirtual')
+            ->willReturn(false);
+
+        $this->quote
+            ->expects($this->exactly(2))
+            ->method('getGrandTotal')
+            ->willReturn(self::GRAND_TOTAL);
+
+        $this->quote
+            ->expects($this->exactly(4))
             ->method('getId')
             ->willReturn(
                 null,
@@ -424,28 +428,28 @@ class PlaceOrderTest extends TestCase
             ->getMock();
 
         $billingAddressMock
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('getOrigData')
             ->willReturn('email')
             ->willReturn(null);
 
         $billingAddressMock
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('getEmail')
             ->willReturn(self::CUSTOMER_EMAIL);
 
         $this->quote
-            ->expects($this->any())
+            ->expects($this->exactly(3))
             ->method('getBillingAddress')
             ->willReturn($billingAddressMock);
 
         $this->quote
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('getShippingAddress')
             ->willReturn($billingAddressMock);
 
         $this->quote
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('collectTotals')
             ->willReturnSelf();
     }
