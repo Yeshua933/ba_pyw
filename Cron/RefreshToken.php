@@ -25,13 +25,9 @@ class RefreshToken
 
     /**
      * Refresh and generate a token.
-     * @todo: This is a work in progress. We need to separate responsibilities
      */
     public function execute()
     {
-        /**
-         * @todo: Add a condition to check if is token expired ( > 15 minutes )
-         */
         if ($this->config->isPayYourWayEnabled() && $this->config->isRefreshTokenProcessEnabled()) {
             $accessToken = $this->getAccessToken();
         }
@@ -40,7 +36,7 @@ class RefreshToken
     /**
      * This is a work in progress
      */
-    private function getAccessToken(): string
+    private function getAccessToken(): ?string
     {
         return $this->generateAccessToken->execute();
     }

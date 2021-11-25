@@ -60,5 +60,9 @@
     <preference for="PayYourWay\Pyw\Api\RequestInterface" type="PayYourWay\Pyw\Service\PaymentConfirmationLookup\Request"/>
     <preference for="PayYourWay\Pyw\Api\PaymentReturnLookupInterface" type="PayYourWay\Pyw\Service\PaymentReturnLookup"/>
     <preference for="PayYourWay\Pyw\Api\PaymentReturnRequestInterface" type="PayYourWay\Pyw\Service\PaymentReturnLookup\PaymentReturnRequest"/>
+
+    <preference for="PayYourWay\Pyw\Api\AccessTokenLookupInterface" type="PayYourWay\Pyw\Service\AccessTokenLookup"/>
+    <preference for="PayYourWay\Pyw\Api\AccessTokenRequestInterface" type="PayYourWay\Pyw\Service\AccessTokenLookup\AccessTokenRequest"/>
+
     <preference for="PayYourWay\Pyw\Api\RefIdBuilderInterface" type="PayYourWay\Pyw\Model\RefIdBuilder"/>
 </config>
