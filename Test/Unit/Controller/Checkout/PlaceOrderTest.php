@@ -495,7 +495,7 @@ class PlaceOrderTest extends TestCase
     {
         $this->request = $this->createMock(RequestInterface::class);
         $this->request
-            ->expects($this->any())
+            ->expects($this->exactly(2))
             ->method('getParam')
             ->with('pywid')
             ->willReturn(self::PYW_ID);
