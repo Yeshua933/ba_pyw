@@ -486,6 +486,7 @@ class PlaceOrderTest extends TestCase
     {
         $this->refIdBuilder = $this->createMock(RefIdBuilderInterface::class);
         $this->refIdBuilder
+            ->expects($this->once())
             ->method('buildRefId')
             ->willReturn(self::REF_ID);
     }
