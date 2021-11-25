@@ -238,7 +238,7 @@ class PlaceOrderTest extends TestCase
     {
         $this->generateAccessToken = $this->createMock(GenerateAccessToken::class);
         $this->generateAccessToken
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('execute')
             ->willReturn(self::ACCESS_TOKEN);
     }
