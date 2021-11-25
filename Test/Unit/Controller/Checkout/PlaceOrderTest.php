@@ -12,6 +12,7 @@ use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Response\RedirectInterface;
 use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
 use Magento\Framework\Serialize\SerializerInterface;
@@ -471,6 +472,23 @@ class PlaceOrderTest extends TestCase
             ->willReturn($this->quote);
     }
 
+    private function getRedirectFactoryMock(): void
+    {
+        $this->redirectFactory = $this->getMockBuilder(RedirectFactory::class)
+            ->setMethods([
+                'create',
+                'setPath'
+            ])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $redirect = $this->createMock(Redirect::class);
+
+        $this->redirectFactory
+            ->method('create')
+            ->willReturn($redirect);
+    }
+
     private function getRefIdBuilderMock(): void
     {
         $this->refIdBuilder = $this->createMock(RefIdBuilderInterface::class);
@@ -506,8 +524,8 @@ class PlaceOrderTest extends TestCase
         $this->redirect = $this->createMock(RedirectInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->messageManager = $this->createMock(MessageManagerInterface::class);
-        $this->redirectFactory = $this->createMock(RedirectFactory::class);
 
+        $this->getRedirectFactoryMock();
         $this->getQuoteManagementMock();
         $this->getSerializerMock();
         $this->getPaymentConfirmationLookupMock();
