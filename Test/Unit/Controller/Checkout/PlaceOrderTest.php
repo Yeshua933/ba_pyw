@@ -37,65 +37,6 @@ use Psr\Log\LoggerInterface;
 
 class PlaceOrderTest extends TestCase
 {
-    private const CLIENT_ID = 'PYW';
-    private const QUOTE_ID = 50;
-    private const GRAND_TOTAL = 500.00;
-    private const CUSTOMER_EMAIL = 'john@doe.com';
-    private const ACCESS_TOKEN = 'WTFvrq5BS5isEuQJqXQuAjVp';
-    private const ENVIRONMENT = 'sandbox';
-    private const REF_ID = '428ZvUu6gFP76Lhm8t1co2joIsGgurfQY82SjTB1yG0Mi3p7PZQCJwxIgbq';
-    private const PYW_ID = '12e28334-4dd4-4510-a40e-bf8d2c39ef55';
-    private const PAYMENT_CONFIRMATION_RETURN_JSON = '
-{
-    "authCode": "09180-20211117-843154488",
-    "orderDate": "11-17-2021 04:28:52",
-    "paymentStatus": "PENDING",
-    "paymentTotal": "500.00",
-    "paymentDetails": [
-        {
-            "id": "12e28334-4dd4-4510-a40e-bf8d2c39ef55",
-            "type": "CREDITCARD",
-            "amount": "500.00",
-            "status": "SUCCESS",
-            "currency": "USD",
-            "cardLastFour": "9699",
-            "cardType": "Sears"
-        },
-        {
-            "id": "16371463",
-            "type": "SYWR",
-            "amount": "0.0",
-            "status": "NOT_PROCESSED",
-            "currency": "USD"
-        }
-    ]
-}
-    ';
-    private const PAYMENT_CONFIRMATION_RETURN_ARRAY = [
-        "authCode" => "09180-20211117-843154488",
-        "orderDate" => "11-17-2021 04:28:52",
-        "paymentStatus" => "PENDING",
-        "paymentTotal" => "500.00",
-        "paymentDetails" => [
-            [
-                "id" => "8ce531e3-5240-4ce4-9401-ad966b532b7e",
-                "type" => "CREDITCARD",
-                "amount" => "500.00",
-                "status" => "SUCCESS",
-                "currency" => "USD",
-                "cardLastFour" => "9699",
-                "cardType" => "Sears"
-            ],
-            [
-                "id" => "16371463",
-                "type" => "SYWR",
-                "amount" => "0.0",
-                "status" => "NOT_PROCESSED",
-                "currency" => "USD"
-            ]
-        ]
-    ];
-
     /** @var CartManagementInterface|MockObject */
     private $quoteManagement;
 
@@ -155,6 +96,8 @@ class PlaceOrderTest extends TestCase
 
     private function getCheckoutSessionMock(): void
     {
+        $quoteId = 50;
+
         $this->checkoutSession = $this->getMockBuilder(CheckoutSession::class)
             ->setMethods([
                 'getQuote',
@@ -172,7 +115,7 @@ class PlaceOrderTest extends TestCase
         $this->checkoutSession
             ->expects($this->exactly(4))
             ->method('getQuoteId')
-            ->willReturn(self::QUOTE_ID);
+            ->willReturn($quoteId);
 
         $this->checkoutSession
             ->expects($this->once())
@@ -208,16 +151,19 @@ class PlaceOrderTest extends TestCase
 
     private function getConfigMock(): void
     {
+        $clientId = 'PYW';
+        $environment = 'sandbox';
+
         $this->config = $this->createMock(Config::class);
         $this->config
             ->expects($this->exactly(6))
             ->method('getClientId')
-            ->willReturn(self::CLIENT_ID);
+            ->willReturn($clientId);
 
         $this->config
             ->expects($this->once())
             ->method('getEnvironment')
-            ->willReturn(self::ENVIRONMENT);
+            ->willReturn($environment);
 
         $this->config
             ->expects($this->exactly(2))
@@ -236,11 +182,13 @@ class PlaceOrderTest extends TestCase
 
     private function getGenerateAccessTokenMock(): void
     {
+        $accessToken = 'WTFvrq5BS5isEuQJqXQuAjVp';
+
         $this->generateAccessToken = $this->createMock(GenerateAccessToken::class);
         $this->generateAccessToken
             ->expects($this->once())
             ->method('execute')
-            ->willReturn(self::ACCESS_TOKEN);
+            ->willReturn($accessToken);
     }
 
     private function getLoggerMock(): void
@@ -255,11 +203,13 @@ class PlaceOrderTest extends TestCase
 
     private function getPaymentConfirmationLookupMock(): void
     {
+        $paymentConfirmationReturnJson = '{"authCode":"09180-20211117-843154488","orderDate":"11-17-2021 04:28:52","paymentStatus":"PENDING","paymentTotal":"500.00","paymentDetails":[{"id":"12e28334-4dd4-4510-a40e-bf8d2c39ef55","type":"CREDITCARD","amount":"500.00","status":"SUCCESS","currency":"USD","cardLastFour":"9699","cardType":"Sears"},{"id":"16371463","type":"SYWR","amount":"0.0","status":"NOT_PROCESSED","currency":"USD"}]}'; //phpcs:ignore
+
         $this->paymentConfirmationLookup = $this->createMock(PaymentConfirmationLookupInterface::class);
         $this->paymentConfirmationLookup
             ->expects($this->once())
             ->method('lookup')
-            ->willReturn(self::PAYMENT_CONFIRMATION_RETURN_JSON);
+            ->willReturn($paymentConfirmationReturnJson);
     }
 
     private function getPaymentConfirmationRequestFactoryMock(): void
@@ -363,6 +313,10 @@ class PlaceOrderTest extends TestCase
 
     private function getQuoteMock()
     {
+        $quoteId = 50;
+        $grandTotal = 500.00;
+        $customerEmail = 'john@doe.com';
+
         $this->quote = $this->getMockBuilder(Quote::class)
             ->setMethods([
                 'getGrandTotal',
@@ -417,16 +371,16 @@ class PlaceOrderTest extends TestCase
         $this->quote
             ->expects($this->exactly(2))
             ->method('getGrandTotal')
-            ->willReturn(self::GRAND_TOTAL);
+            ->willReturn($grandTotal);
 
         $this->quote
             ->expects($this->exactly(4))
             ->method('getId')
             ->willReturn(
                 null,
-                self::QUOTE_ID,
-                self::QUOTE_ID,
-                self::QUOTE_ID
+                $quoteId,
+                $quoteId,
+                $quoteId
             );
 
         $billingAddressMock = $this->getMockBuilder(Address::class)
@@ -446,7 +400,7 @@ class PlaceOrderTest extends TestCase
         $billingAddressMock
             ->expects($this->once())
             ->method('getEmail')
-            ->willReturn(self::CUSTOMER_EMAIL);
+            ->willReturn($customerEmail);
 
         $this->quote
             ->expects($this->exactly(3))
@@ -499,21 +453,25 @@ class PlaceOrderTest extends TestCase
 
     private function getRefIdBuilderMock(): void
     {
+        $refId = '428ZvUu6gFP76Lhm8t1co2joIsGgurfQY82SjTB1yG0Mi3p7PZQCJwxIgbq';
+
         $this->refIdBuilder = $this->createMock(RefIdBuilderInterface::class);
         $this->refIdBuilder
             ->expects($this->once())
             ->method('buildRefId')
-            ->willReturn(self::REF_ID);
+            ->willReturn($refId);
     }
 
     private function getRequestMock(): void
     {
+        $pywId = '12e28334-4dd4-4510-a40e-bf8d2c39ef55';
+
         $this->request = $this->createMock(RequestInterface::class);
         $this->request
             ->expects($this->exactly(2))
             ->method('getParam')
             ->with('pywid')
-            ->willReturn(self::PYW_ID);
+            ->willReturn($pywId);
     }
 
     private function getResponseMock(): void
@@ -523,11 +481,13 @@ class PlaceOrderTest extends TestCase
 
     private function getSerializerMock(): void
     {
+        $paymentConfirmationReturnArray = ["authCode"=>"09180-20211117-843154488","orderDate"=>"11-17-2021 04:28:52","paymentStatus"=>"PENDING","paymentTotal"=>"500.00","paymentDetails"=>[["id"=>"8ce531e3-5240-4ce4-9401-ad966b532b7e","type"=>"CREDITCARD","amount"=>"500.00","status"=>"SUCCESS","currency"=>"USD","cardLastFour"=>"9699","cardType"=>"Sears"],["id"=>"16371463","type"=>"SYWR","amount"=>"0.0","status"=>"NOT_PROCESSED","currency"=>"USD"]]]; //phpcs:ignore
+
         $this->serializer = $this->createMock(SerializerInterface::class);
         $this->serializer
             ->expects($this->once())
             ->method('unserialize')
-            ->willReturn(self::PAYMENT_CONFIRMATION_RETURN_ARRAY);
+            ->willReturn($paymentConfirmationReturnArray);
     }
 
     protected function setUp(): void
