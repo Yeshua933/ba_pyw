@@ -170,43 +170,38 @@ class PlaceOrderTest extends TestCase
             ->getMock();
 
         $this->checkoutSession
-            ->expects($this->any())
-            ->method('getQuote')
-            ->willReturn($this->quote);
-
-        $this->checkoutSession
-            ->expects($this->any())
+            ->expects($this->exactly(4))
             ->method('getQuoteId')
             ->willReturn(self::QUOTE_ID);
 
         $this->checkoutSession
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('clearHelperData');
 
         $this->checkoutSession
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('setLastRealOrderId')
             ->willReturnSelf();
 
         $this->checkoutSession
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('setLastQuoteId')
             ->with($this->checkoutSession->getQuoteId())
             ->willReturnSelf();
 
         $this->checkoutSession
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('setLastSuccessQuoteId')
             ->with($this->checkoutSession->getQuoteId())
             ->willReturnSelf();
 
         $this->checkoutSession
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('setLastOrderId')
             ->willReturnSelf();
 
         $this->checkoutSession
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('setLastOrderStatus')
             ->willReturnSelf();
     }
@@ -541,7 +536,7 @@ class PlaceOrderTest extends TestCase
         $this->getPlaceOrderControllerObject();
     }
 
-    public function testPlaceOrderController()
+    public function testPlaceOrderControllerRedirect()
     {
         $redirect = $this->createMock(Redirect::class);
 
