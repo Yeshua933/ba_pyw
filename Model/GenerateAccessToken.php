@@ -77,6 +77,9 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
             $expirationTime = (int) $currentAccessToken->getExp();
 
             $difference = $expirationTime - $timeNow;
+            if ($difference < 0) {
+                $difference = 0;
+            }
 
             /**
              * If the difference is greater or equal than 15 minutes

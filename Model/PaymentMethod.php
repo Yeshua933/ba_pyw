@@ -29,7 +29,7 @@ use PayYourWay\Pyw\Api\PaymentReturnLookupInterface;
 use PayYourWay\Pyw\Api\PaymentReturnRequestInterface;
 use PayYourWay\Pyw\Api\RefIdBuilderInterface;
 use PayYourWay\Pyw\Api\RequestInterface as PaymentConfirmationRequestInterface;
-use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
+use PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment;
 use Psr\Log\LoggerInterface;
 
 class PaymentMethod extends AbstractMethod
