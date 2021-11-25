@@ -20,6 +20,7 @@ use Magento\Quote\Api\CartManagementInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Model\Quote;
 use Magento\Quote\Model\Quote\Address;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Payment;
 use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
 use PayYourWay\Pyw\Api\RefIdBuilderInterface;
@@ -297,6 +298,26 @@ class PlaceOrderTest extends TestCase
         );
     }
 
+    private function getQuoteManagementMock(): void
+    {
+        $orderMock = $this->createPartialMock(
+            Order::class,
+            ['getId', 'getIncrementId', 'getStatus']
+        );
+
+        $this->quoteManagement = $this->getMockBuilder(CartManagementInterface::class)
+            ->setMethods([
+               'submit'
+            ])
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
+
+        $this->quoteManagement
+            ->expects($this->any())
+            ->method('submit')
+            ->willReturn($orderMock);
+    }
+
     private function getQuoteMock()
     {
         $this->quote = $this->getMockBuilder(Quote::class)
@@ -437,13 +458,13 @@ class PlaceOrderTest extends TestCase
     {
         $this->objectManager = new ObjectManager($this);
 
-        $this->quoteManagement = $this->createMock(CartManagementInterface::class);
         $this->response = $this->createMock(ResponseInterface::class);
         $this->redirect = $this->createMock(RedirectInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->messageManager = $this->createMock(MessageManagerInterface::class);
         $this->redirectFactory = $this->createMock(RedirectFactory::class);
 
+        $this->getQuoteManagementMock();
         $this->getSerializerMock();
         $this->getPaymentConfirmationLookupMock();
         $this->getRequestMock();
