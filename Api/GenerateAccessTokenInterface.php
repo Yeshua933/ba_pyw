@@ -20,5 +20,5 @@ interface GenerateAccessTokenInterface
      *
      * @return string
      */
-    public function execute(): string;
+    public function execute(): ?string;
 }
