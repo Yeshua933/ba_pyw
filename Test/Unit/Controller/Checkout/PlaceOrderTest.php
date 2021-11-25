@@ -477,6 +477,7 @@ class PlaceOrderTest extends TestCase
         $redirect = $this->createMock(Redirect::class);
 
         $this->redirectFactory
+            ->expects($this->exactly(1))
             ->method('create')
             ->willReturn($redirect);
     }
