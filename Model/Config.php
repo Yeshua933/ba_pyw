@@ -33,10 +33,13 @@ class Config implements PywConfigInterface
         'payment/payyourway/payment_confirmation_url_production';
     public const CONFIG_XML_PATH_PAYMENT_CONFIRMATION_API_ENDPOINT =
         'payment/payyourway/payment_confirmation_api_endpoint';
+    public const CONFIG_XML_PATH_PAYMENT_RETURN_API_ENDPOINT =
+        'payment/payyourway/payment_return_api_endpoint';
     private const CONFIG_XML_PATH_PAYMENT_UAT_SDK_API_ENDPOINT =
         'https://pywweb.uat.telluride.shopyourway.com/pyw_library/scripts/pywscript';
     private const CONFIG_XML_PATH_PAYMENT_SDK_API_ENDPOINT =
         'https://pywweb.telluride.shopyourway.com/pyw_library/scripts/pywscript';
+    public const CONFIG_XML_PATH_DEBUG_PAY_YOUR_WAY = 'payment/payyourway/debug';
     public const CONFIG_XML_PATH_CLIENT_NAME_PR = 'payment/payyourway/merchant_name_pr';
     public const CONFIG_XML_PATH_CLIENT_NAME_SB = 'payment/payyourway/merchant_name_sb';
 
@@ -230,6 +233,20 @@ class Config implements PywConfigInterface
     }
 
     /**
+     * @param null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getPaymentReturnApiEndpoint(
+        $scopeId = null,
+        string $scope = ScopeInterface::SCOPE_STORE
+    ): ?string {
+        return
+            $this->getPaymentConfirmationUrl($scopeId, $scope) .
+            $this->scopeConfig->getValue(self::CONFIG_XML_PATH_PAYMENT_RETURN_API_ENDPOINT, $scope, $scopeId);
+    }
+
+    /**
      * @return string|null
      */
     public function getPaymentSdkApiEndpoint(): string
@@ -280,4 +297,16 @@ class Config implements PywConfigInterface
         throw new Exception("Client name is not set");
     }
 
+
+    /**
+     * Determine if Pay Your Way has been enabled
+     *
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return bool
+     */
+    public function isDebugMode($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): bool
+    {
+        return $this->scopeConfig->isSetFlag(self::CONFIG_XML_PATH_DEBUG_PAY_YOUR_WAY, $scope, $scopeId);
+    }
 }

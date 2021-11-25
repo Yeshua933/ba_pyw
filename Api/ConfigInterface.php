@@ -69,7 +69,6 @@ interface ConfigInterface
         int    $scopeId = 0
     ): ResourceConfigInterface;
 
-
     /**
      * Save access Client ID
      * @param string $path
@@ -82,7 +81,8 @@ interface ConfigInterface
         string $value,
         string $path,
         string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
-        int $scopeId = 0):ResourceConfigInterface;
+        int $scopeId = 0
+    ):ResourceConfigInterface;
 
     /**
      * @param string|null $scopeId
@@ -105,16 +105,33 @@ interface ConfigInterface
     ): ?string;
 
     /**
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getPaymentReturnApiEndpoint(
+        $scopeId = null,
+        string $scope = ScopeInterface::SCOPE_STORE
+    ): ?string;
+
+    /**
      * @return string|null
      */
     public function getPaymentSdkApiEndpoint(): string;
 
     /**
-    * Get Merchant Id/ Client Id
-    * @param string|null $scopeId
-    * @param string $scope
-    * @return string
-    */
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return bool
+     */
+    public function isDebugMode($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): bool;
+
+    /**
+     * Get Merchant Id/ Client Id
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return string
+     */
     public function getMerchantName(string $scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string;
 
     /**
