@@ -210,17 +210,17 @@ class PlaceOrderTest extends TestCase
     {
         $this->config = $this->createMock(Config::class);
         $this->config
-            ->expects($this->any())
+            ->expects($this->exactly(6))
             ->method('getClientId')
             ->willReturn(self::CLIENT_ID);
 
         $this->config
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('getEnvironment')
             ->willReturn(self::ENVIRONMENT);
 
         $this->config
-            ->expects($this->any())
+            ->expects($this->exactly(2))
             ->method('isDebugMode')
             ->willReturn(true);
     }
