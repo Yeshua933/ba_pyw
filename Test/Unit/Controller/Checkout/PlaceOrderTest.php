@@ -37,13 +37,13 @@ class PlaceOrderTest extends TestCase
 {
     private const CLIENT_ID = 'PYW';
     private const QUOTE_ID = 50;
-    private const GRAND_TOTAL = 199.99;
+    private const GRAND_TOTAL = 500.00;
     private const CUSTOMER_EMAIL = 'john@doe.com';
     private const ACCESS_TOKEN = 'WTFvrq5BS5isEuQJqXQuAjVp';
     private const ENVIRONMENT = 'sandbox';
     private const REF_ID = '428ZvUu6gFP76Lhm8t1co2joIsGgurfQY82SjTB1yG0Mi3p7PZQCJwxIgbq';
     private const PYW_ID = '12e28334-4dd4-4510-a40e-bf8d2c39ef55';
-    private const PAYMENT_CONFIRMATION_RETURN = '
+    private const PAYMENT_CONFIRMATION_RETURN_JSON = '
 {
     "authCode": "09180-20211117-843154488",
     "orderDate": "11-17-2021 04:28:52",
@@ -69,6 +69,30 @@ class PlaceOrderTest extends TestCase
     ]
 }
     ';
+    private const PAYMENT_CONFIRMATION_RETURN_ARRAY = [
+        "authCode" => "09180-20211117-843154488",
+        "orderDate" => "11-17-2021 04:28:52",
+        "paymentStatus" => "PENDING",
+        "paymentTotal" => "500.00",
+        "paymentDetails" => [
+            [
+                "id" => "8ce531e3-5240-4ce4-9401-ad966b532b7e",
+                "type" => "CREDITCARD",
+                "amount" => "500.00",
+                "status" => "SUCCESS",
+                "currency" => "USD",
+                "cardLastFour" => "9699",
+                "cardType" => "Sears"
+            ],
+            [
+                "id" => "16371463",
+                "type" => "SYWR",
+                "amount" => "0.0",
+                "status" => "NOT_PROCESSED",
+                "currency" => "USD"
+            ]
+        ]
+    ];
 
     /** @var CartManagementInterface|MockObject */
     private $quoteManagement;
@@ -184,7 +208,7 @@ class PlaceOrderTest extends TestCase
         $this->paymentConfirmationLookup
             ->expects($this->any())
             ->method('lookup')
-            ->willReturn(self::PAYMENT_CONFIRMATION_RETURN);
+            ->willReturn(self::PAYMENT_CONFIRMATION_RETURN_JSON);
     }
 
     private function getPaymentConfirmationRequestFactoryMock(): void
@@ -394,6 +418,15 @@ class PlaceOrderTest extends TestCase
             ->willReturn(self::PYW_ID);
     }
 
+    private function getSerializerMock(): void
+    {
+        $this->serializer = $this->createMock(SerializerInterface::class);
+        $this->serializer
+            ->expects($this->any())
+            ->method('unserialize')
+            ->willReturn(self::PAYMENT_CONFIRMATION_RETURN_ARRAY);
+    }
+
     protected function setUp(): void
     {
         $this->objectManager = new ObjectManager($this);
@@ -404,8 +437,8 @@ class PlaceOrderTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->messageManager = $this->createMock(MessageManagerInterface::class);
         $this->redirectFactory = $this->createMock(RedirectFactory::class);
-        $this->serializer = $this->createMock(SerializerInterface::class);
 
+        $this->getSerializerMock();
         $this->getPaymentConfirmationLookupMock();
         $this->getRequestMock();
         $this->getPaymentConfirmationRequestFactoryMock();
