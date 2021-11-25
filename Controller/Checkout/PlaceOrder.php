@@ -28,7 +28,7 @@ use Magento\Quote\Model\Quote;
 use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
 use PayYourWay\Pyw\Api\RefIdBuilderInterface;
 use PayYourWay\Pyw\Api\RequestInterfaceFactory as PaymentConfirmationRequestInterfaceFactory;
-use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
+use PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment;
 use PayYourWay\Pyw\Model\Config;
 use PayYourWay\Pyw\Model\GenerateAccessToken;
 use PayYourWay\Pyw\Model\PaymentMethod;
@@ -310,7 +310,7 @@ class PlaceOrder implements HttpGetActionInterface
             return false;
         }
 
-        if ((float)$paymentConfirmationResponseDecode['payment_total'] !== $this->quote->getGrandTotal()) {
+        if ((float)$paymentConfirmationResponseDecode['paymentTotal'] !== $this->quote->getGrandTotal()) {
             $this->logger->error(
                 'The amount returned from PayYour Way doesn\'t match the amount on the store.',
                 [

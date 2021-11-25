@@ -1,11 +1,16 @@
+/**
+ * @author    Blue Acorn iCi <code@blueacornici.com>
+ * @copyright 2021 Blue Acorn iCi. All Rights Reserved.
+ */
 define(
     [
         'Magento_Checkout/js/view/payment/default',
         'PayYourWay_Pyw/js/pyw-sdk',
         'Magento_Checkout/js/model/quote',
-        'mage/url'
+        'mage/url',
+        'Magento_Ui/js/model/messageList'
     ],
-    function (Component, pywSdk, quote, urlBuilder) {
+    function (Component, pywSdk, quote, urlBuilder,messageList) {
         'use strict';
 
         return Component.extend({
@@ -18,10 +23,10 @@ define(
             baseUrl:  window.BASE_URL,
             isPopupTriggered: false,
             returnController: 'payyourway/checkout/return',
+            currency: window.checkoutConfig.payment.payyourway.currency,
 
             initialize : function () {
                 this._super();
-
                 window.addEventListener('hashchange', _.bind(this.handleHash, this));
 
                 if (!this.pywLoaded) {
@@ -31,14 +36,20 @@ define(
             },
 
             openPayYourWay : function () {
-                document.getElementById("overlay").style.display = "block";
-                if (!this.pywLoaded) {
-                    this.loadPayYourWay()
-                        .then(this._setPywObjectAndOpen.bind(this));
-                } else {
-                    this.openPopup();
-                }
+                if(!this.isValidCurrency()){
+                    messageList.addErrorMessage({
+                        message: 'Currency not supported'
+                    });
 
+                }else{
+                    document.getElementById("overlay").style.display = "block";
+                    if (!this.pywLoaded) {
+                        this.loadPayYourWay()
+                            .then(this._setPywObjectAndOpen.bind(this));
+                    } else {
+                        this.openPopup();
+                    }
+                }
             },
 
             loadPayYourWay : function (open) {
@@ -77,7 +88,18 @@ define(
                     childwin.close();
                     window.location.href = urlBuilder.build(this.returnController);
                 }
+            },
+
+            isValidCurrency: function () {
+                var quoteCurrency = quote.totals()['base_currency_code'];
+
+                if (quoteCurrency === 'USD')
+                {
+                    return true;
+                }
+                return false;
             }
+
         });
     }
 );

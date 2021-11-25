@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace PayYourWay\Pyw\Model;
 
+use Exception;
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface as ResourceConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
@@ -34,11 +35,15 @@ class Config implements PywConfigInterface
         'payment/payyourway/payment_confirmation_url_production';
     public const CONFIG_XML_PATH_PAYMENT_CONFIRMATION_API_ENDPOINT =
         'payment/payyourway/payment_confirmation_api_endpoint';
+    public const CONFIG_XML_PATH_PAYMENT_RETURN_API_ENDPOINT =
+        'payment/payyourway/payment_return_api_endpoint';
     private const CONFIG_XML_PATH_PAYMENT_UAT_SDK_API_ENDPOINT =
         'https://pywweb.uat.telluride.shopyourway.com/pyw_library/scripts/pywscript';
     private const CONFIG_XML_PATH_PAYMENT_SDK_API_ENDPOINT =
         'https://pywweb.telluride.shopyourway.com/pyw_library/scripts/pywscript';
     public const CONFIG_XML_PATH_DEBUG_PAY_YOUR_WAY = 'payment/payyourway/debug';
+    public const CONFIG_XML_PATH_CLIENT_NAME_PR = 'payment/payyourway/merchant_name_pr';
+    public const CONFIG_XML_PATH_CLIENT_NAME_SB = 'payment/payyourway/merchant_name_sb';
 
     private ScopeConfigInterface $scopeConfig;
     private ResourceConfigInterface $resourceConfigInterface;
@@ -204,6 +209,28 @@ class Config implements PywConfigInterface
     }
 
     /**
+     * Get Merchant Id/ Client Id
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getMerchantName(string $scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string
+    {
+        if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
+            return $this->scopeConfig->getValue(
+                self::CONFIG_XML_PATH_CLIENT_NAME_SB,
+                $scope,
+                $scopeId
+            );
+        }
+        return $this->scopeConfig->getValue(
+            self::CONFIG_XML_PATH_CLIENT_NAME_PR,
+            $scope,
+            $scopeId
+        );
+    }
+
+    /**
      * Save access token value
      *
      * @param string $path
@@ -285,6 +312,20 @@ class Config implements PywConfigInterface
     }
 
     /**
+     * @param null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getPaymentReturnApiEndpoint(
+        $scopeId = null,
+        string $scope = ScopeInterface::SCOPE_STORE
+    ): ?string {
+        return
+            $this->getPaymentConfirmationUrl($scopeId, $scope) .
+            $this->scopeConfig->getValue(self::CONFIG_XML_PATH_PAYMENT_RETURN_API_ENDPOINT, $scope, $scopeId);
+    }
+
+    /**
      * @return string|null
      */
     public function getPaymentSdkApiEndpoint(): string
@@ -294,6 +335,47 @@ class Config implements PywConfigInterface
         }
         return $this::CONFIG_XML_PATH_PAYMENT_SDK_API_ENDPOINT;
     }
+
+    /**
+     * Save access Client ID
+     * @param string $path
+     * @param string $value
+     * @param string $scope
+     * @param int $scopeId
+     * @return \Magento\Config\Model\ResourceModel\Config
+     */
+    public function  saveClientId(
+        string $value,
+        string $path=self::CONFIG_XML_PATH_CLIENT_ID_SB,
+        string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+        int $scopeId = 0):ResourceConfigInterface
+    {
+        if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
+            $path = self::CONFIG_XML_PATH_CLIENT_ID_SB;
+            return $this->resourceConfigInterface->saveConfig($path, $value, $scope,$scopeId);
+        }
+
+        $path = self::CONFIG_XML_PATH_CLIENT_ID_PR;
+        return $this->resourceConfigInterface->saveConfig($path, $value, $scope,$scopeId);
+    }
+
+    /**
+     * @return string
+     * @throws Exception
+     */
+    public function generateClientId():string
+    {
+        $merchantName = $this->getMerchantName();
+        $merchantName = strtoupper(str_replace(' ', '',$merchantName));
+        if (!empty($merchantName) && isset($merchantName)) {
+            if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
+                return 'MG_'.$merchantName.'_QA';
+            }
+            return 'MG_' . $merchantName;
+        }
+        throw new Exception("Client name is not set");
+    }
+
 
     /**
      * Determine if Pay Your Way has been enabled

@@ -31,6 +31,14 @@
                         <field id="environment">sandbox</field>
                     </depends>
                 </field>
+                <field id="generate_client_id" translate="label" type="button" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Generate Client ID</label>
+                    <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\GenerateClientId</frontend_model>
+                </field>
+                <field id="change_client_id" translate="label" type="button" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Change Client ID</label>
+                    <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\ChangeClientId</frontend_model>
+                </field>
                 <field id="generate_key" translate="label" type="button" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Generate Access Token</label>
                     <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\KeyGenerator</frontend_model>
@@ -194,6 +202,9 @@
                 </field>
                 <field id="payment_confirmation_api_endpoint" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Payment Confirmation API Endpoint</label>
+                </field>
+                <field id="payment_return_api_endpoint" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Payment Return API Endpoint</label>
                 </field>
                 <field id="debug" translate="label" type="select" sortOrder="150" showInDefault="1" showInWebsite="1" canRestore="1">
                     <label>Debug Mode</label>

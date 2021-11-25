@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author    Blue Acorn iCi <code@blueacornici.com>
  * @copyright 2021 Blue Acorn iCi. All Rights Reserved.
@@ -8,23 +9,27 @@ namespace PayYourWay\Pyw\Controller\Adminhtml\Configuration;
 
 use Exception;
 use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
-use PayYourWay\Pyw\Api\GenerateAccessTokenInterface;
+use PayYourWay\Pyw\Api\ConfigInterface;
 use Psr\Log\LoggerInterface;
 
-class GenerateAccess implements HttpPostActionInterface
+class GenerateClient implements HttpPostActionInterface
 {
-    private GenerateAccessTokenInterface $generateAccessToken;
     private JsonFactory $jsonFactory;
     private LoggerInterface $logger;
+    private ConfigInterface $config;
+
 
     public function __construct(
-        GenerateAccessTokenInterface $generateAccessToken,
-        JsonFactory                  $jsonFactory,
-        LoggerInterface              $logger
+        ScopeConfigInterface $scopeConfig,
+        ConfigInterface      $config,
+        JsonFactory          $jsonFactory,
+        LoggerInterface      $logger
     )
     {
-        $this->generateAccessToken = $generateAccessToken;
+        $this->scopeConfig = $scopeConfig;
+        $this->config = $config;
         $this->jsonFactory = $jsonFactory;
         $this->logger = $logger;
     }
@@ -32,16 +37,11 @@ class GenerateAccess implements HttpPostActionInterface
     public function execute()
     {
         $result = $this->jsonFactory->create();
-
         try {
-            $accessToken = $this->generateAccessToken->execute();
-            return $result->setData(['status' => 200]);
+            $clientId = $this->config->generateClientId();
+            $this->config->saveClientId($clientId);
+            return $result->setData(['success' => true]);
         } catch (Exception $exception) {
-            $this->logger->error(
-                'Unable to save access Token',
-                [
-                    'exception' => (string)$exception
-                ]);
             return $result->setHttpResponseCode(404);
         }
     }
