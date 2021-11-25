@@ -541,23 +541,13 @@ class PlaceOrderTest extends TestCase
         $this->getPlaceOrderControllerObject();
     }
 
-    public function testGetClientId()
+    public function testPlaceOrderController()
     {
-        $this->assertEquals(self::CLIENT_ID, $this->config->getClientId());
-    }
+        $redirect = $this->createMock(Redirect::class);
 
-    public function testGetQuote()
-    {
-        $this->assertEquals($this->quote, $this->checkoutSession->getQuote());
-    }
+        $placeOrderExecution = $this->placeOrderController->execute();
 
-    public function testQuoteHasItems()
-    {
-        $this->assertTrue($this->quote->hasItems());
-    }
-
-    public function testExecute()
-    {
-        $this->placeOrderController->execute();
+        $this->assertIsObject($placeOrderExecution);
+        $this->assertEquals($redirect, $placeOrderExecution);
     }
 }
