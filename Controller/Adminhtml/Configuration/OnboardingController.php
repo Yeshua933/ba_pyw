@@ -53,20 +53,43 @@ class OnboardingController implements HttpPostActionInterface
      */
     public function execute(): ResultInterface
     {
+        $response = $this->jsonFactory->create();
+
+        $onboardingRequest = $this->createOnboardingRequest();
+        $result = $this->registerClient($onboardingRequest);
+        $resultDecode = json_decode($result);
+
+        if ($resultDecode->status === 'ERROR') {
+            $response->setHttpResponseCode(400);
+            return $response;
+        }
+
+        if ($resultDecode->status === 'SUCCESS') {
+            $secretCode = $resultDecode->data->secretCode;
+            $this->config->saveSecretKey($secretCode);
+            $response = $response->setData($result);
+            $response->setHttpResponseCode(200);
+        }
+
+        $response->setHttpResponseCode(400);
+        return $response;
+    }
+
+    private function registerClient(
+        OnboardingRequestInterface $onboardingRequest
+    ): string {
+        return $this->onboardingLookup->execute($onboardingRequest);
+    }
+
+    private function createOnboardingRequest(): OnboardingRequestInterface
+    {
         $clientName = $this->request->getParam('client_name');
         $clientEmail = $this->request->getParam('email');
         $clientId = $this->request->getParam('client_id');
         $phoneNumber = $this->request->getParam('phone_number');
         $publicKey = $this->request->getParam('public_key');
         $environment = $this->request->getParam('environment');
-
-        $publicKey = str_replace(
-            ["-----BEGIN CERTIFICATE-----", "-----END CERTIFICATE-----", "\r\n", "\n", "\r", " "],
-            '',
-            $publicKey
-        );
-        $publicKey = chunk_split($publicKey, 64);
-        $publicKey = "-----BEGIN CERTIFICATE-----\n$publicKey-----END CERTIFICATE-----\n";
+        $publicKey = $this->cleanPublicKey($publicKey);
 
         /** @var \PayYourWay\Pyw\Api\OnboardingRequestInterface $onboardingRequest */
         $onboardingRequest = $this->onboardingRequestFactory->create();
@@ -78,46 +101,22 @@ class OnboardingController implements HttpPostActionInterface
         $onboardingRequest->setPublicKey($publicKey);
         $onboardingRequest->setEnvironment($environment);
         $onboardingRequest->setContentType('application/json');
-
-        $result = $this->registerClient($onboardingRequest);
-
-        $response = $this->jsonFactory->create();
-
-        //todo encrypt keys when saving and retrieving
-
-        try {
-            $this->_curl->post($url, $params);
-            $resultBody = $this->_curl->getBody();
-            if (str_contains($resultBody, 'status":"ERROR')) {
-                throw new Exception("Something went wrong.");
-            }
-
-            if (str_contains($resultBody, 'status":"SUCCESS')) {
-                $jsonDecoded = json_decode($resultBody, true);
-                $secretCode = $jsonDecoded['data']['secretCode'];
-                $this->config->saveSecretKey($secretCode);
-            }
-
-            $response = $response->setData($this->_curl->getBody());
-
-            $response->setHttpResponseCode(200);
-
-        } catch (Exception $exception) {
-            $response->setHttpResponseCode(400);
-            $this->logger->error(
-                'Something went wrong',
-                [
-                    'exception' => (string)$exception,
-                ]
-            );
-        }
-
-        return $response;
+        return $onboardingRequest;
     }
 
-    private function registerClient(
-        OnboardingRequestInterface $onboardingRequest
-    ): string {
-        return $this->onboardingLookup->execute($onboardingRequest);
+    private function cleanPublicKey(string $publicKey): string
+    {
+        $publicKey = str_replace(
+            ["-----BEGIN CERTIFICATE-----", "-----END CERTIFICATE-----", "\r\n", "\n", "\r", " "],
+            '',
+            $publicKey
+        );
+        $publicKey = chunk_split($publicKey, 64);
+        return "-----BEGIN CERTIFICATE-----\n$publicKey-----END CERTIFICATE-----\n";
+    }
+
+    private function updateDetails()
+    {
+        return '';
     }
 }
