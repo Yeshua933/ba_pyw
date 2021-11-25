@@ -43,6 +43,32 @@ class PlaceOrderTest extends TestCase
     private const ENVIRONMENT = 'sandbox';
     private const REF_ID = '428ZvUu6gFP76Lhm8t1co2joIsGgurfQY82SjTB1yG0Mi3p7PZQCJwxIgbq';
     private const PYW_ID = '12e28334-4dd4-4510-a40e-bf8d2c39ef55';
+    private const PAYMENT_CONFIRMATION_RETURN = '
+{
+    "authCode": "09180-20211117-843154488",
+    "orderDate": "11-17-2021 04:28:52",
+    "paymentStatus": "PENDING",
+    "paymentTotal": "500.00",
+    "paymentDetails": [
+        {
+            "id": "8ce531e3-5240-4ce4-9401-ad966b532b7e",
+            "type": "CREDITCARD",
+            "amount": "500.00",
+            "status": "SUCCESS",
+            "currency": "USD",
+            "cardLastFour": "9699",
+            "cardType": "Sears"
+        },
+        {
+            "id": "16371463",
+            "type": "SYWR",
+            "amount": "0.0",
+            "status": "NOT_PROCESSED",
+            "currency": "USD"
+        }
+    ]
+}
+    ';
 
     /** @var CartManagementInterface|MockObject */
     private $quoteManagement;
@@ -150,6 +176,15 @@ class PlaceOrderTest extends TestCase
             ->expects($this->any())
             ->method('execute')
             ->willReturn(self::ACCESS_TOKEN);
+    }
+
+    private function getPaymentConfirmationLookupMock(): void
+    {
+        $this->paymentConfirmationLookup = $this->createMock(PaymentConfirmationLookupInterface::class);
+        $this->paymentConfirmationLookup
+            ->expects($this->any())
+            ->method('lookup')
+            ->willReturn(self::PAYMENT_CONFIRMATION_RETURN);
     }
 
     private function getPaymentConfirmationRequestFactoryMock(): void
@@ -367,11 +402,11 @@ class PlaceOrderTest extends TestCase
         $this->response = $this->createMock(ResponseInterface::class);
         $this->redirect = $this->createMock(RedirectInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->paymentConfirmationLookup = $this->createMock(PaymentConfirmationLookupInterface::class);
         $this->messageManager = $this->createMock(MessageManagerInterface::class);
         $this->redirectFactory = $this->createMock(RedirectFactory::class);
         $this->serializer = $this->createMock(SerializerInterface::class);
 
+        $this->getPaymentConfirmationLookupMock();
         $this->getRequestMock();
         $this->getPaymentConfirmationRequestFactoryMock();
         $this->getRefIdBuilderMock();
