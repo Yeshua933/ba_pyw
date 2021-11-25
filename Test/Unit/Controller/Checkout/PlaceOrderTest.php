@@ -346,7 +346,7 @@ class PlaceOrderTest extends TestCase
             ->getMockForAbstractClass();
 
         $this->quoteManagement
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('submit')
             ->willReturn($orderMock);
     }
