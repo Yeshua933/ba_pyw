@@ -10,206 +10,228 @@
         <section id="payment">
             <group id="payyourway" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>PYW Payment</label>
-                <field id="sign_up" translate="label" type="button" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Sign up</label>
-                    <tooltip>Sign up for pay your way</tooltip>
-                    <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\PywOnboarding</frontend_model>
-                </field>
-                <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" canRestore="1">
-                    <label>Enabled</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="client_id_pr" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Client Id</label>
-                    <depends>
-                        <field id="environment">production</field>
-                    </depends>
-                </field>
-                <field id="client_id_sb" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Sandbox Client Id</label>
-                    <depends>
-                        <field id="environment">sandbox</field>
-                    </depends>
-                </field>
-                <field id="generate_client_id" translate="label" type="button" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Generate Client ID</label>
-                    <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\GenerateClientId</frontend_model>
-                </field>
-                <field id="change_client_id" translate="label" type="button" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Change Client ID</label>
-                    <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\ChangeClientId</frontend_model>
-                </field>
-                <field id="generate_key" translate="label" type="button" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Generate Access Token</label>
-                    <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\KeyGenerator</frontend_model>
-                </field>
-                <field id="public_key_pr" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Public Key</label>
-                    <config_path>payment/payyourway/public_key_pr</config_path>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <depends>
-                        <field id="environment">production</field>
-                    </depends>
-                </field>
-                <field id="public_key_sb" translate="label"  type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Sandbox Public Key</label>
-                    <config_path>payment/payyourway/public_key_sb</config_path>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <depends>
-                        <field id="environment">sandbox</field>
-                    </depends>
-                </field>
-                <field id="private_key_pr" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Private Key</label>
-                    <config_path>payment/payyourway/private_key_pr</config_path>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <depends>
-                        <field id="environment">production</field>
-                    </depends>
-                </field>
-                <field id="private_key_sb" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Sandbox Private Key</label>
-                    <config_path>payment/payyourway/private_key_sb</config_path>
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <depends>
-                        <field id="environment">sandbox</field>
-                    </depends>
-                </field>
-                <field id="secret_key_pr" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Secret Key</label>
-                    <depends>
-                        <field id="environment">production</field>
-                    </depends>
-                </field>
-                <field id="secret_key_sb" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Sandbox Secret Key</label>
-                    <depends>
-                        <field id="environment">sandbox</field>
-                    </depends>
-                </field>
-                <field id="environment" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Environment</label>
-                    <source_model>PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment</source_model>
-                    <config_path>payment/payyourway/environment</config_path>
-                </field>
-                <field id="payment_action" translate="label" type="select" sortOrder='90' showInDefault="1" showInWebsite="1">
-                    <label>Payment Action</label>
-                    <source_model>PayYourWay\Pyw\Model\Adminhtml\Config\Source\PaymentAction</source_model>
-                    <attribute type="shared">1</attribute>
-                </field>
-                <field id="merchant_name_pr" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Merchant Name</label>
-                    <depends>
-                        <field id="environment">production</field>
-                    </depends>
-                </field>
-                <field id="merchant_name_sb" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Sandbox Merchant Name</label>
-                    <depends>
-                        <field id="environment">sandbox</field>
-                    </depends>
-                </field>
-                <field id="merchant_email_pr" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Merchant Email</label>
-                    <depends>
-                        <field id="environment">production</field>
-                    </depends>
-                    <validate>validate-email</validate>
-                </field>
-                <field id="merchant_email_sb" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Sandbox Merchant Email</label>
-                    <depends>
-                        <field id="environment">sandbox</field>
-                    </depends>
-                    <validate>validate-email</validate>
-                </field>
-                <field id="merchant_phone_pr" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Merchant Phone</label>
-                    <depends>
-                        <field id="environment">production</field>
-                    </depends>
-                    <validate>phoneUS</validate>
-                </field>
-                <field id="merchant_phone_sb" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Sandbox Merchant Phone</label>
-                    <depends>
-                        <field id="environment">sandbox</field>
-                    </depends>
-                    <validate>phoneUS</validate>
-                </field>
-                <field id="merchant_code_pr" translate="label" type="multiselect" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Merchant MCC Code</label>
-                    <depends>
-                        <field id="environment">production</field>
-                    </depends>
-                </field>
-                <field id="merchant_code_sb" translate="label" type="multiselect" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Sandbox Merchant MCC Code</label>
-                    <depends>
-                        <field id="environment">sandbox</field>
-                    </depends>
-                </field>
-                <field id="merchant_address_pr" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Merchant Address</label>
-                    <depends>
-                        <field id="environment">production</field>
-                    </depends>
-                </field>
-                <field id="merchant_address_sb" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Sandbox Merchant Address</label>
-                    <depends>
-                        <field id="environment">sandbox</field>
-                    </depends>
-                </field>
-                <field id="terms_conditions" translate="label" type="checkbox" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Terms and Conditions</label>
-                </field>
-                <field id="terms_conditions_link" translate="label" type="link" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Terms and Conditions Link</label>
-                </field>
-                <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1">
-                    <label>Sort Order</label>
-                    <frontend_class>validate-number</frontend_class>
-                </field>
-                <field id="title" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Title</label>
-                </field>
-                <field id="enable_refresh_token_process" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" canRestore="1">
-                    <label>Enable Refresh Token Process</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="access_token_pr" translate="label" type="text" sortOrder="70" showInDefault="0" showInWebsite="0" showInStore="0" canRestore="1">
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                </field>
-                <field id="access_token_sb" translate="label" type="text" sortOrder="70" showInDefault="0" showInWebsite="0" showInStore="0" canRestore="0">
-                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
-                    <label>Access Token</label>
-                    <depends>
-                        <field id="environment">production</field>
-                    </depends>
-                </field>
-                <field id="payment_confirmation_url_uat" translate="label" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>UAT Payment Confirmation URL</label>
-                    <depends>
-                        <field id="environment">sandbox</field>
-                    </depends>
-                </field>
-                <field id="payment_confirmation_url_production" translate="label" type="text" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Production Payment Confirmation URL</label>
-                    <depends>
-                        <field id="environment">production</field>
-                    </depends>
-                </field>
-                <field id="payment_confirmation_api_endpoint" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Payment Confirmation API Endpoint</label>
-                </field>
-                <field id="payment_return_api_endpoint" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Payment Return API Endpoint</label>
-                </field>
-                <field id="debug" translate="label" type="select" sortOrder="150" showInDefault="1" showInWebsite="1" canRestore="1">
-                    <label>Debug Mode</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
+                <group id="settings" translate="label comment" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Settings</label>
+                    <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" canRestore="1">
+                        <label>Enabled</label>
+                        <config_path>payment/payyourway/active</config_path>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    </field>
+                    <field id="title" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Title</label>
+                        <config_path>payment/payyourway/title</config_path>
+                    </field>
+                    <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1">
+                        <label>Sort Order</label>
+                        <config_path>payment/payyourway/sort_order</config_path>
+                        <frontend_class>validate-number</frontend_class>
+                    </field>
+                    <field id="environment" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Environment</label>
+                        <config_path>payment/payyourway/environment</config_path>
+                        <source_model>PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment</source_model>
+                    </field>
+                    <field id="client_id_pr" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Client Id</label>
+                        <config_path>payment/payyourway/client_id_pr</config_path>
+                        <depends>
+                            <field id="*/*/*/environment">production</field>
+                        </depends>
+                    </field>
+                    <field id="client_id_sb" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Sandbox Client Id</label>
+                        <config_path>payment/payyourway/client_id_sb</config_path>
+                        <depends>
+                            <field id="*/*/*/environment">sandbox</field>
+                        </depends>
+                    </field>
+                    <field id="generate_client_id" translate="label" type="button" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Generate Client ID</label>
+                        <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\GenerateClientId</frontend_model>
+                    </field>
+                    <field id="change_client_id" translate="label" type="button" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Change Client ID</label>
+                        <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\ChangeClientId</frontend_model>
+                    </field>
+                    <field id="private_key_pr" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Private Key</label>
+                        <config_path>payment/payyourway/private_key_pr</config_path>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <depends>
+                            <field id="*/*/*/environment">production</field>
+                        </depends>
+                    </field>
+                    <field id="private_key_sb" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Sandbox Private Key</label>
+                        <config_path>payment/payyourway/private_key_sb</config_path>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <depends>
+                            <field id="*/*/*/environment">sandbox</field>
+                        </depends>
+                    </field>
+                    <field id="secret_key_pr" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Secret Key</label>
+                        <config_path>payment/payyourway/secret_key_pr</config_path>
+                        <depends>
+                            <field id="*/*/*/environment">production</field>
+                        </depends>
+                    </field>
+                    <field id="secret_key_sb" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Sandbox Secret Key</label>
+                        <config_path>payment/payyourway/secret_key_sb</config_path>
+                        <depends>
+                            <field id="*/*/*/environment">sandbox</field>
+                        </depends>
+                    </field>
+                    <field id="payment_action" translate="label" type="select" sortOrder='70' showInDefault="1" showInWebsite="1">
+                        <label>Payment Action</label>
+                        <config_path>payment/payyourway/payment_action</config_path>
+                        <source_model>PayYourWay\Pyw\Model\Adminhtml\Config\Source\PaymentAction</source_model>
+                        <attribute type="shared">1</attribute>
+                    </field>
+                </group>
+
+                <group id="advance" translate="label comment" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Advance</label>
+                    <field id="debug" translate="label" type="select" sortOrder="150" showInDefault="1" showInWebsite="1" canRestore="1">
+                        <label>Debug Mode</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    </field>
+                    <field id="enable_refresh_token_process" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" canRestore="1">
+                        <label>Enable Refresh Token Process</label>
+                        <config_path>payment/payyourway/enable_refresh_token_process</config_path>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    </field>
+                    <field id="generate_key" translate="label" type="button" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Generate Access Token</label>
+                        <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\KeyGenerator</frontend_model>
+                    </field>
+                    <field id="payment_confirmation_url_uat" translate="label" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>UAT Payment Confirmation URL</label>
+                        <depends>
+                            <field id="environment">sandbox</field>
+                        </depends>
+                    </field>
+                    <field id="payment_confirmation_url_production" translate="label" type="text" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Production Payment Confirmation URL</label>
+                        <depends>
+                            <field id="environment">production</field>
+                        </depends>
+                    </field>
+                    <field id="payment_confirmation_api_endpoint" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Payment Confirmation API Endpoint</label>
+                    </field>
+                    <field id="payment_return_api_endpoint" translate="label" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Payment Return API Endpoint</label>
+                    </field>
+                </group>
+
+                <group id="register" translate="label comment" sortOrder="75" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Register your Store</label>
+                    <field id="public_key_pr" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Public Key</label>
+                        <config_path>payment/payyourway/public_key_pr</config_path>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <depends>
+                            <field id="*/*/settings/environment">production</field>
+                        </depends>
+                    </field>
+                    <field id="public_key_sb" translate="label"  type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Sandbox Public Key</label>
+                        <config_path>payment/payyourway/public_key_sb</config_path>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <depends>
+                            <field id="*/*/settings/environment">sandbox</field>
+                        </depends>
+                    </field>
+                    <field id="merchant_name_pr" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Merchant Name</label>
+                        <config_path>payment/payyourway/merchant_name_pr</config_path>
+                        <depends>
+                            <field id="*/*/settings/environment">production</field>
+                        </depends>
+                    </field>
+                    <field id="merchant_name_sb" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Sandbox Merchant Name</label>
+                        <config_path>payment/payyourway/merchant_name_sb</config_path>
+                        <depends>
+                            <field id="*/*/settings/environment">sandbox</field>
+                        </depends>
+                    </field>
+                    <field id="merchant_email_pr" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Merchant Email</label>
+                        <config_path>payment/payyourway/merchant_email_pr</config_path>
+                        <depends>
+                            <field id="*/*/settings/environment">production</field>
+                        </depends>
+                        <validate>validate-email</validate>
+                    </field>
+                    <field id="merchant_email_sb" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Sandbox Merchant Email</label>
+                        <config_path>payment/payyourway/merchant_email_sb</config_path>
+                        <depends>
+                            <field id="*/*/settings/environment">sandbox</field>
+                        </depends>
+                        <validate>validate-email</validate>
+                    </field>
+                    <field id="merchant_phone_pr" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Merchant Phone</label>
+                        <config_path>payment/payyourway/merchant_phone_pr</config_path>
+                        <depends>
+                            <field id="*/*/settings/environment">production</field>
+                        </depends>
+                        <validate>phoneUS</validate>
+                    </field>
+                    <field id="merchant_phone_sb" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Sandbox Merchant Phone</label>
+                        <config_path>payment/payyourway/merchant_phone_sb</config_path>
+                        <depends>
+                            <field id="*/*/settings/environment">sandbox</field>
+                        </depends>
+                        <validate>phoneUS</validate>
+                    </field>
+                    <field id="merchant_code_pr" translate="label" type="multiselect" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Merchant Category</label>
+                        <config_path>payment/payyourway/merchant_code_pr</config_path>
+                        <depends>
+                            <field id="*/*/settings/environment">production</field>
+                        </depends>
+                    </field>
+                    <field id="merchant_code_sb" translate="label" type="multiselect" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Sandbox Merchant Category</label>
+                        <config_path>payment/payyourway/merchant_code_sb</config_path>
+                        <depends>
+                            <field id="*/*/settings/environment">sandbox</field>
+                        </depends>
+                    </field>
+                    <field id="merchant_address_pr" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Merchant Address</label>
+                        <config_path>payment/payyourway/merchant_address_pr</config_path>
+                        <depends>
+                            <field id="*/*/settings/environment">production</field>
+                        </depends>
+                    </field>
+                    <field id="merchant_address_sb" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Sandbox Merchant Address</label>
+                        <config_path>payment/payyourway/merchant_address_sb</config_path>
+                        <depends>
+                            <field id="*/*/settings/environment">sandbox</field>
+                        </depends>
+                    </field>
+                    <field id="terms_conditions" translate="label" type="checkbox" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Terms and Conditions</label>
+                    </field>
+                    <field id="terms_conditions_link" translate="label" type="link" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Terms and Conditions Link</label>
+                    </field>
+
+                    <field id="sign_up" translate="label" type="button" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Sign up</label>
+                        <tooltip>Sign up for pay your way</tooltip>
+                        <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\PywOnboarding</frontend_model>
+                    </field>
+                </group>
+
             </group>
         </section>
     </system>

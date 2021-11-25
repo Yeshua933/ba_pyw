@@ -29,11 +29,9 @@ class OnboardingController implements HttpPostActionInterface
         JsonFactory      $jsonFactory,
         LoggerInterface  $logger,
         ConfigInterface  $config,
-        Curl             $curl,
+        Curl $curl,
         RequestInterface $request
-
-    )
-    {
+    ) {
         $this->config = $config;
         $this->jsonFactory = $jsonFactory;
         $this->_curl = $curl;
@@ -91,8 +89,7 @@ class OnboardingController implements HttpPostActionInterface
         $this->_curl->addHeader("Content-Type", "application/json");
         $this->_curl->addHeader("Authorization", "Bearer " . $accessToken);
 
-        $params = json_encode(
-            $params, JSON_THROW_ON_ERROR);
+        $params = json_encode($params, JSON_THROW_ON_ERROR);
 
         $response = $this->jsonFactory->create();
 

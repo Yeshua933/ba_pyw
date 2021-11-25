@@ -18,7 +18,7 @@ use Magento\Store\Model\Store;
 class PywOnboarding extends Field
 {
     /** Path to block template */
-    protected $_template = 'PayYourWay_Pyw::system/config/Onboarding.phtml';
+    protected $_template = 'PayYourWay_Pyw::system/config/onboarding.phtml';
 
     public function render(AbstractElement $element): string
     {
@@ -28,9 +28,8 @@ class PywOnboarding extends Field
 
     protected function _getElementHtml(AbstractElement $element): string
     {
-        //todo fix title
         $title = __('Register');
-        $envId = 'select-groups-payyourway-fields-environment-value';
+        $envId = 'select-groups-payyourway-groups-settings-fields-environment-value';
         $storeId = 0;
 
         if ($this->getRequest()->getParam('website')) {
