@@ -51,7 +51,7 @@ class PlaceOrderTest extends TestCase
     "paymentTotal": "500.00",
     "paymentDetails": [
         {
-            "id": "8ce531e3-5240-4ce4-9401-ad966b532b7e",
+            "id": "12e28334-4dd4-4510-a40e-bf8d2c39ef55",
             "type": "CREDITCARD",
             "amount": "500.00",
             "status": "SUCCESS",
