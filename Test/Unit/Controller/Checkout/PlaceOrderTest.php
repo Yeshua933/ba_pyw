@@ -180,33 +180,33 @@ class PlaceOrderTest extends TestCase
             ->willReturn(self::QUOTE_ID);
 
         $this->checkoutSession
-            ->expects($this->exactly(1))
+            ->expects($this->any())
             ->method('clearHelperData');
 
         $this->checkoutSession
-            ->expects($this->exactly(1))
+            ->expects($this->any())
             ->method('setLastRealOrderId')
             ->willReturnSelf();
 
         $this->checkoutSession
-            ->expects($this->exactly(1))
+            ->expects($this->any())
             ->method('setLastQuoteId')
             ->with($this->checkoutSession->getQuoteId())
             ->willReturnSelf();
 
         $this->checkoutSession
-            ->expects($this->exactly(1))
+            ->expects($this->any())
             ->method('setLastSuccessQuoteId')
             ->with($this->checkoutSession->getQuoteId())
             ->willReturnSelf();
 
         $this->checkoutSession
-            ->expects($this->exactly(1))
+            ->expects($this->any())
             ->method('setLastOrderId')
             ->willReturnSelf();
 
         $this->checkoutSession
-            ->expects($this->exactly(1))
+            ->expects($this->any())
             ->method('setLastOrderStatus')
             ->willReturnSelf();
     }
@@ -457,7 +457,7 @@ class PlaceOrderTest extends TestCase
             ->willReturn($billingAddressMock);
 
         $this->quote
-            ->expects($this->once())
+            ->expects($this->any())
             ->method('collectTotals')
             ->willReturnSelf();
     }
