@@ -311,7 +311,8 @@ class PlaceOrderTest extends TestCase
                 'setShippingAddress',
                 'getShippingAddress',
                 'setShouldIgnoreValidation',
-                'collectTotals'
+                'collectTotals',
+                'importData'
             ])
             ->disableOriginalConstructor()
             ->getMock();
@@ -344,6 +345,11 @@ class PlaceOrderTest extends TestCase
             ->expects($this->any())
             ->method('getGrandTotal')
             ->willReturn(self::GRAND_TOTAL);
+
+        $this->quote
+            ->expects($this->any())
+            ->method('importData')
+            ->willReturnSelf();
 
         $this->quote
             ->expects($this->any())
