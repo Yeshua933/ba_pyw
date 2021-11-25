@@ -42,6 +42,7 @@ class PlaceOrderTest extends TestCase
     private const ACCESS_TOKEN = 'WTFvrq5BS5isEuQJqXQuAjVp';
     private const ENVIRONMENT = 'sandbox';
     private const REF_ID = '428ZvUu6gFP76Lhm8t1co2joIsGgurfQY82SjTB1yG0Mi3p7PZQCJwxIgbq';
+    private const PYW_ID = '12e28334-4dd4-4510-a40e-bf8d2c39ef55';
 
     /** @var CartManagementInterface|MockObject */
     private $quoteManagement;
@@ -300,6 +301,7 @@ class PlaceOrderTest extends TestCase
         $billingAddressMock
             ->expects($this->any())
             ->method('getOrigData')
+            ->willReturn('email')
             ->willReturn(null);
 
         $billingAddressMock
@@ -341,6 +343,16 @@ class PlaceOrderTest extends TestCase
             ->willReturn(self::REF_ID);
     }
 
+    private function getRequestMock(): void
+    {
+        $this->request = $this->createMock(RequestInterface::class);
+        $this->request
+            ->expects($this->any())
+            ->method('getParam')
+            ->with('pywid')
+            ->willReturn(self::PYW_ID);
+    }
+
     protected function setUp(): void
     {
         $this->objectManager = new ObjectManager($this);
@@ -349,12 +361,12 @@ class PlaceOrderTest extends TestCase
         $this->response = $this->createMock(ResponseInterface::class);
         $this->redirect = $this->createMock(RedirectInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->request = $this->createMock(RequestInterface::class);
         $this->paymentConfirmationLookup = $this->createMock(PaymentConfirmationLookupInterface::class);
         $this->messageManager = $this->createMock(MessageManagerInterface::class);
         $this->redirectFactory = $this->createMock(RedirectFactory::class);
         $this->serializer = $this->createMock(SerializerInterface::class);
 
+        $this->getRequestMock();
         $this->getPaymentConfirmationRequestFactoryMock();
         $this->getRefIdBuilderMock();
         $this->getGenerateAccessTokenMock();
