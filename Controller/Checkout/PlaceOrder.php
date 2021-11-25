@@ -344,7 +344,7 @@ class PlaceOrder implements HttpGetActionInterface
         $paymentConfirmationRequest->setChannel('ONLINE');
         $paymentConfirmationRequest->setMerchantId($this->config->getClientId());
         $paymentConfirmationRequest->setPywid($this->request->getParam('pywid'));
-        $paymentConfirmationRequest->setTransactionId($this->quote->getId());
+        $paymentConfirmationRequest->setTransactionId((string)$this->quote->getId());
         $paymentConfirmationRequest->setActionType('READONLY');
         $paymentConfirmationRequest->setTransactionType('1P');
         $paymentConfirmationRequest->setRefId($refId);

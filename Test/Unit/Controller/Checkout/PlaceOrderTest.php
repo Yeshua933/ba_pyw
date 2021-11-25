@@ -127,6 +127,11 @@ class PlaceOrderTest extends TestCase
             ->expects($this->any())
             ->method('getEnvironment')
             ->willReturn(self::ENVIRONMENT);
+
+        $this->config
+            ->expects($this->any())
+            ->method('isDebugMode')
+            ->willReturn(true);
     }
 
     private function getCustomerSessionMock(): void
@@ -286,6 +291,7 @@ class PlaceOrderTest extends TestCase
             ->method('getId')
             ->willReturn(
                 null,
+                self::QUOTE_ID,
                 self::QUOTE_ID,
                 self::QUOTE_ID
             );
