@@ -175,33 +175,33 @@ class PlaceOrderTest extends TestCase
             ->willReturn(self::QUOTE_ID);
 
         $this->checkoutSession
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('clearHelperData');
 
         $this->checkoutSession
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('setLastRealOrderId')
             ->willReturnSelf();
 
         $this->checkoutSession
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('setLastQuoteId')
             ->with($this->checkoutSession->getQuoteId())
             ->willReturnSelf();
 
         $this->checkoutSession
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('setLastSuccessQuoteId')
             ->with($this->checkoutSession->getQuoteId())
             ->willReturnSelf();
 
         $this->checkoutSession
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('setLastOrderId')
             ->willReturnSelf();
 
         $this->checkoutSession
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('setLastOrderStatus')
             ->willReturnSelf();
     }
@@ -215,7 +215,7 @@ class PlaceOrderTest extends TestCase
             ->willReturn(self::CLIENT_ID);
 
         $this->config
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('getEnvironment')
             ->willReturn(self::ENVIRONMENT);
 
@@ -229,7 +229,7 @@ class PlaceOrderTest extends TestCase
     {
         $this->customerSession = $this->createMock(CustomerSession::class);
         $this->customerSession
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('isLoggedIn')
             ->willReturn(false);
     }
@@ -238,7 +238,7 @@ class PlaceOrderTest extends TestCase
     {
         $this->generateAccessToken = $this->createMock(GenerateAccessToken::class);
         $this->generateAccessToken
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('execute')
             ->willReturn(self::ACCESS_TOKEN);
     }
@@ -257,7 +257,7 @@ class PlaceOrderTest extends TestCase
     {
         $this->paymentConfirmationLookup = $this->createMock(PaymentConfirmationLookupInterface::class);
         $this->paymentConfirmationLookup
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('lookup')
             ->willReturn(self::PAYMENT_CONFIRMATION_RETURN_JSON);
     }
@@ -266,37 +266,37 @@ class PlaceOrderTest extends TestCase
     {
         $paymentConfirmationRequest = $this->createMock(PaymentConfirmationRequestInterface::class);
         $paymentConfirmationRequest
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('setChannel')
             ->willReturnSelf();
 
         $paymentConfirmationRequest
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('setMerchantId')
             ->willReturnSelf();
 
         $paymentConfirmationRequest
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('setPywid')
             ->willReturnSelf();
 
         $paymentConfirmationRequest
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('setTransactionId')
             ->willReturnSelf();
 
         $paymentConfirmationRequest
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('setActionType')
             ->willReturnSelf();
 
         $paymentConfirmationRequest
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('setTransactionType')
             ->willReturnSelf();
 
         $paymentConfirmationRequest
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('setRefId')
             ->willReturnSelf();
 
@@ -310,7 +310,7 @@ class PlaceOrderTest extends TestCase
             ->getMock();
 
         $this->paymentConfirmationRequestFactory
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('create')
             ->willReturn($paymentConfirmationRequest);
     }
@@ -356,7 +356,7 @@ class PlaceOrderTest extends TestCase
             ->getMockForAbstractClass();
 
         $this->quoteManagement
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('submit')
             ->willReturn($orderMock);
     }
@@ -382,7 +382,7 @@ class PlaceOrderTest extends TestCase
             ->getMock();
 
         $this->quote
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('hasItems')
             ->willReturn(true);
 
@@ -395,12 +395,12 @@ class PlaceOrderTest extends TestCase
             ->getMock();
 
         $paymentMock
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('getMethod')
             ->willReturn(PayYourWayPaymentMethod::METHOD_CODE);
 
         $paymentMock
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('importData')
             ->willReturnSelf();
 
@@ -438,13 +438,13 @@ class PlaceOrderTest extends TestCase
             ->getMock();
 
         $billingAddressMock
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('getOrigData')
             ->willReturn('email')
             ->willReturn(null);
 
         $billingAddressMock
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('getEmail')
             ->willReturn(self::CUSTOMER_EMAIL);
 
@@ -454,12 +454,12 @@ class PlaceOrderTest extends TestCase
             ->willReturn($billingAddressMock);
 
         $this->quote
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('getShippingAddress')
             ->willReturn($billingAddressMock);
 
         $this->quote
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('collectTotals')
             ->willReturnSelf();
     }
@@ -469,7 +469,7 @@ class PlaceOrderTest extends TestCase
         $this->quoteRepository = $this->createMock(CartRepositoryInterface::class);
 
         $this->quoteRepository
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('get')
             ->willReturn($this->quote);
     }
@@ -487,7 +487,7 @@ class PlaceOrderTest extends TestCase
         $redirect = $this->createMock(Redirect::class);
 
         $this->redirectFactory
-            ->expects($this->exactly(1))
+            ->expects($this->once())
             ->method('create')
             ->willReturn($redirect);
     }
