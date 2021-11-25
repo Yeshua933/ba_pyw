@@ -247,7 +247,7 @@ class PlaceOrderTest extends TestCase
     {
         $this->paymentConfirmationLookup = $this->createMock(PaymentConfirmationLookupInterface::class);
         $this->paymentConfirmationLookup
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('lookup')
             ->willReturn(self::PAYMENT_CONFIRMATION_RETURN_JSON);
     }
