@@ -3,7 +3,9 @@
  * @author    Blue Acorn iCi <code@blueacornici.com>
  * @copyright 2021 Blue Acorn iCi. All Rights Reserved.
  */
-namespace PayYourWay\Pyw\Model\Adminhtml\Source;
+declare(strict_types=1);
+
+namespace PayYourWay\Pyw\Model\Adminhtml\Config\Source;
 
 use Magento\Framework\Option\ArrayInterface;
 

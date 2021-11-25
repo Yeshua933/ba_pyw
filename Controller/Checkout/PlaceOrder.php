@@ -28,7 +28,7 @@ use Magento\Quote\Model\Quote;
 use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
 use PayYourWay\Pyw\Api\RefIdBuilderInterface;
 use PayYourWay\Pyw\Api\RequestInterfaceFactory as PaymentConfirmationRequestInterfaceFactory;
-use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
+use PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment;
 use PayYourWay\Pyw\Model\Config;
 use PayYourWay\Pyw\Model\GenerateAccessToken;
 use PayYourWay\Pyw\Model\PaymentMethod;

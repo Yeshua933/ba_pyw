@@ -10,12 +10,12 @@ namespace PayYourWay\Pyw\Model;
 use Magento\Framework\Exception\AlreadyExistsException;
 use Magento\Framework\Serialize\SerializerInterface;
 use PayYourWay\Pyw\Api\GenerateAccessTokenInterface;
-use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
 use PayYourWay\Pyw\Api\AccessTokenRequestInterfaceFactory;
 use PayYourWay\Pyw\Api\AccessTokenLookupInterface;
 use PayYourWay\Pyw\Model\ResourceModel\AccessToken as ResourceModel;
-use  PayYourWay\Pyw\Model\ResourceModel\AccessToken\Collection;
+use PayYourWay\Pyw\Model\ResourceModel\AccessToken\Collection;
 use PayYourWay\Pyw\Model\AccessTokenFactory;
+use PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment;
 
 /**
  * Used for creating/renewing the Pay Your Way access
@@ -77,6 +77,9 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
             $expirationTime = (int) $currentAccessToken->getExp();
 
             $difference = $expirationTime - $timeNow;
+            if ($difference < 0) {
+                $difference = 0;
+            }
 
             /**
              * If the difference is greater or equal than 15 minutes

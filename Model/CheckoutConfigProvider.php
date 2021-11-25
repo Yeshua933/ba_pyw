@@ -13,7 +13,7 @@ use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use PayYourWay\Pyw\Api\ConfigInterface;
 use PayYourWay\Pyw\Api\RefIdBuilderInterface;
-use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
+use PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment;
 use Psr\Log\LoggerInterface;
 
 class CheckoutConfigProvider implements ConfigProviderInterface

@@ -11,7 +11,7 @@ use Magento\Framework\HTTP\ClientInterface;
 use PayYourWay\Pyw\Api\AccessTokenLookupInterface;
 use PayYourWay\Pyw\Api\AccessTokenRequestInterface;
 use PayYourWay\Pyw\Api\ConfigInterface;
-use PayYourWay\Pyw\Model\Adminhtml\Source\Environment;
+use PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment;
 
 class AccessTokenLookup implements AccessTokenLookupInterface
 {
