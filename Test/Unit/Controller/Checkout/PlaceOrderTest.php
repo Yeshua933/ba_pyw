@@ -505,7 +505,7 @@ class PlaceOrderTest extends TestCase
     {
         $this->serializer = $this->createMock(SerializerInterface::class);
         $this->serializer
-            ->expects($this->any())
+            ->expects($this->once())
             ->method('unserialize')
             ->willReturn(self::PAYMENT_CONFIRMATION_RETURN_ARRAY);
     }
