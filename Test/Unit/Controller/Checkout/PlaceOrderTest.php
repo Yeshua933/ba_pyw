@@ -459,7 +459,7 @@ class PlaceOrderTest extends TestCase
         $this->quoteRepository = $this->createMock(CartRepositoryInterface::class);
 
         $this->quoteRepository
-            ->expects($this->any())
+            ->expects($this->exactly(1))
             ->method('get')
             ->willReturn($this->quote);
     }
