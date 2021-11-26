@@ -26,6 +26,8 @@ class Config implements PywConfigInterface
     public const CONFIG_XML_PATH_CLIENT_ID_SB = 'payment/payyourway/client_id_sb';
     public const CONFIG_XML_PATH_PRIVATE_KEY_PR = 'payment/payyourway/private_key_pr';
     public const CONFIG_XML_PATH_PRIVATE_KEY_SB = 'payment/payyourway/private_key_sb';
+    public const CONFIG_XML_PATH_SECRET_KEY_PR = 'payment/payyourway/secret_key_pr';
+    public const CONFIG_XML_PATH_SECRET_KEY_SB = 'payment/payyourway/secret_key_sb';
     public const CONFIG_XML_PATH_ACCESS_TOKEN_PR = 'payment/payyourway/access_token_pr';
     public const CONFIG_XML_PATH_ACCESS_TOKEN_SB = 'payment/payyourway/access_token_sb';
     public const CONFIG_XML_PATH_PAYMENT_CONFIRMATION_URL_UAT = 'payment/payyourway/payment_confirmation_url_uat';
@@ -51,9 +53,10 @@ class Config implements PywConfigInterface
      * @param ResourceConfigInterface $resourceConfigInterface
      */
     public function __construct(
-        ScopeConfigInterface $scopeConfig,
+        ScopeConfigInterface    $scopeConfig,
         ResourceConfigInterface $resourceConfigInterface
-    ) {
+    )
+    {
         $this->scopeConfig = $scopeConfig;
         $this->resourceConfigInterface = $resourceConfigInterface;
     }
@@ -83,18 +86,6 @@ class Config implements PywConfigInterface
     }
 
     /**
-     * Get environment
-     *
-     * @param string|null $scopeId
-     * @param string $scope
-     * @return string
-     */
-    public function getEnvironment($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string
-    {
-        return $this->scopeConfig->getValue(self::CONFIG_XML_PATH_ENVIRONMENT, $scope, $scopeId);
-    }
-
-    /**
      * Get Client Id
      *
      * @param string|null $scopeId
@@ -118,6 +109,41 @@ class Config implements PywConfigInterface
     }
 
     /**
+     * Get environment
+     *
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getEnvironment($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string
+    {
+        return $this->scopeConfig->getValue(self::CONFIG_XML_PATH_ENVIRONMENT, $scope, $scopeId);
+    }
+
+    /**
+     * Get Access Token
+     *
+     * @param string|null $scopeId
+     * @param string $scope
+     * @return string
+     */
+    public function getAccessToken($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string
+    {
+        if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
+            return $this->scopeConfig->getValue(
+                self::CONFIG_XML_PATH_ACCESS_TOKEN_SB,
+                $scope,
+                $scopeId
+            );
+        }
+        return $this->scopeConfig->getValue(
+            self::CONFIG_XML_PATH_ACCESS_TOKEN_PR,
+            $scope,
+            $scopeId
+        );
+    }
+
+    /**
      * Get Private Key
      *
      * @param string|null $scopeId
@@ -134,7 +160,7 @@ class Config implements PywConfigInterface
                 $scopeId
             );
             $privateKey = str_replace(
-                ["-----BEGIN PRIVATE KEY-----","-----END PRIVATE KEY-----","\r\n", "\n", "\r"," "],
+                ["-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----", "\r\n", "\n", "\r", " "],
                 '',
                 $privateKey
             );
@@ -148,13 +174,38 @@ class Config implements PywConfigInterface
             $scopeId
         );
         $privateKey = str_replace(
-            ["-----BEGIN PRIVATE KEY-----","-----END PRIVATE KEY-----","\r\n", "\n", "\r"," "],
+            ["-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----", "\r\n", "\n", "\r", " "],
             '',
             $privateKey
         );
         $privateKey = chunk_split($privateKey, 64);
 
         return "-----BEGIN RSA PRIVATE KEY-----\n$privateKey-----END RSA PRIVATE KEY-----\n";
+    }
+
+    /**
+     * Save private key
+     *
+     * @param string $path
+     * @param string $value
+     * @param string $scope
+     * @param int $scopeId
+     * @return \Magento\Config\Model\ResourceModel\Config
+     */
+    public function savePrivateKey(
+        string $value,
+        string $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_SB,
+        string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+        int    $scopeId = 0
+    ): ResourceConfigInterface
+    {
+        if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
+            $path = self::CONFIG_XML_PATH_PRIVATE_KEY_SB;
+            return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
+        }
+
+        $path = self::CONFIG_XML_PATH_PRIVATE_KEY_PR;
+        return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
     }
 
     /**
@@ -192,14 +243,39 @@ class Config implements PywConfigInterface
         string $value,
         string $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_SB,
         string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
-        int $scopeId = 0
-    ): ResourceConfigInterface {
+        int    $scopeId = 0
+    ): ResourceConfigInterface
+    {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
             $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_SB;
             return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
         }
 
         $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_PR;
+        return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
+    }
+
+    /**
+     * Save access token value
+     *
+     * @param string $path
+     * @param string $value
+     * @param string $scope
+     * @param int $scopeId
+     * @return \Magento\Config\Model\ResourceModel\Config
+     */
+    public function saveSecretKey(
+        string $value,
+        string $path = self::CONFIG_XML_PATH_SECRET_KEY_SB,
+        string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+        int    $scopeId = 0
+    ): ResourceConfigInterface {
+        if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
+            $path = self::CONFIG_XML_PATH_SECRET_KEY_SB;
+            return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
+        }
+
+        $path = self::CONFIG_XML_PATH_SECRET_KEY_PR;
         return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
     }
 
@@ -254,7 +330,7 @@ class Config implements PywConfigInterface
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
             return $this::CONFIG_XML_PATH_PAYMENT_UAT_SDK_API_ENDPOINT;
         }
-        return  $this::CONFIG_XML_PATH_PAYMENT_SDK_API_ENDPOINT;
+        return $this::CONFIG_XML_PATH_PAYMENT_SDK_API_ENDPOINT;
     }
 
     /**
@@ -265,19 +341,21 @@ class Config implements PywConfigInterface
      * @param int $scopeId
      * @return \Magento\Config\Model\ResourceModel\Config
      */
-    public function  saveClientId(
+    public function saveClientId(
         string $value,
-        string $path=self::CONFIG_XML_PATH_CLIENT_ID_SB,
+        string $path = self::CONFIG_XML_PATH_CLIENT_ID_SB,
         string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
-        int $scopeId = 0):ResourceConfigInterface
-    {
+        int $scopeId = 0
+    ): ResourceConfigInterface {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
-            $path = self::CONFIG_XML_PATH_CLIENT_ID_SB;
-            return $this->resourceConfigInterface->saveConfig($path, $value, $scope,$scopeId);
+            return $this->resourceConfigInterface->saveConfig(
+                self::CONFIG_XML_PATH_CLIENT_ID_SB,
+                $value,
+                $scope,
+                $scopeId
+            );
         }
-
-        $path = self::CONFIG_XML_PATH_CLIENT_ID_PR;
-        return $this->resourceConfigInterface->saveConfig($path, $value, $scope,$scopeId);
+        return $this->resourceConfigInterface->saveConfig(self::CONFIG_XML_PATH_CLIENT_ID_PR, $value, $scope, $scopeId);
     }
 
     /**
@@ -287,7 +365,7 @@ class Config implements PywConfigInterface
     public function generateClientId():string
     {
         $merchantName = $this->getMerchantName();
-        $merchantName = strtoupper(str_replace(' ', '',$merchantName));
+        $merchantName = strtoupper(str_replace(' ', '', $merchantName));
         if (!empty($merchantName) && isset($merchantName)) {
             if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
                 return 'MG_'.$merchantName.'_QA';

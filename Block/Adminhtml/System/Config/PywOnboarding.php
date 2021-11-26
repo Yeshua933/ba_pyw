@@ -10,6 +10,7 @@ namespace PayYourWay\Pyw\Block\Adminhtml\System\Config;
 use Magento\Backend\Block\Widget\Button;
 use Magento\Config\Block\System\Config\Form\Field;
 use Magento\Framework\Data\Form\Element\AbstractElement;
+use Magento\Store\Model\Store;
 
 /**
  * Custom renderer for PYW Onboarding popup
@@ -17,7 +18,7 @@ use Magento\Framework\Data\Form\Element\AbstractElement;
 class PywOnboarding extends Field
 {
     /** Path to block template */
-    protected $_template = 'PayYourWay_Pyw::system/config/Onboarding.phtml';
+    protected $_template = 'PayYourWay_Pyw::system/config/onboarding.phtml';
 
     public function render(AbstractElement $element): string
     {
@@ -27,19 +28,43 @@ class PywOnboarding extends Field
 
     protected function _getElementHtml(AbstractElement $element): string
     {
-        return $this->_toHtml();
+        $title = __('Register');
+        $envId = 'select-groups-payyourway-groups-settings-fields-environment-value';
+        $storeId = 0;
+
+        if ($this->getRequest()->getParam('website')) {
+            $website = $this->_storeManager->getWebsite($this->getRequest()->getParam('website'));
+            if ($website->getId()) {
+                /** @var Store $store */
+                $store = $website->getDefaultStore();
+                $storeId = $store->getStoreId();
+            }
+        }
+
+        $endpoint = $this->getUrl('payyourway/configuration/onboardingcontroller', ['storeId' => $storeId]);
+
+        $html = <<<TEXT
+            <button
+                type="button"
+                title="{$title}"
+                class="button"
+                onclick="pywValidator.call(this, '{$endpoint}', '{$envId}')">
+                <span>{$title}</span>
+            </button>
+        TEXT;
+        return $html;
     }
 
-    public function getCustomUrl(): string
+    public function getOnboardingUrl(): string
     {
-        return $this->getUrl('router/controller/action');
+        return $this->getUrl('payyourway/controller/onboarding');
     }
 
     public function getButtonHtml(): string
     {
         $button = $this->getLayout()
             ->createBlock(Button::class)
-            ->setData(['id' => 'sign_up', 'label' => __('SIGN UP FOR PAY YOUR WAY'),]);
+            ->setData(['id' => 'sign_up', 'label' => __('REGISTER FOR PAY YOUR WAY'),]);
         return $button->toHtml();
     }
 }
