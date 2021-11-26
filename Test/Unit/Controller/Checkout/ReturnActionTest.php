@@ -122,9 +122,54 @@ class ReturnActionTest extends TestCase
         return $request;
     }
 
+    private function getRequestMockForRedirect(): RequestInterface
+    {
+        $pywMsg = null;
+
+        $request = $this->createMock(RequestInterface::class);
+        $request
+            ->expects($this->exactly(2))
+            ->method('getParam')
+            ->withConsecutive(
+                ['pywmsg'],
+                ['pywmsg']
+            )
+            ->willReturn(
+                $pywMsg,
+                $pywMsg
+            );
+
+        return $request;
+    }
+
     private function getResultFactoryMock(): ResultFactory
     {
         $resultMock = $this->createMock(ResultInterface::class);
+
+        $resultFactory = $this->createMock(ResultFactory::class);
+        $resultFactory
+            ->expects($this->once())
+            ->method('create')
+            ->with(ResultFactory::TYPE_REDIRECT)
+            ->willReturn($resultMock);
+
+        return $resultFactory;
+    }
+
+    private function getResultFactoryMockForRedirect(): ResultFactory
+    {
+        $path = 'checkout/cart';
+
+        $resultMock = $this->getMockBuilder(ResultInterface::class)
+            ->setMethods(['setPath'])
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
+
+        $resultMock
+            ->expects($this->once())
+            ->method('setPath')
+            ->with($path)
+            ->willReturnSelf();
 
         $resultFactory = $this->createMock(ResultFactory::class);
         $resultFactory
@@ -173,7 +218,10 @@ class ReturnActionTest extends TestCase
         );
 
         $forwardMock = $this->createMock(Forward::class);
-        $this->assertEquals($forwardMock, $this->returnActionController->execute());
+
+        $returnActionExecution = $this->returnActionController->execute();
+        $this->assertInstanceOf(Forward::class, $returnActionExecution);
+        $this->assertEquals($forwardMock, $returnActionExecution);
     }
 
     public function testForwardToCancel()
@@ -191,6 +239,26 @@ class ReturnActionTest extends TestCase
         );
 
         $forwardMock = $this->createMock(Forward::class);
-        $this->assertEquals($forwardMock, $this->returnActionController->execute());
+
+        $returnActionExecution = $this->returnActionController->execute();
+        $this->assertInstanceOf(Forward::class, $returnActionExecution);
+        $this->assertEquals($forwardMock, $returnActionExecution);
+    }
+
+    public function testRedirectWhenMissingParameters()
+    {
+        $messageManagerMock = $this->getMessageManagerMock();
+        $resultFactoryMock = $this->getResultFactoryMockForRedirect();
+        $requestMockForRedirect = $this->getRequestMockForRedirect();
+        $forwardFactoryMock =  $this->createMock(ForwardFactory::class);
+
+        $this->getReturnActionControllerObject(
+            $messageManagerMock,
+            $resultFactoryMock,
+            $requestMockForRedirect,
+            $forwardFactoryMock
+        );
+
+        $this->assertInstanceOf(ResultInterface::class, $this->returnActionController->execute());
     }
 }
