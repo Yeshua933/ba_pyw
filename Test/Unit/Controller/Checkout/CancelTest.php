@@ -31,7 +31,7 @@ class CancelTest extends TestCase
         $this->objectManager = new ObjectManager($this);
     }
 
-    public function getCheckoutSessionMock()
+    public function getCheckoutSessionMock(): CheckoutSession
     {
         $quoteMock = $this->createMock(Quote::class);
 
@@ -44,7 +44,7 @@ class CancelTest extends TestCase
         return $checkoutSession;
     }
 
-    public function getLoggerMock()
+    public function getLoggerMock(): LoggerInterface
     {
         $logger = $this->createMock(LoggerInterface::class);
         $logger
