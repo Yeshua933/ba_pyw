@@ -16,6 +16,7 @@ use PayYourWay\Pyw\Api\AccessTokenLookupInterface;
 use PayYourWay\Pyw\Model\ResourceModel\AccessToken as ResourceModel;
 use PayYourWay\Pyw\Model\ResourceModel\AccessToken\Collection;
 use PayYourWay\Pyw\Model\AccessTokenFactory;
+use Psr\Log\LoggerInterface;
 
 /**
  * Used for creating/renewing the Pay Your Way access
@@ -36,6 +37,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
     private ResourceModel $resourceModel;
     private SerializerInterface $serializer;
     private Collection $collection;
+    private LoggerInterface $logger;
 
     public function __construct(
         Config $config,
@@ -44,7 +46,8 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
         AccessTokenFactory $accessTokenFactory,
         ResourceModel $resourceModel,
         SerializerInterface $serializer,
-        Collection $collection
+        Collection $collection,
+        LoggerInterface $logger
     ) {
         $this->config = $config;
         $this->accessTokenRequestFactory = $accessTokenRequestFactory;
@@ -53,6 +56,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
         $this->accessTokenFactory = $accessTokenFactory;
         $this->serializer = $serializer;
         $this->collection = $collection;
+        $this->logger = $logger;
     }
 
     /**
@@ -60,10 +64,17 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
      */
     public function execute(): ?string
     {
-        //TODO add the generate process; load store configuration
         $header = $this->getEncoded(json_encode(['typ' => 'JWT', 'alg' => 'RSA'], JSON_THROW_ON_ERROR));
         $client_id = $this->config->getClientId();
         $privateKey = $this->config->getPrivateKey();
+
+        if ($this->config->isDebugMode()) {
+            $debug = [
+                'client_id' => $this->config->getClientId(),
+                'private_key' => $this->config->getPrivateKey(),
+            ];
+            $this->logger->info($this->serializer->serialize($debug));
+        }
 
         if ($client_id === null || $privateKey === null) {
             return null;
@@ -131,6 +142,135 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
 
         $accessTokenEncode = $this->accessTokenLookup->execute($accessTokenRequest);
         $accessTokenDecode = $this->serializer->unserialize($accessTokenEncode);
+
+        if ($this->config->isDebugMode()) {
+            $debug = [
+                'client_id' => $this->config->getClientId(),
+                'access_token_response' => $accessTokenDecode,
+            ];
+            $this->logger->info($this->serializer->serialize($debug));
+        }
+
+        if (array_key_exists('error', $accessTokenDecode) && !empty($accessTokenDecode['error'])) {
+            $debug = [
+                'client_id' => $this->config->getClientId(),
+                'access_token_response' => $accessTokenDecode,
+            ];
+            $this->logger->error($this->serializer->serialize($debug));
+            return null;
+        }
+
+        /** @var \PayYourWay\Pyw\Model\AccessToken $accessToken */
+        $accessToken = $this->accessTokenFactory->create();
+        $accessToken->setAccessToken((string)$accessTokenDecode['access_token']);
+        $accessToken->setTokenType((string)$accessTokenDecode['token_type']);
+        $accessToken->setExp((int)$accessTokenDecode['exp']);
+        $accessToken->setIss((int)$accessTokenDecode['iss']);
+        try {
+            $this->resourceModel->save($accessToken);
+        } catch (AlreadyExistsException $e) {
+            return null;
+        }
+
+        return $accessToken->getAccessToken();
+    }
+
+    public function executeWithParams(
+        string $clientId,
+        string $privateKey
+    ): ?string {
+        $header = $this->getEncoded(json_encode(['typ' => 'JWT', 'alg' => 'RSA'], JSON_THROW_ON_ERROR));
+        if ($this->config->isDebugMode()) {
+            $debug = [
+                'client_id' => $this->config->getClientId(),
+                'privateKey' => $this->config->getPrivateKey(),
+            ];
+            $this->logger->info($this->serializer->serialize($debug));
+        }
+
+        if ($clientId === null || $privateKey === null) {
+            return null;
+        }
+
+        $currentAccessToken = $this->collection->getFirstItem();
+
+        if ($currentAccessToken->getId() != null) {
+
+            $timeNow = (int) microtime(true) * 1000;
+            $expirationTime = (int) $currentAccessToken->getExp();
+
+            $difference = $expirationTime - $timeNow;
+            if ($difference < 0) {
+                $difference = 0;
+            }
+
+            /**
+             * If the difference is greater or equal than 15 minutes
+             */
+            if ($difference >= self::THRESHOLD) {
+                return $currentAccessToken->getAccessToken();
+            }
+
+            try {
+                $this->resourceModel->delete($currentAccessToken);
+            } catch (\Exception $e) {
+                return null;
+            }
+        }
+
+        $aud = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX ?
+            self::OAUTH_UAT :
+            self::OAUTH_PRD;
+
+        $claim = $this->getEncoded(
+            json_encode([
+                "iss" => $clientId,
+                "scope" => "",
+                "aud" => $aud,
+                "exp" => round(microtime(true)*1000) + 7200000 ,
+                "iat" => round(microtime(true)*1000)
+            ], JSON_THROW_ON_ERROR)
+        );
+
+        openssl_sign(
+            $header.".".$claim,
+            $jwtSig,
+            $privateKey,
+            "sha256WithRSAEncryption"
+        );
+        $jwtSig = $this->getEncoded($jwtSig);
+
+        $jwtAssertion = $header.".".$claim.".".$jwtSig;
+
+        /**
+         * Get the access token calling PYW service
+         */
+
+        /** @var \PayYourWay\Pyw\Api\AccessTokenRequestInterface $accessTokenRequest */
+        $accessTokenRequest = $this->accessTokenRequestFactory->create();
+        $accessTokenRequest->setJwt($jwtAssertion);
+        $accessTokenRequest->setGrantType(self::GRANT_TYPE);
+        $accessTokenRequest->setContentType('application/json');
+
+        $accessTokenEncode = $this->accessTokenLookup->execute($accessTokenRequest);
+        $accessTokenDecode = $this->serializer->unserialize($accessTokenEncode);
+
+        if ($this->config->isDebugMode()) {
+            $debug = [
+                'client_id' => $this->config->getClientId(),
+                'access_token_response' => $accessTokenDecode,
+            ];
+            $this->logger->info($this->serializer->serialize($debug));
+        }
+
+        if (array_key_exists('error', $accessTokenDecode) && !empty($accessTokenDecode['error'])) {
+            $debug = [
+                'client_id' => $this->config->getClientId(),
+                'access_token_response' => $accessTokenDecode,
+            ];
+            $this->logger->error($this->serializer->serialize($debug));
+            return null;
+        }
 
         /** @var \PayYourWay\Pyw\Model\AccessToken $accessToken */
         $accessToken = $this->accessTokenFactory->create();

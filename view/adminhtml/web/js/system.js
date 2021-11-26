@@ -12,7 +12,10 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
         var email = '';
         var public_key = '';
         var private_key = '';
-        debugger;
+        var address = '';
+        var category = '';
+
+
         if (env_id === 'sandbox') {
             client_name = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-name-sb-value"]').val();
             email = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-email-sb-value"]').val();
@@ -20,6 +23,8 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
             phone_number = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-phone-sb-value"]').val();
             public_key = $('[data-ui-id="text-groups-payyourway-groups-register-fields-public-key-sb-value"]').val();
             private_key = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-private-key-sb-value"]').val();
+            address = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-address-sb-value"]').val();
+            category = $('[data-ui-id="select-groups-payyourway-groups-register-fields-merchant-category-sb-value"]').val();
         } else {
             client_name = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-name-pr-value"]').val();
             email = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-email-pr-value"]').val();
@@ -27,6 +32,8 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
             phone_number = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-phone-pr-value"]').val();
             public_key = $('[data-ui-id="text-groups-payyourway-groups-register-fields-public-key-pr-value"]').val();
             private_key = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-private-key-pr-value"]').val();
+            address = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-address-pr-value"]').val();
+            category = $('[data-ui-id="select-groups-payyourway-groups-register-fields-merchant-category-pr-value"]').val();
         }
 
         /* Remove previous success message if present */
@@ -80,6 +87,8 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
             public_key: public_key,
             private_key: private_key,
             phone_number: phone_number,
+            address: address,
+            category: category,
             email: email
         }).done(function () {
             $('<div class="message message-success payyourway-registration-success-message">' + $t("Registered Client Successfully") + '</div>').insertAfter(self);
