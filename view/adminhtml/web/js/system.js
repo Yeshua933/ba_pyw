@@ -101,4 +101,33 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
             $(self).text($t("Validate Credentials")).attr('disabled', false);
         });
     }
+
+    function generate_client_id(){
+        let clientIdSb = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-client-id-sb-value"]');
+        let clientIdPr = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-client-id-pr-value"]');
+        let merchantNameSb = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-merchant-name-sb-value"]');
+        let merchantNamePr = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-merchant-name-pr-value"]');
+        let environment = $('[data-ui-id="select-groups-payyourway-groups-settings-fields-environment-value"]');
+        if (environment.val() === 'sandbox') {
+
+            let merchantName = merchantNameSb.val();
+            let clientId = 'MG_'+merchantName.replace(/\s/g, '')+'_QA';
+            clientIdSb.val(clientId);
+        } else {
+
+            let merchantName = merchantNamePr.val();
+            let clientId = 'MG_'+merchantName.replace(/\s/g, '');
+            clientIdPr.val(clientId);
+        }
+    }
+
+    $('#payment_us_payyourway_settings_merchant_name_sb').on("input",function () {
+        generate_client_id();
+
+    });
+
+    $('#payment_us_payyourway_settings_merchant_name_pr').on("input",function () {
+        generate_client_id();
+
+    });
 });
