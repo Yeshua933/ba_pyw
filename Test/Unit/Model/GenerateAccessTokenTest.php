@@ -7,6 +7,7 @@ declare(strict_types=1);
 
 namespace PayYourWay\Pyw\Test\Unit\Model;
 
+use Magento\Framework\DataObject;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use PayYourWay\Pyw\Api\AccessTokenLookupInterface;
@@ -45,12 +46,65 @@ class GenerateAccessTokenTest extends TestCase
 
     private function getCollectionMock(): Collection
     {
-        return $this->createMock(Collection::class);
+        $accessTokenId = 10;
+        $expirationTime = strtotime(date("Y-m-d H:i:s", strtotime("+16 minutes"))) * 1000;
+        $accessToken = "ACCESS_TOKEN_RANDOM_STRING";
+
+        $dataObjectMock = $this->getMockBuilder(DataObject::class)
+            ->setMethods([
+                'getId',
+                'getExp',
+                'getAccessToken'
+            ])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $dataObjectMock
+            ->expects($this->once())
+            ->method('getId')
+            ->willReturn($accessTokenId);
+
+        $dataObjectMock
+            ->expects($this->once())
+            ->method('getExp')
+            ->willReturn($expirationTime);
+
+        $dataObjectMock
+            ->expects($this->once())
+            ->method('getAccessToken')
+            ->willReturn($accessToken);
+
+        $collection = $this->createMock(Collection::class);
+        $collection
+            ->expects($this->once())
+            ->method('getFirstItem')
+            ->willReturn($dataObjectMock);
+
+        return $collection;
     }
 
     private function getConfigMock(): Config
     {
-        return $this->createMock(Config::class);
+        $clientId = 'PYW';
+        $privateKey = 'PRIVATE_KEY';
+
+        $config = $this->createMock(Config::class);
+        $config
+            ->expects($this->once())
+            ->method('getClientId')
+            ->willReturn($clientId);
+
+        $config
+            ->expects($this->once())
+            ->method('getPrivateKey')
+            ->willReturn($privateKey);
+
+        $config
+            ->expects($this->once())
+            ->method('isDebugMode')
+            ->willReturn(false);
+
+        return $config;
     }
 
     private function getLoggerMock(): LoggerInterface
@@ -98,8 +152,10 @@ class GenerateAccessTokenTest extends TestCase
         );
     }
 
-    public function testGenerateAccessToken()
+    public function testGetAccessToken()
     {
+        $accessToken = "ACCESS_TOKEN_RANDOM_STRING";
+
         $configMock = $this->getConfigMock();
         $accessTokenRequestFactoryMock = $this->getAccessTokenRequestFactoryMock();
         $accessTokenLookupMock = $this->getAccessTokenLookupMock();
@@ -121,6 +177,6 @@ class GenerateAccessTokenTest extends TestCase
         );
 
         $generateAccessTokenExecution = $this->generateAccessTokenModel->execute();
-        $this->assertTrue($generateAccessTokenExecution);
+        $this->assertEquals($accessToken, $generateAccessTokenExecution);
     }
 }
