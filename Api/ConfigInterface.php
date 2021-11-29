@@ -175,11 +175,4 @@ interface ConfigInterface
      * @return string
      */
     public function getMerchantName(string $scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string;
-
-    /**
-     * @return string
-     * @throws Exception
-     */
-    public function generateClientId(): string;
-
 }

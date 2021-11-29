@@ -310,11 +310,25 @@ class PlaceOrder implements HttpGetActionInterface
             return false;
         }
 
+        if (!empty($paymentConfirmationResponseDecode['errors'])) {
+            $this->logger->error(
+                'There is an issue with the payment gateway provider.',
+                [
+                    'payment_response' => $paymentConfirmationResponseDecode,
+                    'quote' => $this->quote->getData()
+                ]
+            );
+            $this->messageManager->addErrorMessage(
+                __('There is an issue with the payment gateway provider.')
+            );
+            return false;
+        }
+
         if ((float)$paymentConfirmationResponseDecode['paymentTotal'] !== $this->quote->getGrandTotal()) {
             $this->logger->error(
                 'The amount returned from PayYour Way doesn\'t match the amount on the store.',
                 [
-                    'paymentResponse' => $paymentConfirmationResponseDecode,
+                    'payment_response' => $paymentConfirmationResponseDecode,
                     'quote' => $this->quote->getData(),
                     'pywid' => $this->request->getParam('pywid')
                 ]

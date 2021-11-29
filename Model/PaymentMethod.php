@@ -58,10 +58,6 @@ class PaymentMethod extends AbstractMethod
         Data $paymentData,
         ScopeConfigInterface $scopeConfig,
         Logger $logger,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
-        array $data = [],
-        DirectoryHelper $directory = null,
         PaymentReturnRequestInterface $paymentReturnRequest,
         RefIdBuilderInterface $refIdBuilder,
         ConfigInterface $config,
@@ -69,7 +65,11 @@ class PaymentMethod extends AbstractMethod
         PaymentReturnLookupInterface $paymentReturnLookup,
         PaymentConfirmationRequestInterface $paymentConfirmationRequest,
         PaymentConfirmationLookupInterface $paymentConfirmationLookup,
-        LoggerInterface $pywLogger
+        LoggerInterface $pywLogger,
+        AbstractResource $resource = null,
+        AbstractDb $resourceCollection = null,
+        array $data = [],
+        DirectoryHelper $directory = null
     ) {
         parent::__construct(
             $context,

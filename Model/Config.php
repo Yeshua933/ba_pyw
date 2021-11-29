@@ -55,8 +55,7 @@ class Config implements PywConfigInterface
     public function __construct(
         ScopeConfigInterface    $scopeConfig,
         ResourceConfigInterface $resourceConfigInterface
-    )
-    {
+    ) {
         $this->scopeConfig = $scopeConfig;
         $this->resourceConfigInterface = $resourceConfigInterface;
     }
@@ -244,8 +243,7 @@ class Config implements PywConfigInterface
         string $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_SB,
         string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
         int    $scopeId = 0
-    ): ResourceConfigInterface
-    {
+    ): ResourceConfigInterface {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
             $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_SB;
             return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
@@ -357,24 +355,6 @@ class Config implements PywConfigInterface
         }
         return $this->resourceConfigInterface->saveConfig(self::CONFIG_XML_PATH_CLIENT_ID_PR, $value, $scope, $scopeId);
     }
-
-    /**
-     * @return string
-     * @throws Exception
-     */
-    public function generateClientId():string
-    {
-        $merchantName = $this->getMerchantName();
-        $merchantName = strtoupper(str_replace(' ', '', $merchantName));
-        if (!empty($merchantName) && isset($merchantName)) {
-            if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
-                return 'MG_'.$merchantName.'_QA';
-            }
-            return 'MG_' . $merchantName;
-        }
-        throw new Exception("Client name is not set");
-    }
-
 
     /**
      * Determine if Pay Your Way has been enabled
