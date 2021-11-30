@@ -9,6 +9,7 @@ namespace PayYourWay\Pyw\Controller\Checkout;
 
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Controller\Result\ForwardFactory;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Message\ManagerInterface as MessageManagerInterface;
@@ -18,19 +19,22 @@ class ReturnAction implements HttpGetActionInterface
     private MessageManagerInterface $messageManager;
     private ResultFactory $resultFactory;
     private RequestInterface $request;
+    private ForwardFactory $forwardFactory;
 
     public function __construct(
         MessageManagerInterface $messageManager,
         ResultFactory $resultFactory,
-        RequestInterface $request
+        RequestInterface $request,
+        ForwardFactory $forwardFactory
     ) {
         $this->messageManager = $messageManager;
         $this->resultFactory = $resultFactory;
         $this->request = $request;
+        $this->forwardFactory = $forwardFactory;
     }
 
     /**
-     * Return from Pay Your Way when success
+     * Handle the return from Pay Your Way
      *
      * @return void|ResultInterface
      */
@@ -38,11 +42,22 @@ class ReturnAction implements HttpGetActionInterface
     {
         $resultRedirect = $this->resultFactory->create(ResultFactory::TYPE_REDIRECT);
 
+        /**
+         * Proceed to the place order action if the parameters indicates the order has been successful
+         */
         if ($this->request->getParam('pywmsg') === 'Y' && $this->request->getParam('pywid') !== null) {
-            $this->request->initForward();
-            $this->request->setActionName('placeOrder');
-            $this->request->setDispatched(false);
-            return;
+            $resultForward = $this->forwardFactory->create();
+            $resultForward->forward('placeOrder');
+            return $resultForward;
+        }
+
+        /**
+         * Proceed to the cancel order action if the parameters indicates the order hasn't been successful
+         */
+        if ($this->request->getParam('pywmsg') === 'N') {
+            $resultForward = $this->forwardFactory->create();
+            $resultForward->forward('cancel');
+            return $resultForward;
         }
 
         $this->messageManager->addErrorMessage(

@@ -13,7 +13,7 @@
     "require": {
         "magento/product-enterprise-edition": "2.4.3",
         "magento/composer-root-update-plugin": "~1.1",
-        "magento/composer-dependency-version-audit-plugin": "~0.1"
+        "pay-your-way/module-pay-your-way": "dev-master"
     },
     "autoload": {
         "exclude-from-classmap": [
@@ -67,12 +67,16 @@
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
-    "repositories": [
-        {
+    "repositories": {
+        "magento": {
             "type": "composer",
             "url": "https://repo.magento.com/"
+        },
+        "ba": {
+            "type": "composer",
+            "url": "https://satis.blueacorn.net"
         }
-    ],
+    },
     "extra": {
         "magento-force": "override"
     }

@@ -1,9 +1,16 @@
+/**
+ * @author    Blue Acorn iCi <code@blueacornici.com>
+ * @copyright 2021 Blue Acorn iCi. All Rights Reserved.
+ */
 define(
     [
         'Magento_Checkout/js/view/payment/default',
         'PayYourWay_Pyw/js/pyw-sdk',
+        'Magento_Checkout/js/model/quote',
+        'mage/url',
+        'Magento_Ui/js/model/messageList'
     ],
-    function (Component,pywSdk) {
+    function (Component, pywSdk, quote, urlBuilder,messageList) {
         'use strict';
 
         return Component.extend({
@@ -14,9 +21,14 @@ define(
             payyourway: null,
             pywLoaded : false,
             baseUrl:  window.BASE_URL,
+            isPopupTriggered: false,
+            returnController: 'payyourway/checkout/return',
+            currency: window.checkoutConfig.payment.payyourway.currency,
 
             initialize : function () {
                 this._super();
+                window.addEventListener('hashchange', _.bind(this.handleHash, this));
+
                 if (!this.pywLoaded) {
                     this.loadPayYourWay()
                         .then(this._setPywObject.bind(this));
@@ -24,13 +36,20 @@ define(
             },
 
             openPayYourWay : function () {
-                if (!this.pywLoaded) {
-                    this.loadPayYourWay()
-                        .then(this._setPywObjectAndOpen.bind(this));
-                } else {
-                    this.openPopup();
-                }
+                if(!this.isValidCurrency()){
+                    messageList.addErrorMessage({
+                        message: 'Currency not supported'
+                    });
 
+                }else{
+                    document.getElementById("overlay").style.display = "block";
+                    if (!this.pywLoaded) {
+                        this.loadPayYourWay()
+                            .then(this._setPywObjectAndOpen.bind(this));
+                    } else {
+                        this.openPopup();
+                    }
+                }
             },
 
             loadPayYourWay : function (open) {
@@ -50,18 +69,37 @@ define(
             },
 
             openPopup : function () {
-                let total = 500;
-                let returnUrl = this.baseUrl + 'payyourway/checkout/return';
-                let cancelUrl = this.baseUrl + 'payyourway/checkout/cancel';
+                let grandTotal = parseFloat(this.getGrandTotal());
+                let returnUrl = this.baseUrl + this.returnController;
+                this.isPopupTriggered = true;
 
-                /**
-                 * @todo: We have to ask them to accept the cancelUrl parameter
-                 * and also replace the hard coded PYW_payment_failed.html
-                 * preparePayment(this.paymentConfig.refid, total, returnUrl, cancelUrl);
-                 */
+                preparePayment(this.paymentConfig.refid, grandTotal, returnUrl);
+            },
 
-                preparePayment(this.paymentConfig.refid, total, returnUrl);
+            getGrandTotal : function () {
+                return quote.totals()['base_grand_total'];
+            },
+
+            handleHash: function () {
+                let hash = window.location.hash;
+                let paymentHash = '#payment';
+
+                if (this.isPopupTriggered && hash !== paymentHash) {
+                    childwin.close();
+                    window.location.href = urlBuilder.build(this.returnController);
+                }
+            },
+
+            isValidCurrency: function () {
+                var quoteCurrency = quote.totals()['base_currency_code'];
+
+                if (quoteCurrency === 'USD')
+                {
+                    return true;
+                }
+                return false;
             }
+
         });
     }
 );

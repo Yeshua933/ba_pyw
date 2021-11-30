@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace PayYourWay\Pyw\Model\System\Config\Source;
+namespace PayYourWay\Pyw\Model\Adminhtml\Config\Source;
 
 use Magento\Framework\Option\ArrayInterface;
 

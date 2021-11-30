@@ -13,8 +13,17 @@
                 <model>PayYourWay\Pyw\Model\PaymentMethod</model>
                 <order_status>processing</order_status>
                 <title>Pay Your Way</title>
+                <environment>sandbox</environment>
                 <payment_action>authorize_capture</payment_action>
                 <enable_refresh_token_process>1</enable_refresh_token_process>
+                <public_key_pr backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <private_key_pr backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <public_key_sb backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <private_key_sb backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <payment_confirmation_url_uat>https://checkout.uat.telluride.shopyourway.com/</payment_confirmation_url_uat>
+                <payment_confirmation_url_production>https://checkout.telluride.shopyourway.com/</payment_confirmation_url_production>
+                <payment_confirmation_api_endpoint>tell/api/checkout/v1/orderpaymentconfirm</payment_confirmation_api_endpoint>
+                <payment_return_api_endpoint>tell/api/payment/v1/return</payment_return_api_endpoint>
             </payyourway>
         </payment>
     </default>

@@ -7,11 +7,92 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Session Proxies -->
+    <type name="PayYourWay\Pyw\Model\CheckoutConfigProvider">
+        <arguments>
+            <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
     <type name="PayYourWay\Pyw\Controller\Checkout\PlaceOrder">
         <arguments>
             <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>
             <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
         </arguments>
     </type>
-    <preference for="PayYourWay\Pyw\Api\ConfigInterface" type="PayYourWay\Pyw\Model\Config"/>
+    <type name="PayYourWay\Pyw\Controller\Checkout\Cancel">
+        <arguments>
+            <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
+    <type name="PayYourWay\Pyw\ViewModel\UpdateSectionViewModel">
+        <arguments>
+            <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
+        </arguments>
+    </type>
+    <!-- Handlers for pyw logger -->
+    <virtualType name="PywLogger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="info" xsi:type="object">PayYourWay\Pyw\Logger\Handler\PywInfoHandler</item>
+                <item name="error" xsi:type="object">PayYourWay\Pyw\Logger\Handler\PywErrorHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="PayYourWay\Pyw\Model\CheckoutConfigProvider">
+        <arguments>
+            <argument name="logger" xsi:type="object">PywLogger</argument>
+        </arguments>
+    </type>
+    <type name="PayYourWay\Pyw\Controller\Checkout\PlaceOrder">
+        <arguments>
+            <argument name="logger" xsi:type="object">PywLogger</argument>
+        </arguments>
+    </type>
+    <type name="PayYourWay\Pyw\Model\PaymentMethod">
+        <arguments>
+            <argument name="pywLogger" xsi:type="object">PywLogger</argument>
+        </arguments>
+    </type>
+    <type name="PayYourWay\Pyw\Model\GenerateAccessToken">
+        <arguments>
+            <argument name="logger" xsi:type="object">PywLogger</argument>
+        </arguments>
+    </type>
+    <type name="PayYourWay\Pyw\Controller\Adminhtml\Configuration\OnboardingController">
+        <arguments>
+            <argument name="logger" xsi:type="object">PywLogger</argument>
+        </arguments>
+    </type>
+
+    <!-- Interfaces preferences -->
+    <preference for="PayYourWay\Pyw\Api\ConfigInterface"
+                type="PayYourWay\Pyw\Model\Config"/>
+    <preference for="PayYourWay\Pyw\Api\GenerateAccessTokenInterface"
+                type="PayYourWay\Pyw\Model\GenerateAccessToken"/>
+    <preference for="PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface"
+                type="PayYourWay\Pyw\Service\PaymentConfirmationLookup"/>
+    <preference for="PayYourWay\Pyw\Api\RequestInterface"
+                type="PayYourWay\Pyw\Service\PaymentConfirmationLookup\Request"/>
+    <preference for="PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface"
+                type="PayYourWay\Pyw\Service\PaymentConfirmationLookup"/>
+    <preference for="PayYourWay\Pyw\Api\RequestInterface"
+                type="PayYourWay\Pyw\Service\PaymentConfirmationLookup\Request"/>
+    <preference for="PayYourWay\Pyw\Api\PaymentReturnLookupInterface"
+                type="PayYourWay\Pyw\Service\PaymentReturnLookup"/>
+    <preference for="PayYourWay\Pyw\Api\PaymentReturnRequestInterface"
+                type="PayYourWay\Pyw\Service\PaymentReturnLookup\PaymentReturnRequest"/>
+    <preference for="PayYourWay\Pyw\Api\AccessTokenLookupInterface"
+                type="PayYourWay\Pyw\Service\AccessTokenLookup"/>
+    <preference for="PayYourWay\Pyw\Api\AccessTokenRequestInterface"
+                type="PayYourWay\Pyw\Service\AccessTokenLookup\AccessTokenRequest"/>
+    <preference for="PayYourWay\Pyw\Api\OnboardingLookupInterface"
+                type="PayYourWay\Pyw\Service\OnboardingLookup"/>
+    <preference for="PayYourWay\Pyw\Api\OnboardingRequestInterface"
+                type="PayYourWay\Pyw\Service\OnboardingLookup\OnboardingRequest"/>
+    <preference for="PayYourWay\Pyw\Api\UpdateMerchantLookupInterface"
+                type="PayYourWay\Pyw\Service\UpdateMerchantLookup"/>
+    <preference for="PayYourWay\Pyw\Api\UpdateMerchantRequestInterface"
+                type="PayYourWay\Pyw\Service\UpdateMerchantLookup\UpdateMerchantRequest"/>
+    <preference for="PayYourWay\Pyw\Api\RefIdBuilderInterface"
+                type="PayYourWay\Pyw\Model\RefIdBuilder"/>
 </config>
