@@ -1,5 +1,5 @@
 image:
-  name: blueacornici/magento-services:v2-7.4composer2
+  name: blueacornici/magento-services:v2-pipelines-7.4composer2
   username: $DOCKER_USER
   password: $DOCKER_PASS
 definitions:
