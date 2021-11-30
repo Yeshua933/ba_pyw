@@ -196,8 +196,7 @@ class Config implements PywConfigInterface
         string $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_SB,
         string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
         int    $scopeId = 0
-    ): ResourceConfigInterface
-    {
+    ): ResourceConfigInterface {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
             $path = self::CONFIG_XML_PATH_PRIVATE_KEY_SB;
             return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
@@ -296,7 +295,11 @@ class Config implements PywConfigInterface
         string $scope = ScopeInterface::SCOPE_STORE
     ): ?string {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
-            return $this->scopeConfig->getValue(self::CONFIG_XML_PATH_PAYMENT_CONFIRMATION_URL_UAT, $scope, $scopeId);
+            return $this->scopeConfig->getValue(
+                self::CONFIG_XML_PATH_PAYMENT_CONFIRMATION_URL_UAT,
+                $scope,
+                $scopeId
+            );
         }
 
         return $this->scopeConfig->getValue(

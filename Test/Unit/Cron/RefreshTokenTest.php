@@ -5,6 +5,8 @@
  */
 declare(strict_types=1);
 
+namespace PayYourWay\Pyw\Test\Unit\Cron;
+
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use PayYourWay\Pyw\Api\GenerateAccessTokenInterface;
 use PayYourWay\Pyw\Cron\RefreshToken;
