@@ -367,4 +367,20 @@ class Config implements PywConfigInterface
     {
         return $this->scopeConfig->isSetFlag(self::CONFIG_XML_PATH_DEBUG_PAY_YOUR_WAY, $scope, $scopeId);
     }
+
+    public function getSecretKey(string $scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string
+    {
+        if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
+            return $this->scopeConfig->getValue(
+                self::CONFIG_XML_PATH_SECRET_KEY_SB,
+                $scope,
+                $scopeId
+            );
+        }
+        return $this->scopeConfig->getValue(
+            self::CONFIG_XML_PATH_SECRET_KEY_PR,
+            $scope,
+            $scopeId
+        );
+    }
 }

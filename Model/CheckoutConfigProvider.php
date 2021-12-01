@@ -107,8 +107,7 @@ class CheckoutConfigProvider implements ConfigProviderInterface
                 'timestamp' => time(),
                 'transaction_id' => $quoteId,
                 'user_id' => $customerEmail ?? '',
-                'sandbox_mode'=> $sandboxMode,
-                'ref_id' => $refId
+                'sandbox_mode'=> $sandboxMode
             ];
             $this->logger->info($this->serializer->serialize($debug));
         }
