@@ -28,8 +28,7 @@ class OnboardingLookup implements OnboardingLookupInterface
         OnboardingRequestInterface $request
     ): string {
         $url = $request->getEnvironment() === Environment::ENVIRONMENT_SANDBOX ?
-            self::URL_UAT :
-            self::URL_PRD;
+            self::URL_UAT : self::URL_PRD;
 
         $this->curl->setHeaders($request->getHeaders());
         $this->curl->post($url, json_encode($request->getBody()));

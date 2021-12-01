@@ -94,11 +94,9 @@ class OnboardingController implements HttpPostActionInterface
              */
             $accessToken = $this->getAccessToken();
             if ($accessToken === null) {
-                $response->setData(['message'=>__('Can\'t generate Access Token')]);
-                $response->setHttpResponseCode(400);
-                return $response;
+                $accessToken = '';
             }
-            $refId = $this->getRefId($accessToken);
+            $refId = $this->getRefId($accessToken, $secretCode);
             $updateMerchantRequest = $this->createUpdateMerchantRequest($refId);
             $resultMerchant = $this->updateMerchant($updateMerchantRequest);
             $resultMerchantDecode = json_decode($resultMerchant);
@@ -216,7 +214,7 @@ class OnboardingController implements HttpPostActionInterface
      * @param string $accessToken
      * @return string
      */
-    private function getRefId(string $accessToken): string
+    private function getRefId(string $accessToken, string $secretCode): string
     {
         $environment = $this->request->getParam('environment');
         $sandboxMode = $environment === Environment::ENVIRONMENT_SANDBOX;
@@ -230,7 +228,8 @@ class OnboardingController implements HttpPostActionInterface
             time(),
             '',
             $clientEmail,
-            $sandboxMode
+            $sandboxMode,
+            $secretCode
         );
 
         if ($this->config->isDebugMode()) {
@@ -242,7 +241,7 @@ class OnboardingController implements HttpPostActionInterface
                 'transaction_id'=>'',
                 'user_id'=>$clientEmail,
                 'sandbox_mode'=>$sandboxMode,
-                'ref_id'=>$refId
+                'ref_id'=>$refId,
             ];
             $this->logger->info($this->serializer->serialize($debug));
         }
