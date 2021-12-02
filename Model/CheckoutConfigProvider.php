@@ -57,16 +57,16 @@ class CheckoutConfigProvider implements ConfigProviderInterface
         $accessToken =  (string) $this->generateAccessToken->execute();
         $quoteId = (string) $quote->getId();
         $customerEmail = $quote->getCustomerEmail() ?? '';
+        $clientId = $this->scopeConfig->getClientId() ?? '';
 
-        $refId = $this->getRefId($accessToken, $quoteId, $customerEmail, $sandboxMode);
-
+        $refId = $this->getRefId($accessToken, $quoteId, $customerEmail,$clientId, $sandboxMode);
         return [
             'payment' => [
                 'payyourway' => [
                     'refid' => $refId,
                     'sdkUrl' => $this->scopeConfig->getPaymentSdkApiEndpoint(),
                     'isActive' => $this->scopeConfig->isPayYourWayEnabled(),
-                    'clientId' => $this->scopeConfig->getClientId(),
+                    'clientId' => $clientId,
                     'environment' => $this->scopeConfig->getEnvironment(),
                     'currency' => $this->storeManager->getStore()->getCurrentCurrency()->getCode(),
                 ]
@@ -86,13 +86,14 @@ class CheckoutConfigProvider implements ConfigProviderInterface
     private function getRefId(
         string $accessToken,
         string $quoteId,
+        string $clientId,
         string $customerEmail = '',
         bool $sandboxMode = false
     ): string {
         $refId = $this->refIdBuilder->buildRefId(
-            $this->scopeConfig->getClientId(),
+            $clientId,
             $accessToken,
-            $this->scopeConfig->getClientId(),
+            $clientId,
             time(),
             $quoteId,
             $customerEmail,
@@ -101,9 +102,9 @@ class CheckoutConfigProvider implements ConfigProviderInterface
 
         if ($this->scopeConfig->isDebugMode()) {
             $debug = [
-                'client_id' => $this->scopeConfig->getClientId(),
+                'client_id' => $clientId,
                 'access_token' => $accessToken,
-                'requestor_id' => $this->scopeConfig->getClientId(),
+                'requestor_id' => $clientId,
                 'timestamp' => time(),
                 'transaction_id' => $quoteId,
                 'user_id' => $customerEmail ?? '',

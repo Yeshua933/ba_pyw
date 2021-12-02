@@ -41,6 +41,11 @@ define(
                         message: 'Currency not supported'
                     });
 
+                } else if(window.checkoutConfig.payment.payyourway.clientId ==='') {
+                    messageList.addErrorMessage({
+                        message: 'Client id missing in PayYourWay configuration'
+                    });
+
                 } else {
                     document.getElementById("overlay").style.display = "block";
                     if (!this.pywLoaded) {
@@ -94,9 +99,7 @@ define(
                 var quoteCurrency = quote.totals()['base_currency_code'];
 
                 return quoteCurrency === 'USD';
-
             }
-
         });
     }
 );
