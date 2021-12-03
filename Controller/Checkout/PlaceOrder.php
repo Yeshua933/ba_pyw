@@ -359,7 +359,7 @@ class PlaceOrder implements HttpGetActionInterface
         /** @var \PayYourWay\Pyw\Api\RequestInterface $paymentConfirmationRequest */
         $paymentConfirmationRequest = $this->paymentConfirmationRequestFactory->create();
         $paymentConfirmationRequest->setChannel('ONLINE');
-        $paymentConfirmationRequest->setMerchantId('PYW');//TODO remove
+        $paymentConfirmationRequest->setMerchantId('PYW');//TODO remove this
         $paymentConfirmationRequest->setPywid($this->request->getParam('pywid'));
         $paymentConfirmationRequest->setTransactionId((string)$this->quote->getId());
         $paymentConfirmationRequest->setActionType('READONLY');
