@@ -41,6 +41,11 @@ define(
                         message: 'Currency not supported'
                     });
 
+                } else if (this.paymentConfig.refid === null) {
+                    messageList.addErrorMessage({
+                        message: 'Payment configuration missing/incorrect.'
+                    });
+
                 } else {
                     document.getElementById("overlay").style.display = "block";
                     if (!this.pywLoaded) {

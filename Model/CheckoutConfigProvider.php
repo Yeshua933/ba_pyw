@@ -81,14 +81,14 @@ class CheckoutConfigProvider implements ConfigProviderInterface
      * @param string $quoteId
      * @param string $customerEmail
      * @param bool $sandboxMode
-     * @return string
+     * @return string|null
      */
     private function getRefId(
         string $accessToken,
         string $quoteId,
         string $customerEmail = '',
         bool $sandboxMode = false
-    ): string {
+    ): ?string {
         $refId = $this->refIdBuilder->buildRefId(
             $this->scopeConfig->getClientId(),
             $accessToken,
