@@ -79,5 +79,13 @@ php bin/magento admin:user:create \
 --admin-firstname=Eui \
 --admin-lastname=Chung
 
+# Create admin account for Sindura
+php bin/magento admin:user:create \
+--admin-user=sindura \
+--admin-password=sindura123 \
+--admin-email=sindura.angadimani@blueacornici.com \
+--admin-firstname=Sindura \
+--admin-lastname=Angadimani
+
 # Flush cache
 php bin/magento cache:flush
