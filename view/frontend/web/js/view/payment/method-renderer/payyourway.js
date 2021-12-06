@@ -40,12 +40,14 @@ define(
                     messageList.addErrorMessage({
                         message: 'Currency not supported'
                     });
-
-                } else if(window.checkoutConfig.payment.payyourway.clientId ==='') {
+                } else if(this.paymentConfig.clientId ==='') {
                     messageList.addErrorMessage({
                         message: 'Client id missing in PayYourWay configuration'
                     });
-
+                } else if (this.paymentConfig.refid === null) {
+                    messageList.addErrorMessage({
+                        message: 'Payment configuration missing/incorrect.'
+                    });
                 } else {
                     document.getElementById("overlay").style.display = "block";
                     if (!this.pywLoaded) {

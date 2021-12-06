@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace PayYourWay\Pyw\Model;
 
 use Magento\Framework\Exception\AlreadyExistsException;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\SerializerInterface;
 use PayYourWay\Pyw\Api\GenerateAccessTokenInterface;
 use PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment;
@@ -120,12 +121,23 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
             ], JSON_THROW_ON_ERROR)
         );
 
-        openssl_sign(
-            $header.".".$claim,
-            $jwtSig,
-            $privateKey,
-            "sha256WithRSAEncryption"
-        );
+        try {
+            openssl_sign(
+                $header.".".$claim,
+                $jwtSig,
+                $privateKey,
+                "sha256WithRSAEncryption"
+            );
+        } catch (LocalizedException $exception) {
+            $this->logger->error(
+                'Something went wrong with the Pay Your Way.',
+                [
+                    'exception' => (string)$exception,
+                ]
+            );
+            return null;
+        }
+
         $jwtSig = $this->getEncoded($jwtSig);
 
         $jwtAssertion = $header.".".$claim.".".$jwtSig;
