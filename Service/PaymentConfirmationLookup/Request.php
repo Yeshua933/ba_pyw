@@ -101,7 +101,8 @@ class Request implements RequestInterface
         return [
             "Accept" => "application/json",
             "channel" => $this->getChannel(),
-            "merchantId" => $this->getMerchantId(),
+            "platform" => 'PYW',
+            "merchantClientId" => $this->getMerchantId(),
             "pywid" => $this->getPywid(),
             "transactionId" => $this->getTransactionId(),
             "actionType" => $this->getActionType(),
