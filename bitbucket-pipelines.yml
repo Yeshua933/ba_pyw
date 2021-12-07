@@ -28,7 +28,7 @@ pipelines:
           script: [ source init, provision ]
           services: [ docker ]
   branches:
-    '{master, pipelines}':
+    '{master,pipelines}':
       - step:
           name: "7.4composer2 & 2.4.3-ee"
           size: 2x
