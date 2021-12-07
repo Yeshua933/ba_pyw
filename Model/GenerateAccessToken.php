@@ -85,7 +85,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
             ], JSON_THROW_ON_ERROR)
         );
 
-        $storedAccessToken = $this->isStoredTokenExpired($storedAccessToken);
+        $storedAccessToken = $this->checkTokenExpiration($storedAccessToken);
 
         if ($this->validateParameters($clientId, $privateKey)) {
             return null;
@@ -117,9 +117,9 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
 
     /**
      * If token is 15 minutes or less from expiring, token is deleted and Null is returned
-     * If token is not expired existing token is returned.
+     * If token is not expired existing string token entity is returned.
      */
-    private function isStoredTokenExpired($storedAccessToken)
+    private function checkTokenExpiration($storedAccessToken)
     {
         if ($storedAccessToken->getId() !== null) {
 
@@ -135,7 +135,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
              * If the difference is greater or equal than 15 minutes
              */
             if ($difference >= self::THRESHOLD) {
-                return $storedAccessToken->getAccessToken();
+                return $storedAccessToken;
             }
 
             try {
