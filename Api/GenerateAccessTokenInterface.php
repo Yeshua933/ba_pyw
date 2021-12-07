@@ -14,20 +14,12 @@ namespace PayYourWay\Pyw\Api;
  */
 interface GenerateAccessTokenInterface
 {
-
-    /**
-     * Generate the OAUTH token for PYW server
-     *
-     * @return string
-     */
-    public function execute(): ?string;
-
     /**
      * Generate the OAUTH token for PYW server passing the parameters
      *
      * @return string
      */
-    public function executeWithParams(
+    public function execute(
         string $clientId,
         string $privateKey
     ): ?string;
