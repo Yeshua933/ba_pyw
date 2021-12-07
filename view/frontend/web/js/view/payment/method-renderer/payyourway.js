@@ -40,7 +40,14 @@ define(
                     messageList.addErrorMessage({
                         message: 'Currency not supported'
                     });
-
+                } else if(this.paymentConfig.clientId ==='') {
+                    messageList.addErrorMessage({
+                        message: 'Client id missing in PayYourWay configuration'
+                    });
+                } else if (this.paymentConfig.refid === null) {
+                    messageList.addErrorMessage({
+                        message: 'Payment configuration missing/incorrect.'
+                    });
                 } else {
                     document.getElementById("overlay").style.display = "block";
                     if (!this.pywLoaded) {
@@ -94,9 +101,7 @@ define(
                 var quoteCurrency = quote.totals()['base_currency_code'];
 
                 return quoteCurrency === 'USD';
-
             }
-
         });
     }
 );

@@ -132,7 +132,7 @@ class OnboardingController implements HttpPostActionInterface
         $clientId = $this->request->getParam('client_id');
         $privateKey = $this->request->getParam('private_key');
         $privateKey = $this->cleanPrivateKey($privateKey);
-        return $this->generateAccessToken->executeWithParams($clientId, $privateKey);
+        return $this->generateAccessToken->execute($clientId, $privateKey);
     }
 
     private function createOnboardingRequest(): OnboardingRequestInterface

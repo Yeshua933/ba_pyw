@@ -22,7 +22,7 @@ interface RefIdBuilderInterface
      * @param string $transactionId
      * @param string|null $userId
      * @param bool $sandbox
-     * @return string
+     * @return string|null
      */
     public function buildRefId(
         string $clientId,
