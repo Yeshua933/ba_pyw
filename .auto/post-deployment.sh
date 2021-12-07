@@ -87,5 +87,37 @@ php bin/magento admin:user:create \
 --admin-firstname=Sindura \
 --admin-lastname=Angadimani
 
+# Create admin account for Amol
+php bin/magento admin:user:create \
+--admin-user=amol \
+--admin-password=amol123 \
+--admin-email=amol.bhangale@syw.com \
+--admin-firstname=amol \
+--admin-lastname=bhangale
+
+# Create admin account for Alkesh
+php bin/magento admin:user:create \
+--admin-user=alkesh \
+--admin-password=alkesh123 \
+--admin-email=alkeshmohandas.prabhudesai@syw.com \
+--admin-firstname=Sindura \
+--admin-lastname=Prabhidesai
+
+# Create admin account for Jenny
+php bin/magento admin:user:create \
+--admin-user=jenny \
+--admin-password=jenny123 \
+--admin-email=jenny.kishazy@syw.com \
+--admin-firstname=jenny \
+--admin-lastname=kishazy
+
+# Create admin account for Mehul
+php bin/magento admin:user:create \
+--admin-user=mehul \
+--admin-password=mehul123 \
+--admin-email=mehul.parekh@syw.com \
+--admin-firstname=mehul \
+--admin-lastname=Parekh
+
 # Flush cache
 php bin/magento cache:flush
