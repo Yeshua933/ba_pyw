@@ -53,7 +53,7 @@ define(
             },
 
             loadPayYourWay : function (open) {
-                let sdkUrl = this.paymentConfig.sdkUrl;
+                var sdkUrl = this.paymentConfig.sdkUrl;
                 return pywSdk(sdkUrl);
             },
 
@@ -69,8 +69,8 @@ define(
             },
 
             openPopup : function () {
-                let grandTotal = parseFloat(this.getGrandTotal());
-                let returnUrl = this.baseUrl + this.returnController;
+                var grandTotal = parseFloat(this.getGrandTotal());
+                var returnUrl = this.baseUrl + this.returnController;
                 this.isPopupTriggered = true;
 
                 preparePayment(this.paymentConfig.refid, grandTotal, returnUrl, this.paymentConfig.clientId);
@@ -81,8 +81,8 @@ define(
             },
 
             handleHash: function () {
-                let hash = window.location.hash;
-                let paymentHash = '#payment';
+                var hash = window.location.hash;
+                var paymentHash = '#payment';
 
                 if (this.isPopupTriggered && hash !== paymentHash) {
                     childwin.close();
