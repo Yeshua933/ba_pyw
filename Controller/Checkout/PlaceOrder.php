@@ -310,7 +310,15 @@ class PlaceOrder implements HttpGetActionInterface
             return false;
         }
 
+        //TODO: verify return request is needed for condition when errors are present.
         if (!empty($paymentConfirmationResponseDecode['errors'])) {
+            $paymentCancellationResponse = $this->paymentConfirmationLookup->lookup(
+                $this->createReturnCancellationRequest()
+            );
+            if ($this->config->isDebugMode()) {
+                $this->logger->info($paymentCancellationResponse);
+            }
+
             $this->logger->error(
                 'There is an issue with the payment gateway provider.',
                 [
@@ -325,6 +333,13 @@ class PlaceOrder implements HttpGetActionInterface
         }
 
         if ((float)$paymentConfirmationResponseDecode['paymentTotal'] !== $this->quote->getGrandTotal()) {
+            $paymentConfirmationResponse = $this->paymentConfirmationLookup->lookup(
+                $this->createReturnCancellationRequest()
+            );
+            if ($this->config->isDebugMode()) {
+                $this->logger->info($paymentConfirmationResponse);
+            }
+
             $this->logger->error(
                 'The amount returned from PayYour Way doesn\'t match the amount on the store.',
                 [
@@ -338,6 +353,52 @@ class PlaceOrder implements HttpGetActionInterface
             );
             return false;
         }
+
+        $paymentConfirmationResponseConfirm = $this->paymentConfirmationLookup->lookup(
+            $this->createPaymentConfirmationRequestConfirm()
+        );
+
+        if ($this->config->isDebugMode()) {
+            $this->logger->info($paymentConfirmationResponseConfirm);
+        }
+
+        $paymentConfirmationResponseConfirmDecode = $this->serializer->unserialize($paymentConfirmationResponseConfirm);
+
+        if (!is_array($paymentConfirmationResponseConfirmDecode)) {
+            $this->logger->error(
+                'There is an issue with the payment gateway provider',
+                [
+                    'quote' => $this->quote->getData(),
+                ]
+            );
+            $this->messageManager->addErrorMessage(
+                __('There is an issue with the payment gateway provider')
+            );
+            return false;
+        }
+
+        if (!empty($paymentConfirmationResponseConfirmDecode['errors'])) {
+            $paymentConfirmationResponse = $this->paymentConfirmationLookup->lookup(
+                $this->createReturnCancellationRequest()
+            );
+            if ($this->config->isDebugMode()) {
+                $this->logger->info($paymentConfirmationResponse);
+            }
+
+            $this->logger->error(
+                'There is an issue with the payment gateway provider.',
+                [
+                    'payment_response' => $paymentConfirmationResponseDecode,
+                    'quote' => $this->quote->getData()
+                ]
+            );
+            $this->messageManager->addErrorMessage(
+                __('There is an issue with the payment gateway provider.')
+            );
+            return false;
+        }
+
+
         return true;
     }
 
@@ -363,6 +424,59 @@ class PlaceOrder implements HttpGetActionInterface
         $paymentConfirmationRequest->setPywid($this->request->getParam('pywid'));
         $paymentConfirmationRequest->setTransactionId((string)$this->quote->getId());
         $paymentConfirmationRequest->setActionType('READONLY');
+        $paymentConfirmationRequest->setTransactionType('1P');
+        $paymentConfirmationRequest->setRefId($refId);
+
+        return $paymentConfirmationRequest;
+    }
+
+    /**
+     * @throws \JsonException
+     */
+    private function createPaymentConfirmationRequestConfirm(): \PayYourWay\Pyw\Api\RequestInterface
+    {
+        $accessToken =  $this->generateAccessToken->execute();
+        if ($accessToken === null) {
+            $accessToken = '';
+        }
+        $sandboxMode = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX;
+        $quoteId = (string) $this->quote->getId();
+        $customerEmail = $this->quote->getCustomerEmail() ?? '';
+
+        $refId = $this->getRefId($accessToken, $quoteId, $customerEmail, $sandboxMode);
+
+        /** @var \PayYourWay\Pyw\Api\RequestInterface $paymentConfirmationRequest */
+        $paymentConfirmationRequest = $this->paymentConfirmationRequestFactory->create();
+        $paymentConfirmationRequest->setChannel('ONLINE');
+        $paymentConfirmationRequest->setMerchantId($this->config->getClientId());//TODO remove this
+        $paymentConfirmationRequest->setPywid($this->request->getParam('pywid'));
+        $paymentConfirmationRequest->setTransactionId((string)$this->quote->getId());
+        $paymentConfirmationRequest->setActionType('CONFIRM');
+        $paymentConfirmationRequest->setTransactionType('1P');
+        $paymentConfirmationRequest->setRefId($refId);
+
+        return $paymentConfirmationRequest;
+    }
+
+    private function createReturnCancellationRequest(): \PayYourWay\Pyw\Api\RequestInterface
+    {
+        $accessToken =  $this->generateAccessToken->execute();
+        if ($accessToken === null) {
+            $accessToken = '';
+        }
+        $sandboxMode = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX;
+        $quoteId = (string) $this->quote->getId();
+        $customerEmail = $this->quote->getCustomerEmail() ?? '';
+
+        $refId = $this->getRefId($accessToken, $quoteId, $customerEmail, $sandboxMode);
+
+        /** @var \PayYourWay\Pyw\Api\RequestInterface $paymentConfirmationRequest */
+        $paymentConfirmationRequest = $this->paymentConfirmationRequestFactory->create();
+        $paymentConfirmationRequest->setChannel('ONLINE');
+        $paymentConfirmationRequest->setMerchantId($this->config->getClientId());//TODO remove this
+        $paymentConfirmationRequest->setPywid($this->request->getParam('pywid'));
+        $paymentConfirmationRequest->setTransactionId((string)$this->quote->getId());
+        $paymentConfirmationRequest->setActionType('CANCEL');
         $paymentConfirmationRequest->setTransactionType('1P');
         $paymentConfirmationRequest->setRefId($refId);
 
