@@ -93,18 +93,21 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
 
         $this->debugCheckpoint($isDebugMode, $clientId, $privateKey);
 
-        $jwtSig = $this->generateJWTSignature($header, $claim, $privateKey);
+        if(!isset($storedAccessToken)){
+            $jwtSig = $this->generateJWTSignature($header, $claim, $privateKey);
 
-        $accessTokenDecoded = $this->getAccessTokenRequest($header, $claim, $jwtSig);
+            $accessTokenDecoded = $this->getAccessTokenRequest($header, $claim, $jwtSig);
 
-        $this->debugCheckpoint($isDebugMode, $clientId, $privateKey, $accessTokenDecoded);
-
-        if (array_key_exists('error', $accessTokenDecoded) && !empty($accessTokenDecoded['error'])) {
             $this->debugCheckpoint($isDebugMode, $clientId, $privateKey, $accessTokenDecoded);
-            return null;
-        }
 
-        $this->saveAccessToken($accessTokenDecoded);
+            if (array_key_exists('error', $accessTokenDecoded) && !empty($accessTokenDecoded['error'])) {
+                $this->debugCheckpoint($isDebugMode, $clientId, $privateKey, $accessTokenDecoded);
+                return null;
+            }
+            $newAccessToken = $this->saveAccessToken($accessTokenDecoded);
+
+            return $newAccessToken->getAccessToken();
+        }
 
         return $storedAccessToken->getAccessToken();
     }
@@ -206,7 +209,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
         return $this->serializer->unserialize($accessTokenEncode);
     }
 
-    private function saveAccessToken($accessTokenDecoded): void
+    private function saveAccessToken($accessTokenDecoded)
     {
         /** @var AccessToken $accessToken */
         $accessToken = $this->accessTokenFactory->create();
@@ -216,8 +219,9 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
         $accessToken->setIss((int)$accessTokenDecoded['iss']);
         try {
             $this->resourceModel->save($accessToken);
+            return $accessToken;
         } catch (AlreadyExistsException $e) {
-            return;
+            return null;
         }
     }
 }
