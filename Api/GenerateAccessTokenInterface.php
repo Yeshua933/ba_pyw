@@ -7,8 +7,6 @@ declare(strict_types=1);
 
 namespace PayYourWay\Pyw\Api;
 
-use PayYourWay\Pyw\Model\AccessToken;
-
 /**
  * Used for creating/renewing the Pay Your Way Access Token
  *
@@ -19,7 +17,9 @@ interface GenerateAccessTokenInterface
     /**
      * Generate the OAUTH token for PYW server passing the parameters
      *
-     * @return AccessToken
+     * @param string $clientId
+     * @param string $privateKey
+     * @return string|null
      */
     public function execute(
         string $clientId,

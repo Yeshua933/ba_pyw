@@ -206,7 +206,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
         return $this->serializer->unserialize($accessTokenEncode);
     }
 
-    private function saveAccessToken($accessTokenDecoded)
+    private function saveAccessToken($accessTokenDecoded): ?AccessToken
     {
         /** @var AccessToken $accessToken */
         $accessToken = $this->accessTokenFactory->create();
