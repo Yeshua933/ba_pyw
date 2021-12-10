@@ -50,8 +50,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
         SerializerInterface                $serializer,
         Collection                         $collection,
         LoggerInterface                    $logger
-    )
-    {
+    ) {
         $this->config = $config;
         $this->accessTokenRequestFactory = $accessTokenRequestFactory;
         $this->accessTokenLookup = $accessTokenLookup;
@@ -93,7 +92,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
 
         $this->debugCheckpoint($isDebugMode, $clientId, $privateKey);
 
-        if(!isset($storedAccessToken)){
+        if (!isset($storedAccessToken)) {
             $jwtSig = $this->generateJWTSignature($header, $claim, $privateKey);
 
             $accessTokenDecoded = $this->getAccessTokenRequest($header, $claim, $jwtSig);
@@ -111,7 +110,6 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
 
         return $storedAccessToken->getAccessToken();
     }
-
 
     private function getEncoded($data): string
     {
@@ -153,8 +151,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
     private function validateParameters(
         ?string $clientId,
         ?string $privateKey
-    ): bool
-    {
+    ): bool {
         return ($clientId === null || $privateKey === null);
     }
 

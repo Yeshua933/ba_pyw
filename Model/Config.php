@@ -190,7 +190,6 @@ class Config implements PywConfigInterface
             return "-----BEGIN RSA PRIVATE KEY-----\n$privateKey-----END RSA PRIVATE KEY-----\n";
         }
         return null;
-
     }
 
     /**
