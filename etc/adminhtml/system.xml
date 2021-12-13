@@ -233,7 +233,7 @@
                         <label>Sign up</label>
                         <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\PywOnboarding</frontend_model>
                         <comment>
-                            <![CDATA[<a href="http://www.shopyourway.com">Program Information</a>]]>
+                            <![CDATA[<a href="http://www.shopyourway.com" target="_blank">Program Information</a>]]>
                         </comment>
                     </field>
                 </group>
