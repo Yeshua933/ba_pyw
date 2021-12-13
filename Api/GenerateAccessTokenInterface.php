@@ -17,7 +17,9 @@ interface GenerateAccessTokenInterface
     /**
      * Generate the OAUTH token for PYW server passing the parameters
      *
-     * @return string
+     * @param string $clientId
+     * @param string $privateKey
+     * @return string|null
      */
     public function execute(
         string $clientId,

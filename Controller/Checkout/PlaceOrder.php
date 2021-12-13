@@ -398,7 +398,6 @@ class PlaceOrder implements HttpGetActionInterface
             return false;
         }
 
-
         return true;
     }
 

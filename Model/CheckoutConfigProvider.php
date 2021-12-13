@@ -37,8 +37,7 @@ class CheckoutConfigProvider implements ConfigProviderInterface
         CheckoutSession       $checkoutSession,
         SerializerInterface   $serializer,
         LoggerInterface       $logger
-    )
-    {
+    ) {
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
         $this->generateAccessToken = $generateAccessToken;
@@ -93,8 +92,7 @@ class CheckoutConfigProvider implements ConfigProviderInterface
         string $clientId,
         string $customerEmail = '',
         bool   $sandboxMode = false
-    ): ?string
-    {
+    ): ?string {
         $refId = $this->refIdBuilder->buildRefId(
             $clientId,
             $accessToken,

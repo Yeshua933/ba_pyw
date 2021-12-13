@@ -232,6 +232,9 @@
                     <field id="sign_up" translate="label" type="button" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                         <label>Sign up</label>
                         <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\PywOnboarding</frontend_model>
+                        <comment>
+                            <![CDATA[<a href="http://www.shopyourway.com" target="_blank">Program Information</a>]]>
+                        </comment>
                     </field>
                 </group>
 
