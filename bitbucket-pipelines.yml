@@ -27,7 +27,6 @@ pipelines:
           deployment: auto
           trigger: automatic
           script: [ source init ]
-          services: [ docker ]
       - parallel:
         - step:
             name: "2.4.0 Magento Open Source"
@@ -59,6 +58,8 @@ pipelines:
       - step:
           name: Destroy
           trigger: manual
+          size: 2x
           script: [ source init, destroy ]
+          services: [ docker ]
 
 
