@@ -32,7 +32,7 @@ pipelines:
             name: "2.4.0 Magento Open Source"
             size: 2x
             script: [
-                export AUTO_IMAGE_TYPE=7.4c,
+                export AUTO_IMAGE_TYPE=7.4,
                 export AUTO_USE_EXAMPLE=2.4.0-ce,
                 export AUTO_TESTS_ALWAYS_PASS=true,
 
