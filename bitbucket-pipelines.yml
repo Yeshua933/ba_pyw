@@ -41,7 +41,7 @@ pipelines:
             ]
             services: [ docker ] 
         - step:
-            name: "Adobe Commerce 2.4.3"
+            name: "2.4.3 Adobe Commerce"
             size: 2x
             script: [
                 export AUTO_IMAGE_TYPE=7.4composer2,
