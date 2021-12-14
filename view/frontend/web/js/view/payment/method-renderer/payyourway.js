@@ -36,12 +36,19 @@ define(
             },
 
             openPayYourWay : function () {
-                if(!this.isValidCurrency()){
+                if (!this.isValidCurrency()) {
                     messageList.addErrorMessage({
                         message: 'Currency not supported'
                     });
-
-                }else{
+                } else if(this.paymentConfig.clientId ==='') {
+                    messageList.addErrorMessage({
+                        message: 'Client id missing in PayYourWay configuration'
+                    });
+                } else if (this.paymentConfig.refid === null) {
+                    messageList.addErrorMessage({
+                        message: 'Payment configuration missing/incorrect.'
+                    });
+                } else {
                     document.getElementById("overlay").style.display = "block";
                     if (!this.pywLoaded) {
                         this.loadPayYourWay()
@@ -73,7 +80,7 @@ define(
                 let returnUrl = this.baseUrl + this.returnController;
                 this.isPopupTriggered = true;
 
-                preparePayment(this.paymentConfig.refid, grandTotal, returnUrl);
+                preparePayment(this.paymentConfig.refid, grandTotal, returnUrl, this.paymentConfig.clientId);
             },
 
             getGrandTotal : function () {
@@ -93,13 +100,8 @@ define(
             isValidCurrency: function () {
                 var quoteCurrency = quote.totals()['base_currency_code'];
 
-                if (quoteCurrency === 'USD')
-                {
-                    return true;
-                }
-                return false;
+                return quoteCurrency === 'USD';
             }
-
         });
     }
 );

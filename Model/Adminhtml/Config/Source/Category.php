@@ -22,16 +22,24 @@ class Category implements ArrayInterface
         return [
             [
                 'value' => 0,
-                'label' => 'N/A',
+                'label' => 'Other',
             ],
             [
                 'value' => 1,
-                'label' => 'Category 1',
+                'label' => 'Travel',
             ],
             [
                 'value' => 2,
-                'label' => 'Category 2'
-            ]
+                'label' => 'Grocery'
+            ],
+            [
+                'value' => 3,
+                'label' => 'Restaurant'
+            ],
+            [
+                'value' => 4,
+                'label' => 'Gas Station'
+            ],
         ];
     }
 }

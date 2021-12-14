@@ -7,8 +7,11 @@ declare(strict_types=1);
 
 namespace PayYourWay\Pyw\Model;
 
+use JsonException;
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Checkout\Model\Session as CheckoutSession;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use PayYourWay\Pyw\Api\ConfigInterface;
@@ -27,13 +30,13 @@ class CheckoutConfigProvider implements ConfigProviderInterface
     private LoggerInterface $logger;
 
     public function __construct(
-        ConfigInterface $scopeConfig,
+        ConfigInterface       $scopeConfig,
         StoreManagerInterface $storeManager,
-        GenerateAccessToken $generateAccessToken,
+        GenerateAccessToken   $generateAccessToken,
         RefIdBuilderInterface $refIdBuilder,
-        CheckoutSession $checkoutSession,
-        SerializerInterface $serializer,
-        LoggerInterface $logger
+        CheckoutSession       $checkoutSession,
+        SerializerInterface   $serializer,
+        LoggerInterface       $logger
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->storeManager = $storeManager;
@@ -46,27 +49,27 @@ class CheckoutConfigProvider implements ConfigProviderInterface
 
     /**
      * @return array
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     * @throws \JsonException
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     * @throws JsonException
      */
     public function getConfig(): array
     {
         $quote = $this->checkoutSession->getQuote();
         $sandboxMode = $this->scopeConfig->getEnvironment() === Environment::ENVIRONMENT_SANDBOX;
-        $accessToken =  (string) $this->generateAccessToken->execute();
-        $quoteId = (string) $quote->getId();
+        $accessToken = (string)$this->generateAccessToken->execute();
+        $quoteId = (string)$quote->getId();
         $customerEmail = $quote->getCustomerEmail() ?? '';
+        $clientId = $this->scopeConfig->getClientId() ?? '';
 
-        $refId = $this->getRefId($accessToken, $quoteId, $customerEmail, $sandboxMode);
-
+        $refId = $this->getRefId($accessToken, $quoteId, $customerEmail, $clientId, $sandboxMode);
         return [
             'payment' => [
                 'payyourway' => [
                     'refid' => $refId,
                     'sdkUrl' => $this->scopeConfig->getPaymentSdkApiEndpoint(),
                     'isActive' => $this->scopeConfig->isPayYourWayEnabled(),
-                    'clientId' => $this->scopeConfig->getClientId(),
+                    'clientId' => $clientId,
                     'environment' => $this->scopeConfig->getEnvironment(),
                     'currency' => $this->storeManager->getStore()->getCurrentCurrency()->getCode(),
                 ]
@@ -81,18 +84,19 @@ class CheckoutConfigProvider implements ConfigProviderInterface
      * @param string $quoteId
      * @param string $customerEmail
      * @param bool $sandboxMode
-     * @return string
+     * @return string|null
      */
     private function getRefId(
         string $accessToken,
         string $quoteId,
+        string $clientId,
         string $customerEmail = '',
-        bool $sandboxMode = false
-    ): string {
+        bool   $sandboxMode = false
+    ): ?string {
         $refId = $this->refIdBuilder->buildRefId(
-            $this->scopeConfig->getClientId(),
+            $clientId,
             $accessToken,
-            $this->scopeConfig->getClientId(),
+            $clientId,
             time(),
             $quoteId,
             $customerEmail,
@@ -101,14 +105,13 @@ class CheckoutConfigProvider implements ConfigProviderInterface
 
         if ($this->scopeConfig->isDebugMode()) {
             $debug = [
-                'client_id' => $this->scopeConfig->getClientId(),
+                'client_id' => $clientId,
                 'access_token' => $accessToken,
-                'requestor_id' => $this->scopeConfig->getClientId(),
+                'requestor_id' => $clientId,
                 'timestamp' => time(),
                 'transaction_id' => $quoteId,
                 'user_id' => $customerEmail ?? '',
-                'sandbox_mode'=> $sandboxMode,
-                'ref_id' => $refId
+                'sandbox_mode' => $sandboxMode
             ];
             $this->logger->info($this->serializer->serialize($debug));
         }

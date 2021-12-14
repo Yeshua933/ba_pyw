@@ -22,7 +22,7 @@ interface RefIdBuilderInterface
      * @param string $transactionId
      * @param string|null $userId
      * @param bool $sandbox
-     * @return string
+     * @return string|null
      */
     public function buildRefId(
         string $clientId,
@@ -31,6 +31,7 @@ interface RefIdBuilderInterface
         int $timestamp,
         string $transactionId,
         string $userId = '',
-        bool $sandbox = false
-    ): string;
+        bool $sandbox = false,
+        string $secretCode = ''
+    ): ?string;
 }

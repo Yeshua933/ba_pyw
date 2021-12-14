@@ -177,9 +177,13 @@ interface ConfigInterface
     public function getMerchantName(string $scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string;
 
     /**
+     * Get Secret Code
+     * @param string|null $scopeId
+     * @param string $scope
      * @return string
-     * @throws Exception
      */
-    public function generateClientId(): string;
-
+    public function getSecretKey(
+        string $scopeId = null,
+        string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT
+    ): ?string;
 }

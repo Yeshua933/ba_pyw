@@ -22,8 +22,7 @@ class GenerateAccess implements HttpPostActionInterface
         GenerateAccessTokenInterface $generateAccessToken,
         JsonFactory                  $jsonFactory,
         LoggerInterface              $logger
-    )
-    {
+    ) {
         $this->generateAccessToken = $generateAccessToken;
         $this->jsonFactory = $jsonFactory;
         $this->logger = $logger;
@@ -41,7 +40,8 @@ class GenerateAccess implements HttpPostActionInterface
                 'Unable to save access Token',
                 [
                     'exception' => (string)$exception
-                ]);
+                ]
+            );
             return $result->setHttpResponseCode(404);
         }
     }

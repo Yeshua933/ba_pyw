@@ -27,6 +27,20 @@
                         <config_path>payment/payyourway/environment</config_path>
                         <source_model>PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment</source_model>
                     </field>
+                    <field id="merchant_name_pr" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Merchant Name</label>
+                        <config_path>payment/payyourway/merchant_name_pr</config_path>
+                        <depends>
+                            <field id="*/*/*/environment">production</field>
+                        </depends>
+                    </field>
+                    <field id="merchant_name_sb" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Sandbox Merchant Name</label>
+                        <config_path>payment/payyourway/merchant_name_sb</config_path>
+                        <depends>
+                            <field id="*/*/*/environment">sandbox</field>
+                        </depends>
+                    </field>
                     <field id="client_id_pr" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                         <label>Client Id</label>
                         <config_path>payment/payyourway/client_id_pr</config_path>
@@ -96,24 +110,6 @@
                         <depends>
                             <field id="*/*/settings/environment">sandbox</field>
                         </depends>
-                    </field>
-                    <field id="merchant_name_pr" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                        <label>Merchant Name</label>
-                        <config_path>payment/payyourway/merchant_name_pr</config_path>
-                        <depends>
-                            <field id="*/*/settings/environment">production</field>
-                        </depends>
-                    </field>
-                    <field id="merchant_name_sb" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                        <label>Sandbox Merchant Name</label>
-                        <config_path>payment/payyourway/merchant_name_sb</config_path>
-                        <depends>
-                            <field id="*/*/settings/environment">sandbox</field>
-                        </depends>
-                    </field>
-                    <field id="generate_client_id" translate="label" type="button" sortOrder="91" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                        <label>Generate Client ID</label>
-                        <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\GenerateClientId</frontend_model>
                     </field>
                     <field id="merchant_email_pr" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                         <label>Merchant Email</label>
@@ -232,6 +228,9 @@
                     <field id="sign_up" translate="label" type="button" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                         <label>Sign up</label>
                         <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\PywOnboarding</frontend_model>
+                        <comment>
+                            <![CDATA[<a href="http://www.shopyourway.com" target="_blank">Program Information</a>]]>
+                        </comment>
                     </field>
                 </group>
 
@@ -246,10 +245,6 @@
                         <label>Enable Refresh Token Process</label>
                         <config_path>payment/payyourway/enable_refresh_token_process</config_path>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    </field>
-                    <field id="generate_key" translate="label" type="button" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                        <label>Generate Access Token</label>
-                        <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\KeyGenerator</frontend_model>
                     </field>
                     <field id="payment_confirmation_url_uat" translate="label" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                         <label>UAT Payment Confirmation URL</label>
