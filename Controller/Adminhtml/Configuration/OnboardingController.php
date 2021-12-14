@@ -80,7 +80,14 @@ class OnboardingController implements HttpPostActionInterface
             $this->logger->info($this->serializer->serialize($debug));
         }
 
-        if ($resultDecode->status === 'ERROR') {
+        if ($resultDecode->status === 'ERROR' && $resultDecode->message === 'The Client ID chosen is already taken') {
+            $this->logger->info($this->serializer->serialize($resultDecode));
+            $response->setData('Client Id already registered');
+            $response->setHttpResponseCode(400);
+            return $response;
+        }
+
+        if ($resultDecode->status === 'ERROR' ) {
             $this->logger->info($this->serializer->serialize($resultDecode));
             $response->setHttpResponseCode(400);
             return $response;
