@@ -35,13 +35,14 @@ class AddTitle implements DataPatchInterface, PatchVersionInterface
     public function apply()
     {
         $this->moduleDataSetup->startSetup();
+        /*
         $this->moduleDataSetup->getConnection()->insert("core_config_data",
             ["scope" => "default",
                 "scope_id" => 0,
                 "path" => "payment/payyourway/title",
                 "value" => "Pay with Shop Your Way"
             ]
-        );
+        );*/
         $this->moduleDataSetup->endSetup();
     }
 
