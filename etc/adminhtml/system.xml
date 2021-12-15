@@ -34,9 +34,27 @@
                             <field id="*/*/*/environment">production</field>
                         </depends>
                     </field>
+                    <field id="merchant_status_pr" translate="label" type="text" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Production Merchant Status</label>
+                        <frontend_model>PayYourWay\Pyw\Block\Adminhtml\Config\Form\Field\MerchantStatusProduction</frontend_model>
+                        <comment><![CDATA[Production Merchant status]]></comment>
+                        <config_path>payment/payyourway/merchant_status_pr</config_path>
+                        <depends>
+                            <field id="*/*/*/environment">production</field>
+                        </depends>
+                    </field>
                     <field id="merchant_name_sb" translate="label" type="text" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                         <label>Sandbox Merchant Name</label>
                         <config_path>payment/payyourway/merchant_name_sb</config_path>
+                        <depends>
+                            <field id="*/*/*/environment">sandbox</field>
+                        </depends>
+                    </field>
+                    <field id="merchant_status_sb" translate="label" type="text" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Sandbox Merchant Status</label>
+                        <frontend_model>PayYourWay\Pyw\Block\Adminhtml\Config\Form\Field\MerchantStatusSandbox</frontend_model>
+                        <comment><![CDATA[Sandbox Merchant status]]></comment>
+                        <config_path>payment/payyourway/merchant_status_sb</config_path>
                         <depends>
                             <field id="*/*/*/environment">sandbox</field>
                         </depends>
