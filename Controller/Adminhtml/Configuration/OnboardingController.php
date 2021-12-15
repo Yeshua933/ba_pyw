@@ -38,6 +38,8 @@ class OnboardingController implements HttpPostActionInterface
     private SerializerInterface $serializer;
     private GenerateAccessToken $generateAccessToken;
     private RefIdBuilderInterface $refIdBuilder;
+    private const MESSAGE_CLIENT_ID_ALREADY_TAKEN = 'The Client ID chosen is already taken';
+    private const MESSAGE_ERROR = 'ERROR';
 
     public function __construct(
         JsonFactory $jsonFactory,
@@ -80,14 +82,15 @@ class OnboardingController implements HttpPostActionInterface
             $this->logger->info($this->serializer->serialize($debug));
         }
 
-        if ($resultDecode->status === 'ERROR' && $resultDecode->message === 'The Client ID chosen is already taken') {
+        if ($resultDecode->status === self::MESSAGE_ERROR &&
+            $resultDecode->message === self::MESSAGE_CLIENT_ID_ALREADY_TAKEN) {
             $this->logger->info($this->serializer->serialize($resultDecode));
-            $response->setData('Client Id already registered');
+            $response->setData(self::MESSAGE_CLIENT_ID_ALREADY_TAKEN);
             $response->setHttpResponseCode(400);
             return $response;
         }
 
-        if ($resultDecode->status === 'ERROR' ) {
+        if ($resultDecode->status === self::MESSAGE_ERROR) {
             $this->logger->info($this->serializer->serialize($resultDecode));
             $response->setHttpResponseCode(400);
             return $response;
