@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+/**
+ * @author    Blue Acorn iCi <code@blueacornici.com>
+ * @copyright 2021 Blue Acorn iCi. All Rights Reserved.
+ */
+-->
+<tests xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/testSchema.xsd">
+    <test name="PayYourWayStorefrontCheckoutTest">
+        <annotations>
+            <group value="PayYourWay"/>
+            <features value="PayYourWay"/>
+            <stories value="As a registered customer, I should be able to place an order using Pay Your Way"/>
+            <title value="Validate checkout with Pay Your Way"/>
+            <description value="Validate that a registered customer will have the Pay Your Way payment method option during the checkout and that order can be placed"/>
+            <severity value="CRITICAL"/>
+        </annotations>
+        <before>
+            <!-- Login -->
+            <actionGroup ref="AdminLoginActionGroup" stepKey="login"/>
+            <!-- Create Product -->
+            <createData entity="_defaultCategory" stepKey="createCategory"/>
+            <createData entity="_defaultProduct" stepKey="createProduct">
+                <requiredEntity createDataKey="createCategory"/>
+            </createData>
+            <!-- Create Customer -->
+            <createData entity="Simple_US_Customer" stepKey="createCustomer"/>
+            <!--Enable Free Shipping-->
+            <createData entity="FreeShippinMethodConfig" stepKey="enableFreeShipping"/>
+        </before>
+        <after>
+            <!-- Delete product -->
+            <deleteData stepKey="deleteCategory" createDataKey="createCategory"/>
+            <deleteData stepKey="deleteProduct" createDataKey="createProduct"/>
+            <!--Delete customer -->
+            <deleteData stepKey="deleteCustomer" createDataKey="createCustomer"/>
+            <!--Disable Free Shipping-->
+            <actionGroup ref="CliDisableFreeShippingMethodActionGroup" stepKey="disableFreeShipping"/>
+            <!-- Logout -->
+            <actionGroup ref="AdminLogoutActionGroup" stepKey="logoutFromAdmin"/>
+        </after>
+
+        <!-- Login to the storefront as the previously created customer -->
+        <actionGroup ref="LoginToStorefrontActionGroup" stepKey="loginAsCustomer">
+            <argument name="Customer" value="$$createCustomer$$"/>
+        </actionGroup>
+
+        <!-- Navigate to the previously created category page -->
+        <amOnPage url="{{StorefrontCategoryPage.url($$createCategory.custom_attributes[url_key]$$)}}" stepKey="navigateToCategoryPage"/>
+
+        <!-- Add the previously created product to the cart -->
+        <actionGroup ref="StorefrontAddProductToCartFromCategoryActionGroup" stepKey="addProductToCart">
+            <argument name="productName" value="$$createProduct.name$$"/>
+        </actionGroup>
+
+        <!-- Go to the checkout page -->
+        <actionGroup ref="GoToCheckoutFromMinicartActionGroup" stepKey="goToCheckoutFromMinicart"/>
+
+        <!-- Select the Free Shipping Method -->
+        <click selector="{{CheckoutShippingMethodsSection.checkShippingMethodByName('Free Shipping')}}" stepKey="selectFlatShippingMethod"/>
+        <waitForLoadingMaskToDisappear stepKey="waitForLoadingMask2"/>
+        <actionGroup ref="StorefrontCheckoutClickNextButtonActionGroup" stepKey="clickNext"/>
+
+        <!--Assert grand total-->
+        <actionGroup ref="VerifyCheckoutPaymentOrderSummaryActionGroup" stepKey="verifyCheckoutPaymentOrderSummary">
+            <argument name="orderSummarySubTotal" value="$123.00"/>
+            <argument name="orderSummaryShippingTotal" value="$0.00"/>
+            <argument name="orderSummaryTotal" value="$123.00"/>
+        </actionGroup>
+
+        <dontSeeElement selector="{{StorefrontOrderReviewSection.taxCost}}" stepKey="taxAssertion"/>
+
+        <!-- Click over the PayYourWay payment radio button -->
+        <waitForElement selector="{{CheckoutPaymentSection.paymentSectionTitle}}" stepKey="waitForPlaceOrderButton"/>
+        <click selector="{{CheckoutPaymentSection.PayYourWayPaymentRadio}}" stepKey="clickPlaceOrder"/>
+
+        <!-- Click over the PayYourWay button -->
+        <click selector="{{CheckoutPaymentSection.PayYourWayBtn}}" stepKey="clickPayYourWayBtn"/>
+        <wait time="10" stepKey="waitForPopup"/>
+
+        <!-- Create an action group to handle the popup operation (AdminLoginActionGroup) -->
+
+        <!-- Switch to a window with the `name` parameter of `newWindow`. -->
+        <switchToWindow userInput="SYWPay" stepKey="switchToWindow"/>
+        <click selector="{{CheckoutPaymentSection.PayYourWayBtnGetStarted}}" stepKey="clickPayYourWayBtnGetStarted"/>
+        <wait time="10" stepKey="waitForPopup2"/>
+
+        <!-- Login in the popup -->
+        <fillField selector="{{CheckoutPaymentSection.PayYourWayUsernameLogin}}" userInput="rafael.pfortes@blueacornici.com" stepKey="fillUsername"/>
+        <fillField selector="{{CheckoutPaymentSection.PayYourWayPasswordLogin}}" userInput="123456Abc#" stepKey="fillPassword"/>
+        <click selector="{{CheckoutPaymentSection.PayYourWayLoginBtn}}" stepKey="clickLogin"/>
+        <wait time="10" stepKey="waitForPopup3"/>
+
+        <!-- Complete Application -->
+        <click selector="{{CheckoutPaymentSection.PayYourWayCompleteApplicationBtn}}" stepKey="completeApplication"/>
+        <wait time="10" stepKey="waitForPopup4"/>
+
+        <!-- Continue to Citibank -->
+        <click selector="{{CheckoutPaymentSection.PayYourWayContinueToCitibankBtn}}" stepKey="continueToCitibank"/>
+        <wait time="10" stepKey="waitForPopup5"/>
+    </test>
+</tests>

@@ -58,10 +58,6 @@ class PaymentMethod extends AbstractMethod
         Data $paymentData,
         ScopeConfigInterface $scopeConfig,
         Logger $logger,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
-        array $data = [],
-        DirectoryHelper $directory = null,
         PaymentReturnRequestInterface $paymentReturnRequest,
         RefIdBuilderInterface $refIdBuilder,
         ConfigInterface $config,
@@ -69,7 +65,11 @@ class PaymentMethod extends AbstractMethod
         PaymentReturnLookupInterface $paymentReturnLookup,
         PaymentConfirmationRequestInterface $paymentConfirmationRequest,
         PaymentConfirmationLookupInterface $paymentConfirmationLookup,
-        LoggerInterface $pywLogger
+        LoggerInterface $pywLogger,
+        AbstractResource $resource = null,
+        AbstractDb $resourceCollection = null,
+        array $data = [],
+        DirectoryHelper $directory = null
     ) {
         parent::__construct(
             $context,
@@ -215,7 +215,13 @@ class PaymentMethod extends AbstractMethod
             'transaction_id'=>$order->getId(),
             'user_id'=>$order->getCustomerEmail() ?? '',
             'sandbox_mode'=>$sandboxMode,
-            'ref_id'=>$refId
+            'ref_id'=>$refId,
+            'payment_confirmation_request_channel'=> $this->paymentConfirmationRequest->getChannel(),
+            'payment_confirmation_request_merchant_id'=> $this->paymentConfirmationRequest->getMerchantId(),
+            'payment_confirmation_request_pywid'=> $this->paymentConfirmationRequest->getPywid(),
+            'payment_confirmation_request_transaction_id'=> $this->paymentConfirmationRequest->getTransactionId(),
+            'payment_confirmation_request_action_type'=> $this->paymentConfirmationRequest->getActionType(),
+            'payment_confirmation_request_transaction_type'=> $this->paymentConfirmationRequest->getTransactionType(),
         ];
         $this->pywLogger->debug(json_encode($debug));
         $this->pywLogger->debug(json_encode($paymentConfirmationResponse));

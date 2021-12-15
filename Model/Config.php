@@ -13,6 +13,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\ScopeInterface;
 use PayYourWay\Pyw\Api\ConfigInterface as PywConfigInterface;
 use PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment;
+use function PHPUnit\Framework\isEmpty;
 
 /**
  * Configuration retrieval tool
@@ -158,6 +159,28 @@ class Config implements PywConfigInterface
                 $scope,
                 $scopeId
             );
+
+            if (isset($privateKey) && !empty($privateKey)) {
+
+                $privateKey = str_replace(
+                    ["-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----", "\r\n", "\n", "\r", " "],
+                    '',
+                    $privateKey
+                );
+                $privateKey = chunk_split($privateKey, 64);
+                return "-----BEGIN RSA PRIVATE KEY-----\n$privateKey-----END RSA PRIVATE KEY-----\n";
+            }
+            return null;
+        }
+
+        $privateKey = $this->scopeConfig->getValue(
+            self::CONFIG_XML_PATH_PRIVATE_KEY_PR,
+            $scope,
+            $scopeId
+        );
+
+        if (isset($privateKey) && !empty($privateKey)) {
+
             $privateKey = str_replace(
                 ["-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----", "\r\n", "\n", "\r", " "],
                 '',
@@ -166,20 +189,7 @@ class Config implements PywConfigInterface
             $privateKey = chunk_split($privateKey, 64);
             return "-----BEGIN RSA PRIVATE KEY-----\n$privateKey-----END RSA PRIVATE KEY-----\n";
         }
-
-        $privateKey = $this->scopeConfig->getValue(
-            self::CONFIG_XML_PATH_PRIVATE_KEY_PR,
-            $scope,
-            $scopeId
-        );
-        $privateKey = str_replace(
-            ["-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----", "\r\n", "\n", "\r", " "],
-            '',
-            $privateKey
-        );
-        $privateKey = chunk_split($privateKey, 64);
-
-        return "-----BEGIN RSA PRIVATE KEY-----\n$privateKey-----END RSA PRIVATE KEY-----\n";
+        return null;
     }
 
     /**
@@ -295,7 +305,11 @@ class Config implements PywConfigInterface
         string $scope = ScopeInterface::SCOPE_STORE
     ): ?string {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
-            return $this->scopeConfig->getValue(self::CONFIG_XML_PATH_PAYMENT_CONFIRMATION_URL_UAT, $scope, $scopeId);
+            return $this->scopeConfig->getValue(
+                self::CONFIG_XML_PATH_PAYMENT_CONFIRMATION_URL_UAT,
+                $scope,
+                $scopeId
+            );
         }
 
         return $this->scopeConfig->getValue(
@@ -382,5 +396,21 @@ class Config implements PywConfigInterface
     public function isDebugMode($scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): bool
     {
         return $this->scopeConfig->isSetFlag(self::CONFIG_XML_PATH_DEBUG_PAY_YOUR_WAY, $scope, $scopeId);
+    }
+
+    public function getSecretKey(string $scopeId = null, string $scope = ScopeInterface::SCOPE_STORE): ?string
+    {
+        if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
+            return $this->scopeConfig->getValue(
+                self::CONFIG_XML_PATH_SECRET_KEY_SB,
+                $scope,
+                $scopeId
+            );
+        }
+        return $this->scopeConfig->getValue(
+            self::CONFIG_XML_PATH_SECRET_KEY_PR,
+            $scope,
+            $scopeId
+        );
     }
 }

@@ -17,7 +17,7 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
 
 
         if (env_id === 'sandbox') {
-            client_name = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-name-sb-value"]').val();
+            client_name = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-merchant-name-sb-value"]').val();
             email = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-email-sb-value"]').val();
             client_id = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-client-id-sb-value"]').val();
             phone_number = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-phone-sb-value"]').val();
@@ -26,7 +26,7 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
             address = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-address-sb-value"]').val();
             category = $('[data-ui-id="select-groups-payyourway-groups-register-fields-merchant-category-sb-value"]').val();
         } else {
-            client_name = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-name-pr-value"]').val();
+            client_name = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-merchant-name-pr-value"]').val();
             email = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-email-pr-value"]').val();
             client_id = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-client-id-pr-value"]').val();
             phone_number = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-phone-pr-value"]').val();
@@ -101,4 +101,33 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
             $(self).text($t("Validate Credentials")).attr('disabled', false);
         });
     }
+
+    function generate_client_id(){
+        let clientIdSb = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-client-id-sb-value"]');
+        let clientIdPr = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-client-id-pr-value"]');
+        let merchantNameSb = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-merchant-name-sb-value"]');
+        let merchantNamePr = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-merchant-name-pr-value"]');
+        let environment = $('[data-ui-id="select-groups-payyourway-groups-settings-fields-environment-value"]');
+        if (environment.val() === 'sandbox') {
+
+            let merchantName = merchantNameSb.val();
+            let clientId = 'MG_'+merchantName.replace(/\s/g, '')+'_QA';
+            clientIdSb.val(clientId);
+        } else {
+
+            let merchantName = merchantNamePr.val();
+            let clientId = 'MG_'+merchantName.replace(/\s/g, '');
+            clientIdPr.val(clientId);
+        }
+    }
+
+    $('#payment_us_payyourway_settings_merchant_name_sb').on("input",function () {
+        generate_client_id();
+
+    });
+
+    $('#payment_us_payyourway_settings_merchant_name_pr').on("input",function () {
+        generate_client_id();
+
+    });
 });

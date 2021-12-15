@@ -36,12 +36,19 @@ define(
             },
 
             openPayYourWay : function () {
-                if(!this.isValidCurrency()){
+                if (!this.isValidCurrency()) {
                     messageList.addErrorMessage({
                         message: 'Currency not supported'
                     });
-
-                }else{
+                } else if(this.paymentConfig.clientId ==='') {
+                    messageList.addErrorMessage({
+                        message: 'Client id missing in PayYourWay configuration'
+                    });
+                } else if (this.paymentConfig.refid === null) {
+                    messageList.addErrorMessage({
+                        message: 'Payment configuration missing/incorrect.'
+                    });
+                } else {
                     document.getElementById("overlay").style.display = "block";
                     if (!this.pywLoaded) {
                         this.loadPayYourWay()
@@ -53,7 +60,7 @@ define(
             },
 
             loadPayYourWay : function (open) {
-                let sdkUrl = this.paymentConfig.sdkUrl;
+                var sdkUrl = this.paymentConfig.sdkUrl;
                 return pywSdk(sdkUrl);
             },
 
@@ -69,11 +76,11 @@ define(
             },
 
             openPopup : function () {
-                let grandTotal = parseFloat(this.getGrandTotal());
-                let returnUrl = this.baseUrl + this.returnController;
+                var grandTotal = parseFloat(this.getGrandTotal());
+                var returnUrl = this.baseUrl + this.returnController;
                 this.isPopupTriggered = true;
 
-                preparePayment(this.paymentConfig.refid, grandTotal, returnUrl);
+                preparePayment(this.paymentConfig.refid, grandTotal, returnUrl, this.paymentConfig.clientId);
             },
 
             getGrandTotal : function () {
@@ -81,8 +88,8 @@ define(
             },
 
             handleHash: function () {
-                let hash = window.location.hash;
-                let paymentHash = '#payment';
+                var hash = window.location.hash;
+                var paymentHash = '#payment';
 
                 if (this.isPopupTriggered && hash !== paymentHash) {
                     childwin.close();
@@ -93,13 +100,8 @@ define(
             isValidCurrency: function () {
                 var quoteCurrency = quote.totals()['base_currency_code'];
 
-                if (quoteCurrency === 'USD')
-                {
-                    return true;
-                }
-                return false;
+                return quoteCurrency === 'USD';
             }
-
         });
     }
 );

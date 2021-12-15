@@ -10,16 +10,16 @@
     <policies>
         <policy id="connect-src">
             <values>
-                <value id="payyourway_payments_connect _sdk" type="host">https://pywweb.uat.telluride.shopyourway.com</value>
-                <value id="payyourway_payments_api_connect_qa" type="host">https://checkout.uat.telluride.shopyourway.com</value>
-                <value id="payyourway_payments_connect_script" type="host">https://pywweb.uat.telluride.shopyourway.com/pyw_library/scripts/pywscript.js</value>
+                <value id="payyourway_payments_connect_sdk_pywweb_uat" type="host">https://pywweb.uat.telluride.shopyourway.com</value>
+                <value id="payyourway_payments_connect_sdk_checkout_uat" type="host">https://checkout.uat.telluride.shopyourway.com</value>
+                <value id="payyourway_payments_connect_sdk_pywweb" type="host">https://pywweb.telluride.shopyourway.com</value>
+                <value id="payyourway_payments_connect_sdk_checkout" type="host">https://checkout.telluride.shopyourway.com</value>
             </values>
         </policy>
         <policy id="script-src">
             <values>
-                <value id="payyourway_payments_source_sdk" type="host">https://pywweb.uat.telluride.shopyourway.com</value>
-                <value id="payyourway_payments_source_script" type="host">https://pywweb.uat.telluride.shopyourway.com/pyw_library/scripts/pywscript.js</value>
-                <value id="payyourway_payments_api_source__qa" type="host">https://checkout.uat.telluride.shopyourway.com</value>
+                <value id="payyourway_payments_source_sdk_uat" type="host">https://pywweb.uat.telluride.shopyourway.com</value>
+                <value id="payyourway_payments_source_sdk" type="host">https://pywweb.telluride.shopyourway.com</value>
             </values>
         </policy>
     </policies>
