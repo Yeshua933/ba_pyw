@@ -17,8 +17,7 @@ class AddTitle implements DataPatchInterface, PatchVersionInterface
 
     public function __construct(
         ModuleDataSetupInterface $moduleDataSetup
-    )
-    {
+    ) {
         $this->moduleDataSetup = $moduleDataSetup;
     }
 
@@ -35,7 +34,8 @@ class AddTitle implements DataPatchInterface, PatchVersionInterface
     public function apply()
     {
         $this->moduleDataSetup->startSetup();
-        $this->moduleDataSetup->getConnection()->insert("core_config_data",
+        $this->moduleDataSetup->getConnection()->insert(
+            "core_config_data",
             ["scope" => "default",
                 "scope_id" => 0,
                 "path" => "payment/payyourway/title",

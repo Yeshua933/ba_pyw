@@ -10,6 +10,7 @@ namespace PayYourWay\Pyw\Api;
 use Magento\Config\Model\ResourceModel\Config;
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface as ResourceConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\ScopeInterface;
 
 /**
@@ -178,8 +179,7 @@ interface ConfigInterface
 
     /**
      * @return string
-     * @throws Exception
+     * @throws LocalizedException
      */
     public function generateClientId(): string;
-
 }

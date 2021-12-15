@@ -7,9 +7,9 @@ declare(strict_types=1);
 
 namespace PayYourWay\Pyw\Model;
 
-use Exception;
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface as ResourceConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\ScopeInterface;
 use PayYourWay\Pyw\Api\ConfigInterface as PywConfigInterface;
 use PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment;
@@ -55,8 +55,7 @@ class Config implements PywConfigInterface
     public function __construct(
         ScopeConfigInterface    $scopeConfig,
         ResourceConfigInterface $resourceConfigInterface
-    )
-    {
+    ) {
         $this->scopeConfig = $scopeConfig;
         $this->resourceConfigInterface = $resourceConfigInterface;
     }
@@ -197,8 +196,7 @@ class Config implements PywConfigInterface
         string $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_SB,
         string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
         int    $scopeId = 0
-    ): ResourceConfigInterface
-    {
+    ): ResourceConfigInterface {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
             $path = self::CONFIG_XML_PATH_PRIVATE_KEY_SB;
             return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
@@ -244,8 +242,7 @@ class Config implements PywConfigInterface
         string $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_SB,
         string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
         int    $scopeId = 0
-    ): ResourceConfigInterface
-    {
+    ): ResourceConfigInterface {
         if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
             $path = self::CONFIG_XML_PATH_ACCESS_TOKEN_SB;
             return $this->resourceConfigInterface->saveConfig($path, $value, $scope, $scopeId);
@@ -360,7 +357,7 @@ class Config implements PywConfigInterface
 
     /**
      * @return string
-     * @throws Exception
+     * @throws LocalizedException
      */
     public function generateClientId():string
     {
@@ -372,9 +369,8 @@ class Config implements PywConfigInterface
             }
             return 'MG_' . $merchantName;
         }
-        throw new Exception("Client name is not set");
+        throw new LocalizedException("Client name is not set");
     }
-
 
     /**
      * Determine if Pay Your Way has been enabled

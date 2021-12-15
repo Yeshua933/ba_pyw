@@ -20,8 +20,10 @@ use PayYourWay\Pyw\Block\Adminhtml\System\Config\GenerateClientId;
         function generateClientIdButton() {
             let clientIdSb = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-client-id-sb-value"]');
             let clientIdPr = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-client-id-pr-value"]');
-            let merchantNameSb = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-name-sb-value"]');
-            let merchantNamePr = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-name-pr-value"]');
+            let merchantNameSb =
+                $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-name-sb-value"]');
+            let merchantNamePr =
+                $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-name-pr-value"]');
             let environment = $('[data-ui-id="select-groups-payyourway-groups-settings-fields-environment-value"]');
             if (environment.val() === 'sandbox') {
                 if (merchantNameSb.val() === '') {
@@ -67,5 +69,5 @@ use PayYourWay\Pyw\Block\Adminhtml\System\Config\GenerateClientId;
         </div>
     </div>
 </div>
-<?php echo $block->getButtonHtml() ?>
+<?= /* @noEscape */ $block->getButtonHtml() ?>
 
