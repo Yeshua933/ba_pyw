@@ -9,7 +9,6 @@ namespace PayYourWay\Pyw\Model;
 
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface as ResourceConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\ScopeInterface;
 use PayYourWay\Pyw\Api\ConfigInterface as PywConfigInterface;
 use PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment;
@@ -367,23 +366,6 @@ class Config implements PywConfigInterface
             );
         }
         return $this->resourceConfigInterface->saveConfig(self::CONFIG_XML_PATH_CLIENT_ID_PR, $value, $scope, $scopeId);
-    }
-
-    /**
-     * @return string
-     * @throws LocalizedException
-     */
-    public function generateClientId():string
-    {
-        $merchantName = $this->getMerchantName();
-        $merchantName = strtoupper(str_replace(' ', '', $merchantName));
-        if (!empty($merchantName) && isset($merchantName)) {
-            if ($this->getEnvironment() === Environment::ENVIRONMENT_SANDBOX) {
-                return 'MG_'.$merchantName.'_QA';
-            }
-            return 'MG_' . $merchantName;
-        }
-        throw new LocalizedException("Client name is not set");
     }
 
     /**
