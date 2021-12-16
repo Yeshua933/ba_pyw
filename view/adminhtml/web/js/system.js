@@ -92,13 +92,13 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
             email: email
         }).done(function () {
             $('<div class="message message-success payyourway-registration-success-message">' + $t("Registered Client Successfully") + '</div>').insertAfter(self);
-        }).fail(function () {
+        }).fail(function (jqXHR) {
             alert({
                 title: $t('Payyourway Registration Failed'),
-                content: $t('Something went wrong')
+                content: jqXHR.responseText
             });
         }).always(function () {
-            $(self).text($t("Validate Credentials")).attr('disabled', false);
+            $(self).text($t("Register")).attr('disabled', false);
         });
     }
 
