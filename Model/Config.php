@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace PayYourWay\Pyw\Model;
 
-use Exception;
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface as ResourceConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
