@@ -140,7 +140,7 @@ class PaymentMethod extends AbstractMethod
             $this->generateAccessToken->execute(),
             $this->config->getClientId(),
             time(),
-            $order->getId(),
+            $order->getQuoteId(),
             $order->getCustomerEmail() ?? ''
         ));
 
@@ -152,6 +152,8 @@ class PaymentMethod extends AbstractMethod
         $paymentReturnResponseDecoded = json_decode($this->paymentReturnLookup->lookup($this->paymentReturnRequest));
 
         if ($this->config->isDebugMode()) {
+            $this->pywLogger->info(json_encode($this->paymentReturnRequest->getBody()));
+            $this->pywLogger->info(json_encode($this->paymentReturnRequest->getHeaders()));
             $this->pywLogger->info($paymentReturnResponse);
         }
 

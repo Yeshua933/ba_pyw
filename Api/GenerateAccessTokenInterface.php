@@ -23,6 +23,6 @@ interface GenerateAccessTokenInterface
      */
     public function execute(
         string $clientId = '',
-        string $privateKe = ''
+        string $privateKey = ''
     ): ?string;
 }
