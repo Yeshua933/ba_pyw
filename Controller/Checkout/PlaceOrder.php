@@ -210,7 +210,9 @@ class PlaceOrder implements HttpGetActionInterface
 
         $this->quote->collectTotals();
 
-        if (!$this->checkPaymentConfirmation()) {
+        $authCode = $this->checkPaymentConfirmation();
+
+        if ($authCode === null) {
             $redirect = $this->redirectFactory->create();
             $redirect->setPath('checkout/cart');
             return $redirect;
@@ -219,7 +221,11 @@ class PlaceOrder implements HttpGetActionInterface
         try {
             $this->quote->getPayment()->importData([
                 'pywid' => $this->request->getParam('pywid'),
-                'method' => PaymentMethod::METHOD_CODE
+                'method' => PaymentMethod::METHOD_CODE,
+                'additional_data' => [
+                    'pywid' =>  $this->request->getParam('pywid'),
+                    'auth_code' => $authCode
+                ]
             ]);
         } catch (LocalizedException $exception) {
             $this->logger->error(
@@ -266,7 +272,7 @@ class PlaceOrder implements HttpGetActionInterface
     /**
      * @throws \JsonException
      */
-    private function checkPaymentConfirmation(): bool
+    private function checkPaymentConfirmation(): ?string
     {
         $merchantId = $this->config->getClientId();
 
@@ -280,7 +286,7 @@ class PlaceOrder implements HttpGetActionInterface
             $this->messageManager->addErrorMessage(
                 __('There is an issue with the merchant account')
             );
-            return false;
+            return null;
         }
 
         /**
@@ -307,7 +313,7 @@ class PlaceOrder implements HttpGetActionInterface
             $this->messageManager->addErrorMessage(
                 __('There is an issue with the payment gateway provider')
             );
-            return false;
+            return null;
         }
 
         //TODO: verify return request is needed for condition when errors are present.
@@ -329,7 +335,7 @@ class PlaceOrder implements HttpGetActionInterface
             $this->messageManager->addErrorMessage(
                 __('There is an issue with the payment gateway provider.')
             );
-            return false;
+            return null;
         }
 
         if ((float)$paymentConfirmationResponseDecode['paymentTotal'] !== $this->quote->getGrandTotal()) {
@@ -351,7 +357,7 @@ class PlaceOrder implements HttpGetActionInterface
             $this->messageManager->addErrorMessage(
                 __('The amount returned from PayYour Way doesn\'t match the amount on the store.')
             );
-            return false;
+            return null;
         }
 
         $paymentConfirmationResponseConfirm = $this->paymentConfirmationLookup->lookup(
@@ -374,7 +380,7 @@ class PlaceOrder implements HttpGetActionInterface
             $this->messageManager->addErrorMessage(
                 __('There is an issue with the payment gateway provider')
             );
-            return false;
+            return null;
         }
 
         if (!empty($paymentConfirmationResponseConfirmDecode['errors'])) {
@@ -395,10 +401,10 @@ class PlaceOrder implements HttpGetActionInterface
             $this->messageManager->addErrorMessage(
                 __('There is an issue with the payment gateway provider.')
             );
-            return false;
+            return null;
         }
 
-        return true;
+        return $paymentConfirmationResponseConfirmDecode['authCode'];
     }
 
     /**

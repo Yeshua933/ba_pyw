@@ -22,7 +22,7 @@ interface GenerateAccessTokenInterface
      * @return string|null
      */
     public function execute(
-        string $clientId,
-        string $privateKey
+        string $clientId = '',
+        string $privateKe = ''
     ): ?string;
 }
