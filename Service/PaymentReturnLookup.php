@@ -16,6 +16,7 @@ class PaymentReturnLookup implements PaymentReturnLookupInterface
 {
     private ClientInterface $curl;
     private ConfigInterface $config;
+    private const RETURN_URL = 'https://payment.uat.telluride.shopyourway.com/tell/api/payment/v1/return';
 
     public function __construct(
         ClientInterface $curl,
@@ -29,7 +30,7 @@ class PaymentReturnLookup implements PaymentReturnLookupInterface
         PaymentReturnRequestInterface $request
     ): string {
         $this->curl->setHeaders($request->getHeaders());
-        $this->curl->post($this->config->getPaymentReturnApiEndpoint(), json_encode($request->getBody()));
+        $this->curl->post(self::RETURN_URL, json_encode($request->getBody()));
 
         return $this->curl->getBody();
     }

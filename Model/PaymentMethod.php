@@ -132,7 +132,7 @@ class PaymentMethod extends AbstractMethod
 
         $this->paymentReturnRequest->setContentType('application/json');
         $this->paymentReturnRequest->setAccept('application/json');
-        $this->paymentReturnRequest->setChannel('PYW_ONLINE');
+        $this->paymentReturnRequest->setChannel('ONLINE');
         $this->paymentReturnRequest->setClientId((string) $this->config->getClientId());
         $this->paymentReturnRequest->setTransactionId((string) $order->getQuoteId());
         $this->paymentReturnRequest->setRefId($this->refIdBuilder->buildRefId(

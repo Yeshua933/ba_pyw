@@ -59,7 +59,8 @@ class PaymentReturnRequest implements PaymentReturnRequestInterface
             'channel' => $this->getChannel(),
             'client_id' => $this->getClientId(),
             'transactionId' => $this->getTransactionId(),
-            'refId' => $this->getRefId()
+            'refId' => $this->getRefId(),
+            'platform' => 'PYW'
         ];
     }
 
