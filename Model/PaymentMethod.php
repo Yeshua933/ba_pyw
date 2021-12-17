@@ -21,7 +21,6 @@ use Magento\Payment\Helper\Data;
 use Magento\Payment\Model\InfoInterface;
 use Magento\Payment\Model\Method\AbstractMethod;
 use Magento\Payment\Model\Method\Logger;
-use Magento\Quote\Model\Quote;
 use Magento\Sales\Api\Data\OrderInterface;
 use PayYourWay\Pyw\Api\ConfigInterface;
 use PayYourWay\Pyw\Api\GenerateAccessTokenInterface;
@@ -30,7 +29,6 @@ use PayYourWay\Pyw\Api\PaymentReturnLookupInterface;
 use PayYourWay\Pyw\Api\PaymentReturnRequestInterface;
 use PayYourWay\Pyw\Api\RefIdBuilderInterface;
 use PayYourWay\Pyw\Api\RequestInterface as PaymentConfirmationRequestInterface;
-use PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment;
 use Psr\Log\LoggerInterface;
 
 class PaymentMethod extends AbstractMethod
@@ -52,25 +50,25 @@ class PaymentMethod extends AbstractMethod
     private LoggerInterface $pywLogger;
 
     public function __construct(
-        Context $context,
-        Registry $registry,
-        ExtensionAttributesFactory $extensionFactory,
-        AttributeValueFactory $customAttributeFactory,
-        Data $paymentData,
-        ScopeConfigInterface $scopeConfig,
-        Logger $logger,
-        PaymentReturnRequestInterface $paymentReturnRequest,
-        RefIdBuilderInterface $refIdBuilder,
-        ConfigInterface $config,
-        GenerateAccessTokenInterface $generateAccessToken,
-        PaymentReturnLookupInterface $paymentReturnLookup,
+        Context                             $context,
+        Registry                            $registry,
+        ExtensionAttributesFactory          $extensionFactory,
+        AttributeValueFactory               $customAttributeFactory,
+        Data                                $paymentData,
+        ScopeConfigInterface                $scopeConfig,
+        Logger                              $logger,
+        PaymentReturnRequestInterface       $paymentReturnRequest,
+        RefIdBuilderInterface               $refIdBuilder,
+        ConfigInterface                     $config,
+        GenerateAccessTokenInterface        $generateAccessToken,
+        PaymentReturnLookupInterface        $paymentReturnLookup,
         PaymentConfirmationRequestInterface $paymentConfirmationRequest,
-        PaymentConfirmationLookupInterface $paymentConfirmationLookup,
-        LoggerInterface $pywLogger,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
-        array $data = [],
-        DirectoryHelper $directory = null
+        PaymentConfirmationLookupInterface  $paymentConfirmationLookup,
+        LoggerInterface                     $pywLogger,
+        AbstractResource                    $resource = null,
+        AbstractDb                          $resourceCollection = null,
+        array                               $data = [],
+        DirectoryHelper                     $directory = null
     ) {
         parent::__construct(
             $context,
@@ -135,25 +133,32 @@ class PaymentMethod extends AbstractMethod
 
         $this->paymentReturnRequest->setContentType('application/json');
         $this->paymentReturnRequest->setAccept('application/json');
-        $this->paymentReturnRequest->setChannel('PYW_ONLINE');
-        $this->paymentReturnRequest->setClientId('PYW');
-        $this->paymentReturnRequest->setTransactionId($order->getId());
+        $this->paymentReturnRequest->setChannel('ONLINE');
+        $this->paymentReturnRequest->setClientId((string)$this->config->getClientId());
+        $this->paymentReturnRequest->setTransactionId((string)$order->getQuoteId());
         $this->paymentReturnRequest->setRefId($this->refIdBuilder->buildRefId(
             $this->config->getClientId(),
             $this->generateAccessToken->execute(),
             $this->config->getClientId(),
             time(),
-            $order->getId(),
+            $order->getQuoteId(),
             $order->getCustomerEmail() ?? ''
         ));
 
-        $this->paymentReturnRequest->setAuthCode($this->getAuthCode($order, $payment));
+        $this->paymentReturnRequest->setAuthCode($this->getAuthCode($payment));
         $this->paymentReturnRequest->setReturnAmount((string)$amount);
         $this->paymentReturnRequest->setReturnPayments([]);
 
-        $paymentReturnResponse = json_decode($this->paymentReturnLookup->lookup($this->paymentReturnRequest));
+        $paymentReturnResponse = $this->paymentReturnLookup->lookup($this->paymentReturnRequest);
+        $paymentReturnResponseDecoded = json_decode($this->paymentReturnLookup->lookup($this->paymentReturnRequest));
 
-        if (!is_object($paymentReturnResponse)) {
+        if ($this->config->isDebugMode()) {
+            $this->pywLogger->info(json_encode($this->paymentReturnRequest->getBody()));
+            $this->pywLogger->info(json_encode($this->paymentReturnRequest->getHeaders()));
+            $this->pywLogger->info($paymentReturnResponse);
+        }
+
+        if (!is_object($paymentReturnResponseDecoded)) {
             $this->pywLogger->error(
                 'There is an issue with the payment return API',
                 [
@@ -168,87 +173,21 @@ class PaymentMethod extends AbstractMethod
     /**
      * Returns the Auth code to be used in the refund request
      *
-     * @param OrderInterface $order
+     * @param InfoInterface $payment
      * @return string
-     * @throws LocalizedException
      */
-    private function getAuthCode(OrderInterface $order, InfoInterface $payment): string
+    private function getAuthCode(InfoInterface $payment): string
     {
-        $merchantId = $this->config->getClientId();
-
-        if ($merchantId === null) {
-            throw new LocalizedException(
-                __('There is an issue with the merchant ID.')
-            );
-        }
-
-        /**
-         * Make a request to Payment Confirmation API in order to check the payment details
-         */
-        $accessToken =  $this->generateAccessToken->execute();
-        $sandboxMode = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX;
-        $this->paymentConfirmationRequest->setChannel('ONLINE');
-        $this->paymentConfirmationRequest->setMerchantId($merchantId);
-        $this->paymentConfirmationRequest->setPywid((string)$payment->getLastTransId());
-        $this->paymentConfirmationRequest->setTransactionId($order->getId());
-        $this->paymentConfirmationRequest->setActionType('READONLY');
-        $this->paymentConfirmationRequest->setTransactionType('1P');
-        $refId = $this->refIdBuilder->buildRefId(
-            $merchantId,
-            $accessToken,
-            $merchantId,
-            time(),
-            $order->getId(),
-            $order->getCustomerEmail() ?? '',
-            $sandboxMode
-        );
-        $this->paymentConfirmationRequest->setRefId($refId);
-
-        $paymentConfirmationResponse = json_decode($this->paymentConfirmationLookup->lookup(
-            $this->paymentConfirmationRequest
-        ));
-
-        $debug = [
-            'client_id'=>$this->config->getClientId(),
-            'access_token'=>$accessToken,
-            'requestor_id'=>$this->config->getClientId(),
-            'timestamp'=>time(),
-            'transaction_id'=>$order->getId(),
-            'user_id'=>$order->getCustomerEmail() ?? '',
-            'sandbox_mode'=>$sandboxMode,
-            'ref_id'=>$refId,
-            'payment_confirmation_request_channel'=> $this->paymentConfirmationRequest->getChannel(),
-            'payment_confirmation_request_merchant_id'=> $this->paymentConfirmationRequest->getMerchantId(),
-            'payment_confirmation_request_pywid'=> $this->paymentConfirmationRequest->getPywid(),
-            'payment_confirmation_request_transaction_id'=> $this->paymentConfirmationRequest->getTransactionId(),
-            'payment_confirmation_request_action_type'=> $this->paymentConfirmationRequest->getActionType(),
-            'payment_confirmation_request_transaction_type'=> $this->paymentConfirmationRequest->getTransactionType(),
-        ];
-        $this->pywLogger->debug(json_encode($debug));
-        $this->pywLogger->debug(json_encode($paymentConfirmationResponse));
-
-        if (!is_object($paymentConfirmationResponse)) {
-            throw new LocalizedException(
-                __('There is an issue with the payment gateway provider.')
-            );
-        }
-
-        if (!isset($paymentConfirmationResponse->authCode)) {
-            throw new LocalizedException(
-                __('The Pay Your Way Refund has failed. The Auth code was not found.')
-            );
-        }
-
-        return $paymentConfirmationResponse->authCode;
+        $additionalInformation = $payment->getAdditionalInformation();
+        return $additionalInformation['auth_code'];
     }
 
     /**
      * Check whether payment method can be used
      *
-     * @param \Magento\Quote\Api\Data\CartInterface|Quote|null $quote
      * @return bool
      */
-    public function isPYWAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null): bool
+    public function isPYWAvailable(): bool
     {
         $accessToken = $this->generateAccessToken->execute();
         if (!isset($accessToken)) {

@@ -13,14 +13,11 @@
                 name="payment[method]"
                 class="radio radiosyw"
                 data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
-            <img data-bind="attr: { src: require.toUrl('PayYourWay_Pyw/images/syw-logo.png') }" alt="SYW Brand Image" class="imgsyw">      
+            <img data-bind="attr: { src: require.toUrl('PayYourWay_Pyw/images/syw-logo.png') }" alt="SYW Brand Image" class="imgsyw">
             <label data-bind="attr: {'for': getCode()}" class="label sloganlearnmore">
                 <span data-bind="text: getTitle()"></span>
                 <span class="slogan" data-bind="html: 'Shop Your Way MasterCard<sup>®</sup>'"></span>
                 <span data-bind="i18n: 'is the best way to shop now and earn rewards.'">&nbsp;</span>
-                <a href="https://www.shopyourway.com/card" target="_blank">
-                    <span data-bind="i18n: 'Learn More'"></span>
-                </a>
             </label>
         </div>
     </div>
@@ -51,7 +48,7 @@
                         disabled>
                     <span class="padding" data-bind="i18n: 'Pay with Shop Your Way'"></span>
                 </button>
-            </div>            
+            </div>
         </div>
         <div id="pywpopup" class="backdrop">
         </div>

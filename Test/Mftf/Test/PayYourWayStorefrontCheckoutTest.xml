@@ -77,27 +77,14 @@
 
         <!-- Click over the PayYourWay button -->
         <click selector="{{CheckoutPaymentSection.PayYourWayBtn}}" stepKey="clickPayYourWayBtn"/>
-        <wait time="10" stepKey="waitForPopup"/>
 
-        <!-- Create an action group to handle the popup operation (AdminLoginActionGroup) -->
+        <actionGroup ref="PayYourWayCustomerFillPopupFieldsActionGroup" stepKey="customerFillOutPopupFields">
+            <argument name="email" value="{{PayYourWay_Customer_BobSaget.email}}"/>
+            <argument name="password" value="{{PayYourWay_Customer_BobSaget.password}}"/>
+        </actionGroup>
 
-        <!-- Switch to a window with the `name` parameter of `newWindow`. -->
-        <switchToWindow userInput="SYWPay" stepKey="switchToWindow"/>
-        <click selector="{{CheckoutPaymentSection.PayYourWayBtnGetStarted}}" stepKey="clickPayYourWayBtnGetStarted"/>
-        <wait time="10" stepKey="waitForPopup2"/>
-
-        <!-- Login in the popup -->
-        <fillField selector="{{CheckoutPaymentSection.PayYourWayUsernameLogin}}" userInput="rafael.pfortes@blueacornici.com" stepKey="fillUsername"/>
-        <fillField selector="{{CheckoutPaymentSection.PayYourWayPasswordLogin}}" userInput="123456Abc#" stepKey="fillPassword"/>
-        <click selector="{{CheckoutPaymentSection.PayYourWayLoginBtn}}" stepKey="clickLogin"/>
-        <wait time="10" stepKey="waitForPopup3"/>
-
-        <!-- Complete Application -->
-        <click selector="{{CheckoutPaymentSection.PayYourWayCompleteApplicationBtn}}" stepKey="completeApplication"/>
-        <wait time="10" stepKey="waitForPopup4"/>
-
-        <!-- Continue to Citibank -->
-        <click selector="{{CheckoutPaymentSection.PayYourWayContinueToCitibankBtn}}" stepKey="continueToCitibank"/>
-        <wait time="10" stepKey="waitForPopup5"/>
+        <!-- Check the success message -->
+        <waitForElement selector="{{CheckoutSuccessMainSection.success}}" stepKey="waitForSuccessMessage" time="30"/>
+        <see selector="{{CheckoutSuccessMainSection.success}}" userInput="Your order number is:" stepKey="checkOrderPlaceSuccessMessage"/>
     </test>
 </tests>

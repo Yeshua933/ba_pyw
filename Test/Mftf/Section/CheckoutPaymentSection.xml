@@ -10,11 +10,11 @@
     <section name="CheckoutPaymentSection">
         <element name="PayYourWayPaymentRadio" type="radio" selector="input#payyourway.radio" timeout="30"/>
         <element name="PayYourWayBtn" type="radio" selector=".action.primary.paycheckout"/>
-        <element name="PayYourWayBtnGetStarted" type="button" selector=".btn.btn-primary" timeout="30"/>
+        <element name="PayYourWayBtnAlreadyHaveShopYourWayMastercard" type="button" selector=".btn.btn-secondary"/>
         <element name="PayYourWayUsernameLogin" type="input" selector="#username"/>
         <element name="PayYourWayPasswordLogin" type="input" selector="#password"/>
-        <element name="PayYourWayLoginBtn" type="button" selector=".cd1df0865.c0b512bff.c6cad41d5.c132a5a03.c571d5ab7" timeout="30"/>
-        <element name="PayYourWayCompleteApplicationBtn" type="button" selector=".btn.btn-primary" timeout="30"/>
-        <element name="PayYourWayContinueToCitibankBtn" type="button" selector=".btn.btn-primary.ml-8" timeout="30"/>
+        <element name="PayYourWayLoginBtn" type="button" selector=".cd1df0865.c0b512bff.c6cad41d5.c132a5a03.c571d5ab7"/>
+        <element name="PayYourWayCvv" type="input" selector="#cvv"/>
+        <element name="PayYourWayCompletePaymentBtn" type="button" selector="#payButton"/>
     </section>
 </sections>
