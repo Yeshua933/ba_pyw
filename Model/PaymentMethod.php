@@ -21,6 +21,7 @@ use Magento\Payment\Helper\Data;
 use Magento\Payment\Model\InfoInterface;
 use Magento\Payment\Model\Method\AbstractMethod;
 use Magento\Payment\Model\Method\Logger;
+use Magento\Quote\Model\Quote;
 use Magento\Sales\Api\Data\OrderInterface;
 use PayYourWay\Pyw\Api\ConfigInterface;
 use PayYourWay\Pyw\Api\GenerateAccessTokenInterface;
@@ -239,5 +240,20 @@ class PaymentMethod extends AbstractMethod
         }
 
         return $paymentConfirmationResponse->authCode;
+    }
+
+    /**
+     * Check whether payment method can be used
+     *
+     * @param \Magento\Quote\Api\Data\CartInterface|Quote|null $quote
+     * @return bool
+     */
+    public function isPYWAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null): bool
+    {
+        $accessToken = $this->generateAccessToken->execute();
+        if (!isset($accessToken)) {
+            return false;
+        }
+        return true;
     }
 }
