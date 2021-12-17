@@ -11,22 +11,21 @@
         <!-- Switch to a window with the `name` parameter of `newWindow`. -->
         <executeJS function="return window.name;" stepKey="rootWindow"/>
         <switchToWindow userInput="SYWPay" stepKey="switchToWindow"/>
+        <waitForElementVisible selector="{{CheckoutPaymentSection.PayYourWayBtnAlreadyHaveShopYourWayMastercard}}" stepKey="waitBtnFormAppears"/>
         <click selector="{{CheckoutPaymentSection.PayYourWayBtnAlreadyHaveShopYourWayMastercard}}" stepKey="clickPayYourWayBtnAlreadyHaveShopYourWayMastercard"/>
-        <wait time="10" stepKey="waitForPopup2"/>
 
         <!-- Login in the popup -->
+        <waitForElementVisible selector="{{CheckoutPaymentSection.PayYourWayUsernameLogin}}" stepKey="waitLoginFormAppears"/>
         <fillField selector="{{CheckoutPaymentSection.PayYourWayUsernameLogin}}" userInput="{{PayYourWay_Popup_Customer_BobSaget.email}}" stepKey="fillUsername"/>
         <fillField selector="{{CheckoutPaymentSection.PayYourWayPasswordLogin}}" userInput="{{PayYourWay_Popup_Customer_BobSaget.password}}" stepKey="fillPassword"/>
         <click selector="{{CheckoutPaymentSection.PayYourWayLoginBtn}}" stepKey="clickLogin"/>
-        <wait time="10" stepKey="waitForPopup3"/>
 
         <!-- Fill in the CVV -->
+        <waitForElementVisible selector="{{CheckoutPaymentSection.PayYourWayCvv}}" stepKey="waitCvvFormAppears"/>
         <fillField selector="{{CheckoutPaymentSection.PayYourWayCvv}}" userInput="{{PayYourWay_Popup_Customer_BobSaget.cvv}}" stepKey="fillCvv"/>
         <click selector="{{CheckoutPaymentSection.PayYourWayCompletePaymentBtn}}" stepKey="clickCompletePayment"/>
 
         <!-- Return to the parent window -->
         <switchToWindow userInput="{$rootWindow}" stepKey="switchToRoot"/>
-
-        <wait time="30" stepKey="waitForPopup4"/>
     </actionGroup>
 </actionGroups>

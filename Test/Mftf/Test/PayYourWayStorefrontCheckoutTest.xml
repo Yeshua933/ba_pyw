@@ -77,7 +77,6 @@
 
         <!-- Click over the PayYourWay button -->
         <click selector="{{CheckoutPaymentSection.PayYourWayBtn}}" stepKey="clickPayYourWayBtn"/>
-        <wait time="10" stepKey="waitForPopup"/>
 
         <actionGroup ref="PayYourWayCustomerFillPopupFieldsActionGroup" stepKey="customerFillOutPopupFields">
             <argument name="email" value="{{PayYourWay_Customer_BobSaget.email}}"/>
@@ -85,6 +84,7 @@
         </actionGroup>
 
         <!-- Check the success message -->
+        <waitForElement selector="{{CheckoutSuccessMainSection.success}}" stepKey="waitForSuccessMessage" time="30"/>
         <see selector="{{CheckoutSuccessMainSection.success}}" userInput="Your order number is:" stepKey="checkOrderPlaceSuccessMessage"/>
     </test>
 </tests>
