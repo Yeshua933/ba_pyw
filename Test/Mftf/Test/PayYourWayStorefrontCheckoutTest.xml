@@ -79,28 +79,10 @@
         <click selector="{{CheckoutPaymentSection.PayYourWayBtn}}" stepKey="clickPayYourWayBtn"/>
         <wait time="10" stepKey="waitForPopup"/>
 
-        <!-- Create an action group to handle the popup operation (AdminLoginActionGroup) -->
-
-        <!-- Switch to a window with the `name` parameter of `newWindow`. -->
-        <executeJS function="return window.name;" stepKey="rootWindow"/>
-        <switchToWindow userInput="SYWPay" stepKey="switchToWindow"/>
-        <click selector="{{CheckoutPaymentSection.PayYourWayBtnAlreadyHaveShopYourWayMastercard}}" stepKey="clickPayYourWayBtnAlreadyHaveShopYourWayMastercard"/>
-        <wait time="10" stepKey="waitForPopup2"/>
-
-        <!-- Login in the popup -->
-        <fillField selector="{{CheckoutPaymentSection.PayYourWayUsernameLogin}}" userInput="pyw.payments@syw.com" stepKey="fillUsername"/>
-        <fillField selector="{{CheckoutPaymentSection.PayYourWayPasswordLogin}}" userInput="Syw@12345" stepKey="fillPassword"/>
-        <click selector="{{CheckoutPaymentSection.PayYourWayLoginBtn}}" stepKey="clickLogin"/>
-        <wait time="10" stepKey="waitForPopup3"/>
-
-        <!-- Fill in the CVV -->
-        <fillField selector="{{CheckoutPaymentSection.PayYourWayCvv}}" userInput="123" stepKey="fillCvv"/>
-        <click selector="{{CheckoutPaymentSection.PayYourWayCompletePaymentBtn}}" stepKey="clickCompletePayment"/>
-
-        <!-- Return to the parent window -->
-        <switchToWindow userInput="{$rootWindow}" stepKey="switchToRoot"/>
-
-        <wait time="30" stepKey="waitForPopup4"/>
+        <actionGroup ref="PayYourWayCustomerFillPopupFieldsActionGroup" stepKey="customerFillOutPopupFields">
+            <argument name="email" value="{{PayYourWay_Customer_BobSaget.email}}"/>
+            <argument name="password" value="{{PayYourWay_Customer_BobSaget.password}}"/>
+        </actionGroup>
 
         <!-- Check the success message -->
         <see selector="{{CheckoutSuccessMainSection.success}}" userInput="Your order number is:" stepKey="checkOrderPlaceSuccessMessage"/>
