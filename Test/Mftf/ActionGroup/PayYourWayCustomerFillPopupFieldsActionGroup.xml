@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * @author    Blue Acorn iCi <code@blueacornici.com>
+ * @copyright 2021 Blue Acorn iCi. All Rights Reserved.
+ */
+-->
+<actionGroups xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:noNamespaceSchemaLocation="urn:magento:mftf:Test/etc/actionGroupSchema.xsd">
+    <actionGroup name="PayYourWayCustomerFillPopupFieldsActionGroup">
+        <!-- Switch to a window with the `name` parameter of `newWindow`. -->
+        <executeJS function="return window.name;" stepKey="rootWindow"/>
+        <switchToWindow userInput="SYWPay" stepKey="switchToWindow"/>
+        <waitForElementVisible selector="{{CheckoutPaymentSection.PayYourWayBtnAlreadyHaveShopYourWayMastercard}}" stepKey="waitBtnFormAppears"/>
+        <click selector="{{CheckoutPaymentSection.PayYourWayBtnAlreadyHaveShopYourWayMastercard}}" stepKey="clickPayYourWayBtnAlreadyHaveShopYourWayMastercard"/>
+
+        <!-- Login in the popup -->
+        <waitForElementVisible selector="{{CheckoutPaymentSection.PayYourWayUsernameLogin}}" stepKey="waitLoginFormAppears"/>
+        <fillField selector="{{CheckoutPaymentSection.PayYourWayUsernameLogin}}" userInput="{{PayYourWay_Popup_Customer_BobSaget.email}}" stepKey="fillUsername"/>
+        <fillField selector="{{CheckoutPaymentSection.PayYourWayPasswordLogin}}" userInput="{{PayYourWay_Popup_Customer_BobSaget.password}}" stepKey="fillPassword"/>
+        <click selector="{{CheckoutPaymentSection.PayYourWayLoginBtn}}" stepKey="clickLogin"/>
+
+        <!-- Fill in the CVV -->
+        <waitForElementVisible selector="{{CheckoutPaymentSection.PayYourWayCvv}}" stepKey="waitCvvFormAppears"/>
+        <fillField selector="{{CheckoutPaymentSection.PayYourWayCvv}}" userInput="{{PayYourWay_Popup_Customer_BobSaget.cvv}}" stepKey="fillCvv"/>
+        <click selector="{{CheckoutPaymentSection.PayYourWayCompletePaymentBtn}}" stepKey="clickCompletePayment"/>
+
+        <!-- Return to the parent window -->
+        <switchToWindow userInput="{$rootWindow}" stepKey="switchToRoot"/>
+    </actionGroup>
+</actionGroups>
