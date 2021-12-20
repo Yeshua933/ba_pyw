@@ -52,14 +52,9 @@ class PaymentMethodTest extends TestCase
 
         $config = $this->createMock(ConfigInterface::class);
         $config
-            ->expects($this->exactly(5))
+            ->expects($this->exactly(3))
             ->method('getClientId')
             ->willReturn($clientId);
-
-        $config
-            ->expects($this->once())
-            ->method('getEnvironment')
-            ->willReturn($environment);
 
         return $config;
     }
@@ -90,7 +85,7 @@ class PaymentMethodTest extends TestCase
 
         $generateAccessToken = $this->createMock(GenerateAccessTokenInterface::class);
         $generateAccessToken
-            ->expects($this->exactly(2))
+            ->expects($this->once())
             ->method('execute')
             ->willReturn($accessToken);
 
@@ -104,71 +99,12 @@ class PaymentMethodTest extends TestCase
 
     private function getPaymentConfirmationLookupMockForRefund(): PaymentConfirmationLookupInterface
     {
-        $paymentConfirmationReturnJson = '{"authCode":"09180-20211117-843154488","orderDate":"11-17-2021 04:28:52","paymentStatus":"PENDING","paymentTotal":"500.00","paymentDetails":[{"id":"12e28334-4dd4-4510-a40e-bf8d2c39ef55","type":"CREDITCARD","amount":"500.00","status":"SUCCESS","currency":"USD","cardLastFour":"9699","cardType":"Sears"},{"id":"16371463","type":"SYWR","amount":"0.0","status":"NOT_PROCESSED","currency":"USD"}]}'; //phpcs:ignore
-
-        $paymentConfirmationLookup = $this->createMock(PaymentConfirmationLookupInterface::class);
-        $paymentConfirmationLookup
-            ->expects($this->once())
-            ->method('lookup')
-            ->willReturn($paymentConfirmationReturnJson);
-
-        return $paymentConfirmationLookup;
+        return $this->createMock(PaymentConfirmationLookupInterface::class);
     }
 
     private function getPaymentConfirmationRequestMockForRefund(): PaymentConfirmationRequestInterface
     {
-        $channel = 'ONLINE';
-        $merchantId = 'PYW';
-        $pywId = '12e28334-4dd4-4510-a40e-bf8d2c39ef55';
-        $orderId = '45';
-        $actionType = 'READONLY';
-        $transactionType = '1P';
-        $refId = 'REF_ID_RANDOM_STRING';
-
-        $paymentConfirmationRequest = $this->createMock(PaymentConfirmationRequestInterface::class);
-        $paymentConfirmationRequest
-            ->expects($this->once())
-            ->method('setChannel')
-            ->with($channel)
-            ->willReturnSelf();
-
-        $paymentConfirmationRequest
-            ->expects($this->once())
-            ->method('setMerchantId')
-            ->with($merchantId)
-            ->willReturnSelf();
-
-        $paymentConfirmationRequest
-            ->expects($this->once())
-            ->method('setPywid')
-            ->with($pywId)
-            ->willReturnSelf();
-
-        $paymentConfirmationRequest
-            ->expects($this->once())
-            ->method('setTransactionId')
-            ->with($orderId)
-            ->willReturnSelf();
-
-        $paymentConfirmationRequest
-            ->expects($this->once())
-            ->method('setActionType')
-            ->with($actionType)
-            ->willReturnSelf();
-
-        $paymentConfirmationRequest
-            ->expects($this->once())
-            ->method('setTransactionType')
-            ->with($transactionType)
-            ->willReturnSelf();
-
-        $paymentConfirmationRequest
-            ->expects($this->once())
-            ->method('setRefId')
-            ->with($refId)
-            ->willReturnSelf();
-
-        return $paymentConfirmationRequest;
+        return $this->createMock(PaymentConfirmationRequestInterface::class);
     }
 
     private function getPaymentDataMockForRefund(): Data
@@ -182,7 +118,7 @@ class PaymentMethodTest extends TestCase
 
         $paymentReturnLookup = $this->createMock(PaymentReturnLookupInterface::class);
         $paymentReturnLookup
-            ->expects($this->once())
+            ->expects($this->exactly(2))
             ->method('lookup')
             ->willReturn($paymentReturnResponse);
 
@@ -193,7 +129,7 @@ class PaymentMethodTest extends TestCase
     {
         $contentType = 'application/json';
         $accept = 'application/json';
-        $channel = 'PYW_ONLINE';
+        $channel = 'ONLINE';
         $clientId = 'PYW';
         $orderId = '45';
         $refId = 'REF_ID_RANDOM_STRING';
@@ -260,13 +196,7 @@ class PaymentMethodTest extends TestCase
 
     private function getPywLoggerMockForRefund(): LoggerInterface
     {
-        $pywLogger = $this->createMock(LoggerInterface::class);
-        $pywLogger
-            ->expects($this->exactly(2))
-            ->method('debug')
-            ->willReturnSelf();
-
-        return $pywLogger;
+        return $this->createMock(LoggerInterface::class);
     }
 
     private function getRefIdBuilderMockForRefund(): RefIdBuilderInterface
@@ -279,7 +209,7 @@ class PaymentMethodTest extends TestCase
 
         $refIdBuilder = $this->createMock(RefIdBuilderInterface::class);
         $refIdBuilder
-            ->expects($this->exactly(2))
+            ->expects($this->once())
             ->method('buildRefId')
             ->with(
                 $clientId,
@@ -408,11 +338,13 @@ class PaymentMethodTest extends TestCase
         $orderId = '45';
         $pywId = '12e28334-4dd4-4510-a40e-bf8d2c39ef55';
         $amount = 199.99;
+        $additionalInformation = ['auth_code' => '09180-20211117-843154488'];
 
         $orderMock = $this->createMock(Order::class);
+
         $orderMock
-            ->expects($this->exactly(5))
-            ->method('getId')
+            ->expects($this->exactly(2))
+            ->method('getQuoteId')
             ->willReturn($orderId);
 
         $paymentMock = $this->getMockBuilder(InfoInterface::class)
@@ -430,8 +362,8 @@ class PaymentMethodTest extends TestCase
 
         $paymentMock
             ->expects($this->once())
-            ->method('getLastTransId')
-            ->willReturn($pywId);
+            ->method('getAdditionalInformation')
+            ->willReturn($additionalInformation);
 
         $refundExecution = $this->paymentMethodModel->refund($paymentMock, $amount);
         $this->assertInstanceOf(PaymentMethod::class, $refundExecution);
