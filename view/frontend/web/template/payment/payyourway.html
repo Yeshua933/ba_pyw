@@ -7,17 +7,31 @@
 <div id="overlay" style="display:none"></div>
 <div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
     <div class="payment-method-title field choice">
-        <p class="unlock" data-bind="i18n: 'Unlock your rewards, your way.'"></p>
         <div class="payyourwaysection">
             <input type="radio"
-                name="payment[method]"
-                class="radio radiosyw"
-                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
+                   name="payment[method]"
+                   class="radio radiosyw"
+                   data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
             <img data-bind="attr: { src: require.toUrl('PayYourWay_Pyw/images/syw-logo.png') }" alt="SYW Brand Image" class="imgsyw">
             <label data-bind="attr: {'for': getCode()}" class="label sloganlearnmore">
-                <span data-bind="text: getTitle()"></span>
-                <span class="slogan" data-bind="html: 'Shop Your Way MasterCard<sup>®</sup>'"></span>
-                <span data-bind="i18n: 'is the best way to shop now and earn rewards.'">&nbsp;</span>
+                <table class=example>
+                    <thead>
+                    <tr class="row">
+                        <th class="col 1"></th>
+                        <th class="col 2"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="row">
+                        <td class="col 1">
+                            <span class="payment-method-name" data-bind="text: getTitle()"></span>
+                        </td>
+                        <td class="col 2">
+                            <span class="slogan" data-bind="html: 'Unlock your rewards, your way.<br/> Shop Your Way MasterCard<sup>®</sup> is the best way to shop now and earn rewards.'">&nbsp;</span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </label>
         </div>
     </div>
