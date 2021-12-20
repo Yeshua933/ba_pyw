@@ -62,7 +62,7 @@ class CheckoutConfigProvider implements ConfigProviderInterface
         $customerEmail = $quote->getCustomerEmail() ?? '';
         $clientId = $this->scopeConfig->getClientId() ?? '';
 
-        $refId = $this->getRefId($accessToken, $quoteId, $customerEmail, $clientId, $sandboxMode);
+        $refId = $this->getRefId($accessToken, $quoteId, $clientId, $customerEmail, $sandboxMode);
         return [
             'payment' => [
                 'payyourway' => [

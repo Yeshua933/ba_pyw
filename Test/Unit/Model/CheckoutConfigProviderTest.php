@@ -129,7 +129,7 @@ class CheckoutConfigProviderTest extends TestCase
             ->willReturn($environment);
 
         $scopeConfig
-            ->expects($this->exactly(3))
+            ->expects($this->once())
             ->method('getClientId')
             ->willReturn($clientId);
 
