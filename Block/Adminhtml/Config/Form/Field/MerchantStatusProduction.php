@@ -41,7 +41,7 @@ class MerchantStatusProduction extends Field
         /**
          * If token is generated successfully then the merchant is registered
          */
-        if ($this->generateAccessToken->execute()) {
+        if ($this->generateAccessToken->execute('', '', false)) {
             $state = 'notice';
             $status = 'Registered';
         }

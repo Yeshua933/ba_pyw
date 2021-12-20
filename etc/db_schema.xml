@@ -18,6 +18,9 @@
                 comment="Expiration Time"/>
         <column xsi:type="varchar" name="iss" length="255" nullable="true"
                 comment="Issued Time"/>
+        <column xsi:type="varchar" name="merchant_id" length="255" nullable="true"
+                comment="Merchant Id"/>
+        <column xsi:type="boolean" name="sandbox" nullable="true" comment="Is sandbox token?"/>
         <constraint xsi:type="primary" referenceId="PRIMARY">
             <column name="entity_id"/>
         </constraint>

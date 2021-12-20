@@ -64,16 +64,24 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
     /**
      * @inheritdoc
      */
-    public function execute(string $client_id = '', string $private_key = ''): ?string
+    public function execute(string $clientId = '', string $privateKey = '', ?bool $isSandbox = null): ?string
     {
         $header = $this->getEncoded(json_encode(['typ' => 'JWT', 'alg' => 'RSA'], JSON_THROW_ON_ERROR));
-        $clientId = (!isEmpty($client_id) && isset($client_id)) ? $client_id : $this->config->getClientId();
-        $privateKey = (!isEmpty($private_key) && isset($private_key)) ? $private_key : $this->config->getPrivateKey();
-        $storedAccessToken = $this->collection->getFirstItem();
+        $clientId = (!isEmpty($clientId) && isset($clientId)) ? $clientId : $this->config->getClientId();
+        if ($isSandbox === null) {
+            $isSandbox = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX;
+        }
+
+        $privateKey = (!isEmpty($privateKey) && isset($privateKey)) ? $privateKey : $this->config->getPrivateKey();
+        $storedAccessToken = $this->collection
+            ->addFieldToFilter('sandbox', $isSandbox)
+            ->addFieldToFilter('merchant_id', $clientId)
+            ->getFirstItem();
         $aud = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX ?
             self::OAUTH_UAT :
             self::OAUTH_PRD;
         $isDebugMode = $this->config->isDebugMode();
+
         $claim = $this->getEncoded(
             json_encode([
                 "iss" => $clientId,
@@ -84,7 +92,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
             ], JSON_THROW_ON_ERROR)
         );
 
-        $storedAccessToken = $this->checkTokenExpiration($storedAccessToken);
+        $storedAccessToken = $this->validateToken($storedAccessToken);
 
         if ($this->validateParameters($clientId, $privateKey)) {
             return null;
@@ -92,7 +100,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
 
         $this->debugCheckpoint($isDebugMode, $clientId, $privateKey);
 
-        if (!isset($storedAccessToken)) {
+        if ($storedAccessToken === null) {
             $jwtSig = $this->generateJWTSignature($header, $claim, $privateKey);
 
             $accessTokenDecoded = $this->getAccessTokenRequest($header, $claim, $jwtSig);
@@ -103,7 +111,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
                 $this->debugCheckpoint($isDebugMode, $clientId, $privateKey, $accessTokenDecoded);
                 return null;
             }
-            $newAccessToken = $this->saveAccessToken($accessTokenDecoded);
+            $newAccessToken = $this->saveAccessToken($accessTokenDecoded, $clientId, $isSandbox);
 
             return $newAccessToken->getAccessToken();
         }
@@ -120,13 +128,12 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
      * If token is 15 minutes or less from expiring, token is deleted and Null is returned
      * If token is not expired existing string token entity is returned.
      */
-    private function checkTokenExpiration($storedAccessToken)
+    private function validateToken($storedAccessToken): ?object
     {
         if ($storedAccessToken->getId() !== null) {
 
             $timeNow = (int)microtime(true) * 1000;
             $expirationTime = (int)$storedAccessToken->getExp();
-
             $difference = $expirationTime - $timeNow;
             if ($difference < 0) {
                 $difference = 0;
@@ -141,6 +148,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
 
             try {
                 $this->resourceModel->delete($storedAccessToken);
+                return null;
             } catch (Exception $e) {
                 return null;
             }
@@ -206,7 +214,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
         return $this->serializer->unserialize($accessTokenEncode);
     }
 
-    private function saveAccessToken($accessTokenDecoded): ?AccessToken
+    private function saveAccessToken($accessTokenDecoded, $merchantId, $sandbox): ?AccessToken
     {
         /** @var AccessToken $accessToken */
         $accessToken = $this->accessTokenFactory->create();
@@ -214,6 +222,8 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
         $accessToken->setTokenType((string)$accessTokenDecoded['token_type']);
         $accessToken->setExp((int)$accessTokenDecoded['exp']);
         $accessToken->setIss((int)$accessTokenDecoded['iss']);
+        $accessToken->setMerchantId($merchantId);
+        $accessToken->setSandbox($sandbox);
         try {
             $this->resourceModel->save($accessToken);
             return $accessToken;
