@@ -148,7 +148,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
 
             try {
                 $this->resourceModel->delete($storedAccessToken);
-                return $storedAccessToken;
+                return null;
             } catch (Exception $e) {
                 return null;
             }
