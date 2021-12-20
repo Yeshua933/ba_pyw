@@ -19,10 +19,12 @@ interface GenerateAccessTokenInterface
      *
      * @param string $clientId
      * @param string $privateKey
+     * @param bool|null $isSandbox
      * @return string|null
      */
     public function execute(
         string $clientId = '',
-        string $privateKey = ''
+        string $privateKey = '',
+        ?bool $isSandbox = null
     ): ?string;
 }
