@@ -13,6 +13,9 @@
             <argument name="checkoutSession" xsi:type="object">Magento\Checkout\Model\Session\Proxy</argument>
         </arguments>
     </type>
+    <type name="Magento\Payment\Model\MethodList">
+        <plugin sortOrder="1" name="disablePayYourWay" type="PayYourWay\Pyw\Plugin\Model\DisablePYWPlugin"/>
+    </type>
     <type name="PayYourWay\Pyw\Controller\Checkout\PlaceOrder">
         <arguments>
             <argument name="customerSession" xsi:type="object">Magento\Customer\Model\Session\Proxy</argument>

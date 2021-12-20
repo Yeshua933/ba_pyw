@@ -21,6 +21,7 @@ use Magento\Payment\Helper\Data;
 use Magento\Payment\Model\InfoInterface;
 use Magento\Payment\Model\Method\AbstractMethod;
 use Magento\Payment\Model\Method\Logger;
+use Magento\Sales\Api\Data\OrderInterface;
 use PayYourWay\Pyw\Api\ConfigInterface;
 use PayYourWay\Pyw\Api\GenerateAccessTokenInterface;
 use PayYourWay\Pyw\Api\PaymentConfirmationLookupInterface;
@@ -49,25 +50,25 @@ class PaymentMethod extends AbstractMethod
     private LoggerInterface $pywLogger;
 
     public function __construct(
-        Context $context,
-        Registry $registry,
-        ExtensionAttributesFactory $extensionFactory,
-        AttributeValueFactory $customAttributeFactory,
-        Data $paymentData,
-        ScopeConfigInterface $scopeConfig,
-        Logger $logger,
-        PaymentReturnRequestInterface $paymentReturnRequest,
-        RefIdBuilderInterface $refIdBuilder,
-        ConfigInterface $config,
-        GenerateAccessTokenInterface $generateAccessToken,
-        PaymentReturnLookupInterface $paymentReturnLookup,
+        Context                             $context,
+        Registry                            $registry,
+        ExtensionAttributesFactory          $extensionFactory,
+        AttributeValueFactory               $customAttributeFactory,
+        Data                                $paymentData,
+        ScopeConfigInterface                $scopeConfig,
+        Logger                              $logger,
+        PaymentReturnRequestInterface       $paymentReturnRequest,
+        RefIdBuilderInterface               $refIdBuilder,
+        ConfigInterface                     $config,
+        GenerateAccessTokenInterface        $generateAccessToken,
+        PaymentReturnLookupInterface        $paymentReturnLookup,
         PaymentConfirmationRequestInterface $paymentConfirmationRequest,
-        PaymentConfirmationLookupInterface $paymentConfirmationLookup,
-        LoggerInterface $pywLogger,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
-        array $data = [],
-        DirectoryHelper $directory = null
+        PaymentConfirmationLookupInterface  $paymentConfirmationLookup,
+        LoggerInterface                     $pywLogger,
+        AbstractResource                    $resource = null,
+        AbstractDb                          $resourceCollection = null,
+        array                               $data = [],
+        DirectoryHelper                     $directory = null
     ) {
         parent::__construct(
             $context,
@@ -133,8 +134,8 @@ class PaymentMethod extends AbstractMethod
         $this->paymentReturnRequest->setContentType('application/json');
         $this->paymentReturnRequest->setAccept('application/json');
         $this->paymentReturnRequest->setChannel('ONLINE');
-        $this->paymentReturnRequest->setClientId((string) $this->config->getClientId());
-        $this->paymentReturnRequest->setTransactionId((string) $order->getQuoteId());
+        $this->paymentReturnRequest->setClientId((string)$this->config->getClientId());
+        $this->paymentReturnRequest->setTransactionId((string)$order->getQuoteId());
         $this->paymentReturnRequest->setRefId($this->refIdBuilder->buildRefId(
             $this->config->getClientId(),
             $this->generateAccessToken->execute(),
@@ -179,5 +180,19 @@ class PaymentMethod extends AbstractMethod
     {
         $additionalInformation = $payment->getAdditionalInformation();
         return $additionalInformation['auth_code'];
+    }
+
+    /**
+     * Check whether payment method can be used
+     *
+     * @return bool
+     */
+    public function isPYWAvailable(): bool
+    {
+        $accessToken = $this->generateAccessToken->execute();
+        if (!isset($accessToken)) {
+            return false;
+        }
+        return true;
     }
 }
