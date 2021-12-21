@@ -14,19 +14,17 @@
                    data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
             <img data-bind="attr: { src: require.toUrl('PayYourWay_Pyw/images/syw-logo.png') }" alt="SYW Brand Image" class="imgsyw">
             <label data-bind="attr: {'for': getCode()}" class="label sloganlearnmore">
-                <table class=example>
+                <table class="payyourway-table">
                     <thead>
-                    <tr class="row">
-                        <th class="col 1"></th>
-                        <th class="col 2"></th>
+                    <tr class="row-header">
                     </tr>
                     </thead>
                     <tbody>
                     <tr class="row">
-                        <td class="col 1">
+                        <td class="col-1">
                             <span class="payment-method-name" data-bind="text: getTitle()"></span>
                         </td>
-                        <td class="col 2">
+                        <td class="col-2">
                             <span class="slogan" data-bind="html: 'Unlock your rewards, your way.<br/> Shop Your Way MasterCard<sup>®</sup> is the best way to shop now and earn rewards.'">&nbsp;</span>
                         </td>
                     </tr>
