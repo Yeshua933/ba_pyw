@@ -79,6 +79,14 @@ php bin/magento admin:user:create \
 --admin-firstname=Eui \
 --admin-lastname=Chung
 
+# Create admin account for Amol
+php bin/magento admin:user:create \
+--admin-user=amol \
+--admin-password=amol123 \
+--admin-email=amol@syw.com \
+--admin-firstname=amol \
+--admin-lastname=amol
+
 
 # Pay Your Way Configurations...
 
