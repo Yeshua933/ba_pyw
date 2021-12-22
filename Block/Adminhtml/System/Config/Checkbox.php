@@ -3,9 +3,14 @@
  * @author    Blue Acorn iCi <code@blueacornici.com>
  * @copyright 2021 Blue Acorn iCi. All Rights Reserved.
  */
+
 namespace PayYourWay\Pyw\Block\Adminhtml\System\Config;
 
+use Magento\Backend\Block\Template\Context;
 use Magento\Config\Block\System\Config\Form\Field;
+use Magento\Config\Model\Config\Structure;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\Data\Form\Element\AbstractElement;
 
 class Checkbox extends Field
 {
@@ -14,36 +19,23 @@ class Checkbox extends Field
     protected $_template = 'PayYourWay_Pyw::system/config/checkbox.phtml';
 
     protected $_values = null;
+
     /**
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Config\Model\Config\Structure $configStructure
+     * @param Context $context
+     * @param Structure $configStructure
      * @param array $data
      */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        array $data = []
+        Context $context,
+        array   $data = []
     ) {
         parent::__construct($context, $data);
-    }
-    /**
-     * Retrieve element HTML markup.
-     *
-     * @param \Magento\Framework\Data\Form\Element\AbstractElement $element
-     *
-     * @return string
-     */
-    protected function _getElementHtml(\Magento\Framework\Data\Form\Element\AbstractElement $element)
-    {
-        $this->setNamePrefix($element->getName())
-            ->setHtmlId($element->getHtmlId());
-
-        return $this->_toHtml();
     }
 
     public function getValues()
     {
         $values = [];
-        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $objectManager = ObjectManager::getInstance();
 
         foreach ($objectManager
                      ->create('PayYourWay\Pyw\Model\Adminhtml\Config\Source\Checkbox')
@@ -53,6 +45,7 @@ class Checkbox extends Field
 
         return $values;
     }
+
     /**
      *
      * @param  $name
@@ -62,13 +55,14 @@ class Checkbox extends Field
     {
         return in_array($name, $this->getCheckedValues());
     }
+
     /**
      *
      * get the checked value from config
      */
     public function getCheckedValues()
     {
-        if (is_null($this->_values)) {
+        if (($this->_values) === null) {
             $data = $this->getConfigData();
             if (isset($data[self::CONFIG_PATH])) {
                 $data = $data[self::CONFIG_PATH];
@@ -79,5 +73,20 @@ class Checkbox extends Field
         }
 
         return $this->_values;
+    }
+
+    /**
+     * Retrieve element HTML markup.
+     *
+     * @param AbstractElement $element
+     *
+     * @return string
+     */
+    protected function _getElementHtml(AbstractElement $element)
+    {
+        $this->setNamePrefix($element->getName())
+            ->setHtmlId($element->getHtmlId());
+
+        return $this->_toHtml();
     }
 }
