@@ -48,7 +48,6 @@ class Checkbox extends Field
         foreach ($objectManager
                      ->create('PayYourWay\Pyw\Model\Adminhtml\Config\Source\Checkbox')
                      ->toOptionArray() as $value) {
-
             $values[$value['value']] = $value['label'];
         }
 

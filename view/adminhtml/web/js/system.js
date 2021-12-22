@@ -130,4 +130,6 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
         generate_client_id();
 
     });
+
+    //$('#payment_us_payyourway_register_checkbox_checkbox');
 });
