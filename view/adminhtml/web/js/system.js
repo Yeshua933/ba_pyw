@@ -119,18 +119,27 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
         if (environment.val() === 'sandbox') {
             let merchantName = merchantNameSb.val();
             let clientId = 'MG_'+merchantName.replace(/\s/g, '')+'_QA';
-            clientIdSb.val(clientId);
+            clientIdSb.val(stripClientId(clientId));
             if (clientIdSbCheckbox.is(':checked')) {
                 clientIdSbCheckbox.click();
             }
         } else {
             let merchantName = merchantNamePr.val();
             let clientId = 'MG_'+merchantName.replace(/\s/g, '');
-            clientIdPr.val(clientId);
+            clientIdPr.val(stripClientId(clientId));
             if (clientIdPrCheckbox.is(':checked')) {
                 clientIdPrCheckbox.click();
             }
         }
+    }
+
+    /**
+     * ClientId must be A-Z and 0-9 only.
+     * We remove everything else that doesn't meet the criteria
+     */
+    function stripClientId(clientId)
+    {
+        return clientId.replace(/[^a-z0-9]/gi,'').toUpperCase();
     }
 
     $('#payment_us_payyourway_settings_merchant_name_sb').on("input",function () {
