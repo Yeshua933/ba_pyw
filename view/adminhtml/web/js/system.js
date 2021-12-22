@@ -141,5 +141,11 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
         generateClientId();
     });
 
-    //$('#payment_us_payyourway_register_checkbox_checkbox');
+    $('#payment_us_payyourway_register_checkbox_checkbox').change(function () {
+        if ($('#payment_us_payyourway_register_checkbox_checkbox').is(":checked")) {
+            $("#registerPywButton").removeAttr("disabled");
+        } else {
+            $("#registerPywButton").attr("disabled", "disabled");
+        }
+    });
 });
