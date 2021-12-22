@@ -1,0 +1,12 @@
+.grid-severity-warning {
+    background: #f1f12c;
+    border: 1px solid darkorange;
+    color: #f68a04;
+    display: block;
+    padding: 0 3px;
+    font-weight: bold;
+    line-height: 17px;
+    text-transform: uppercase;
+    text-align: center;
+}
+

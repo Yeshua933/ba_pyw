@@ -14,6 +14,7 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
         var private_key = '';
         var address = '';
         var category = '';
+        var secretKey = '';
 
 
         if (env_id === 'sandbox') {
@@ -25,6 +26,7 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
             private_key = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-private-key-sb-value"]').val();
             address = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-address-sb-value"]').val();
             category = $('[data-ui-id="select-groups-payyourway-groups-register-fields-merchant-category-sb-value"]').val();
+            secretKey = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-secret-key-sb-value"]');
         } else {
             client_name = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-merchant-name-pr-value"]').val();
             email = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-email-pr-value"]').val();
@@ -33,7 +35,7 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
             public_key = $('[data-ui-id="text-groups-payyourway-groups-register-fields-public-key-pr-value"]').val();
             private_key = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-private-key-pr-value"]').val();
             address = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-address-pr-value"]').val();
-            category = $('[data-ui-id="select-groups-payyourway-groups-register-fields-merchant-category-pr-value"]').val();
+            secretKey = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-secret-key-pr-value"]');
         }
 
         /* Remove previous success message if present */
@@ -90,8 +92,11 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
             address: address,
             category: category,
             email: email
-        }).done(function () {
+        }).done(function (response) {
+            var responseDecoded = JSON.parse(response);
             $('<div class="message message-success payyourway-registration-success-message">' + $t("Registered Client Successfully") + '</div>').insertAfter(self);
+            secretKey.val(responseDecoded.data.secretCode);
+            $('[data-ui-id="page-actions-toolbar-save-button"]').trigger("click");
         }).fail(function (jqXHR) {
             alert({
                 title: $t('Payyourway Registration Failed'),
@@ -102,32 +107,37 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
         });
     }
 
-    function generate_client_id(){
+    function generateClientId()
+    {
         let clientIdSb = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-client-id-sb-value"]');
         let clientIdPr = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-client-id-pr-value"]');
         let merchantNameSb = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-merchant-name-sb-value"]');
         let merchantNamePr = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-merchant-name-pr-value"]');
         let environment = $('[data-ui-id="select-groups-payyourway-groups-settings-fields-environment-value"]');
+        let clientIdSbCheckbox = $('[name="groups[payyourway][groups][settings][fields][client_id_sb][inherit]"]');
+        let clientIdPrCheckbox = $('[name="groups[payyourway][groups][settings][fields][client_id_pr][inherit]"]');
         if (environment.val() === 'sandbox') {
-
             let merchantName = merchantNameSb.val();
             let clientId = 'MG_'+merchantName.replace(/\s/g, '')+'_QA';
             clientIdSb.val(clientId);
+            if (clientIdSbCheckbox.is(':checked')) {
+                clientIdSbCheckbox.click();
+            }
         } else {
-
             let merchantName = merchantNamePr.val();
             let clientId = 'MG_'+merchantName.replace(/\s/g, '');
             clientIdPr.val(clientId);
+            if (clientIdPrCheckbox.is(':checked')) {
+                clientIdPrCheckbox.click();
+            }
         }
     }
 
     $('#payment_us_payyourway_settings_merchant_name_sb').on("input",function () {
-        generate_client_id();
-
+        generateClientId();
     });
 
     $('#payment_us_payyourway_settings_merchant_name_pr').on("input",function () {
-        generate_client_id();
-
+        generateClientId();
     });
 });

@@ -97,7 +97,7 @@ php bin/magento config:set payment/payyourway/merchant_name_sb MARCELTEST30
 php bin/magento config:set payment/payyourway/client_id_sb MG_MARCELTEST30_QA
 php bin/magento config:set payment/payyourway/secret_key_sb B6A708998FB75DD0FE03E4C3668F82148806F354992C4BB1B820516EB4219444
 php bin/magento config:set payment/payyourway/payment_action authorize_capture
-php bin/magento config:set payment/payyourway/sort_order NULL
+php bin/magento config:set payment/payyourway/sort_order 0
 php bin/magento config:set payment/payyourway/merchant_email_sb test@blueacornici.com
 php bin/magento config:set payment/payyourway/merchant_phone_sb 7137777777
 php bin/magento config:set payment/payyourway/merchant_category_sb 0

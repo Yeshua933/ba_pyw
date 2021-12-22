@@ -74,24 +74,12 @@ class OnboardingController implements HttpPostActionInterface
         $onboardingRequest = $this->createOnboardingRequest();
         $result = $this->registerClient($onboardingRequest);
         $resultDecode = json_decode($result);
-
-        if ($this->config->isDebugMode()) {
-            $debug = [
-                'register_client_response' => $resultDecode,
-            ];
-            $this->logger->info($this->serializer->serialize($debug));
-        }
-
-        if ($resultDecode->status === self::MESSAGE_ERROR &&
-            $resultDecode->message === self::MESSAGE_CLIENT_ID_ALREADY_TAKEN) {
-            $this->logger->info($this->serializer->serialize($resultDecode));
-            $response->setData(self::MESSAGE_CLIENT_ID_ALREADY_TAKEN);
-            $response->setHttpResponseCode(400);
-            return $response;
-        }
+        $debug = ['register_client_response' => $resultDecode];
+        $this->logger->info($this->serializer->serialize($debug));
 
         if ($resultDecode->status === self::MESSAGE_ERROR) {
             $this->logger->info($this->serializer->serialize($resultDecode));
+            $response->setData($resultDecode->message);
             $response->setHttpResponseCode(400);
             return $response;
         }
@@ -99,9 +87,7 @@ class OnboardingController implements HttpPostActionInterface
         if ($resultDecode->status === 'SUCCESS') {
             $secretCode = $resultDecode->data->secretCode;
             $this->config->saveSecretKey($secretCode);
-            /**
-             * TODO: PYW should activate the client id automatically
-             */
+
             $accessToken = $this->getAccessToken();
             if ($accessToken === null) {
                 $accessToken = '';
@@ -110,12 +96,8 @@ class OnboardingController implements HttpPostActionInterface
             $updateMerchantRequest = $this->createUpdateMerchantRequest($refId);
             $resultMerchant = $this->updateMerchant($updateMerchantRequest);
             $resultMerchantDecode = json_decode($resultMerchant);
-            if ($this->config->isDebugMode()) {
-                $debug = [
-                    'update_merchant_response' => $resultMerchantDecode,
-                ];
-                $this->logger->info($this->serializer->serialize($debug));
-            }
+            $debug = ['update_merchant_response' => $resultMerchantDecode,];
+            $this->logger->info($this->serializer->serialize($debug));
             $response = $response->setData($result);
             $response->setHttpResponseCode(200);
             return $response;
