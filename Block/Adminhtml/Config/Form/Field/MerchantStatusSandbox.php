@@ -48,13 +48,13 @@ class MerchantStatusSandbox extends Field
         $count = $collection->count();
         $state = 'critical';
         $status = 'Not Registered';
-        $helpText = __('For registering , You need to add the information and click on register button at the Register Your Store Section'); //phpcs:ignore
+        $helpText = __('Please register your store with Shop Your Way.'); //phpcs:ignore
 
         if ($count === 2) {
             $state = 'warning';
             $status = 'Registered';
             $helpText = __(
-                'We have received your information successfully, please communicate with us for activating your account'
+                'Your merchant account has been registered.'
             );
         }
 
@@ -62,7 +62,7 @@ class MerchantStatusSandbox extends Field
             $state = 'notice';
             $status = 'Active';
             $helpText = __(
-                'You can use your PYW services'
+                'Your merchant account is active.'
             );
         }
         $output = <<<HTML
