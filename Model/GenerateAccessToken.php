@@ -18,7 +18,6 @@ use PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment;
 use PayYourWay\Pyw\Model\ResourceModel\AccessToken as ResourceModel;
 use PayYourWay\Pyw\Model\ResourceModel\AccessToken\Collection;
 use Psr\Log\LoggerInterface;
-use function PHPUnit\Framework\isEmpty;
 
 /**
  * Used for creating/renewing the Pay Your Way access
@@ -67,12 +66,12 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
     public function execute(string $clientId = '', string $privateKey = '', ?bool $isSandbox = null): ?string
     {
         $header = $this->getEncoded(json_encode(['typ' => 'JWT', 'alg' => 'RSA'], JSON_THROW_ON_ERROR));
-        $clientId = (!isEmpty($clientId) && isset($clientId)) ? $clientId : $this->config->getClientId();
+        $clientId = (!empty($clientId)) ? $clientId : $this->config->getClientId();
         if ($isSandbox === null) {
             $isSandbox = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX;
         }
 
-        $privateKey = (!isEmpty($privateKey) && isset($privateKey)) ? $privateKey : $this->config->getPrivateKey();
+        $privateKey = (!empty($privateKey)) ? $privateKey : $this->config->getPrivateKey();
         $storedAccessToken = $this->collection
             ->addFieldToFilter('sandbox', $isSandbox)
             ->addFieldToFilter('merchant_id', $clientId)

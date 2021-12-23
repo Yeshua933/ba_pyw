@@ -12,7 +12,6 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 use PayYourWay\Pyw\Api\ConfigInterface as PywConfigInterface;
 use PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment;
-use function PHPUnit\Framework\isEmpty;
 
 /**
  * Configuration retrieval tool
