@@ -11,6 +11,7 @@ use Magento\Config\Model\ResourceModel\Config;
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface as ResourceConfigInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
+use PayYourWay\Pyw\Model\Config as PywConfig;
 
 /**
  * Used for managing the Pay Your Way integration config settings
@@ -74,7 +75,7 @@ interface ConfigInterface
      */
     public function savePrivateKey(
         string $value,
-        string $path,
+        string $path = PywConfig::CONFIG_XML_PATH_ACCESS_TOKEN_SB,
         string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
         int    $scopeId = 0
     ): ResourceConfigInterface;
@@ -90,7 +91,7 @@ interface ConfigInterface
      */
     public function saveAccessToken(
         string $value,
-        string $path,
+        string $path = PywConfig::CONFIG_XML_PATH_ACCESS_TOKEN_SB,
         string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
         int    $scopeId = 0
     ): ResourceConfigInterface;
@@ -106,7 +107,7 @@ interface ConfigInterface
      */
     public function saveSecretKey(
         string $value,
-        string $path,
+        string $path = PywConfig::CONFIG_XML_PATH_SECRET_KEY_SB,
         string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
         int    $scopeId = 0
     ): ResourceConfigInterface;
@@ -121,7 +122,7 @@ interface ConfigInterface
      */
     public function saveClientId(
         string $value,
-        string $path,
+        string $path = PywConfig::CONFIG_XML_PATH_CLIENT_ID_SB,
         string $scope = ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
         int $scopeId = 0
     ):ResourceConfigInterface;
