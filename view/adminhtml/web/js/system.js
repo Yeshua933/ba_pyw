@@ -16,7 +16,6 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
         var category = '';
         var secretKey = '';
 
-
         if (env_id === 'sandbox') {
             client_name = $('[data-ui-id="text-groups-payyourway-groups-settings-fields-merchant-name-sb-value"]').val();
             email = $('[data-ui-id="text-groups-payyourway-groups-register-fields-merchant-email-sb-value"]').val();
@@ -148,5 +147,16 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
 
     $('#payment_us_payyourway_settings_merchant_name_pr').on("input",function () {
         generateClientId();
+    });
+
+    var pyw_checkbox = '#payment_us_payyourway_register_checkbox_checkbox';
+    $("#registerPywButton").attr("disabled", "disabled");
+
+    $(pyw_checkbox).change(function () {
+        if ($(pyw_checkbox).is(":checked")) {
+            $("#registerPywButton").removeAttr("disabled");
+        } else {
+            $("#registerPywButton").attr("disabled", "disabled");
+        }
     });
 });

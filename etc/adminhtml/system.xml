@@ -229,8 +229,13 @@
                     </field>
 
 
-                    <field id="terms_conditions_link" translate="label" type="link" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <field id="checkbox" translate="label" type="checkboxes" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                         <label>Terms and Conditions Link</label>
+                        <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\Checkbox</frontend_model>
+                        <source_model>PayYourWay\Pyw\Model\Adminhtml\Config\Source\Checkbox</source_model>
+                        <comment>
+                            <![CDATA[<a href="http://www.shopyourway.com" target="_blank">View terms and conditions</a>]]>
+                        </comment>
                     </field>
 
                     <field id="sign_up" translate="label" type="button" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">

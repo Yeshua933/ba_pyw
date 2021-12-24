@@ -45,6 +45,7 @@ class PywOnboarding extends Field
 
         $html = <<<TEXT
             <button
+                id = "registerPywButton"
                 type="button"
                 title="{$title}"
                 class="button"

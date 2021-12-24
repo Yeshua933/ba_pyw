@@ -1,0 +1,28 @@
+<?php
+/**
+ * @author    Blue Acorn iCi <code@blueacornici.com>
+ * @copyright 2021 Blue Acorn iCi. All Rights Reserved.
+ */
+use PayYourWay\Pyw\Block\Adminhtml\System\Config\Checkbox;
+
+/**
+ * @var Checkbox $block
+ */
+
+?>
+<input type="hidden" name="<?= $block->escapeHtml($block->getNamePrefix()) ?>" value="" />
+
+<ul class="checkboxes">
+    <?php foreach ($block->getValues() as $name => $label): ?>
+        <li>
+            <input type="checkbox"
+                   value="<?= $block->escapeHtml($name)?>"
+                   name="<?= $block->escapeHtml($block->getNamePrefix()) ?>[]"
+                   id="<?= $block->escapeHtml($block->getHtmlId() . '_' . $name) ?>"
+                    "<?= ($block->getIsChecked($name) ? ' checked="checked"' : '') ?>" />
+            <label for="<?= $block->escapeHtml($block->getHtmlId() . '_' . $name) ?>">
+                <?= $block->escapeHtml($label) ?>
+            </label>
+        </li>
+    <?php endforeach;?>
+</ul>
