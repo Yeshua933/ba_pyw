@@ -108,8 +108,9 @@ class OnboardingController implements HttpPostActionInterface
         $resultMerchant = $this->updateMerchant($updateMerchantRequest);
         $resultMerchantDecode = json_decode($resultMerchant);
         $debug = ['update_merchant_response' => $resultMerchantDecode];
+        $this->logger->info($this->serializer->serialize($debug));
         if ($resultMerchantDecode->response->status === 'success') {
-            $this->logger->info($this->serializer->serialize($debug));
+
             if ($updatingMerchant) {
                 $response = $response->setData(
                     json_encode(['status'=> true , 'message' => __('Update Merchant Successfully')])
