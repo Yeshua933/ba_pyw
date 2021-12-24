@@ -94,7 +94,7 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
             email: email
         }).done(function (response) {
             var responseDecoded = JSON.parse(response);
-            $('<div class="message message-success payyourway-registration-success-message">' + $t("Registered Client Successfully") + '</div>').insertAfter(self);
+            $('<div class="message message-success payyourway-registration-success-message">' + responseDecoded.message + '</div>').insertAfter(self);
             secretKey.val(responseDecoded.data.secretCode);
             $('[data-ui-id="page-actions-toolbar-save-button"]').trigger("click");
         }).fail(function (jqXHR) {

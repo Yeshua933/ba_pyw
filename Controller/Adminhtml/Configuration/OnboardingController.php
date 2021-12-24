@@ -40,6 +40,7 @@ class OnboardingController implements HttpPostActionInterface
     private RefIdBuilderInterface $refIdBuilder;
     private const MESSAGE_CLIENT_ID_ALREADY_TAKEN = 'The Client ID chosen is already taken';
     private const MESSAGE_ERROR = 'ERROR';
+    private const SUCCESS_STATUS = 'SUCCESS';
 
     public function __construct(
         JsonFactory $jsonFactory,
@@ -70,40 +71,59 @@ class OnboardingController implements HttpPostActionInterface
     public function execute(): ResultInterface
     {
         $response = $this->jsonFactory->create();
-
         $onboardingRequest = $this->createOnboardingRequest();
         $result = $this->registerClient($onboardingRequest);
         $resultDecode = json_decode($result);
         $debug = ['register_client_response' => $resultDecode];
         $this->logger->info($this->serializer->serialize($debug));
-
+        $accessToken = '';
+        $secretCode = '';
+        $updatingMerchant = false;
         if ($resultDecode->status === self::MESSAGE_ERROR) {
-            $this->logger->info($this->serializer->serialize($resultDecode));
-            $response->setData($resultDecode->message);
+            if ($resultDecode->message === self::MESSAGE_CLIENT_ID_ALREADY_TAKEN) {
+                $accessToken = $this->getAccessToken();
+                $secretCode = $this->config->getSecretKey();
+                $updatingMerchant = true;
+            } else {
+                $this->logger->info($this->serializer->serialize($resultDecode));
+                $response->setData($resultDecode->message);
+                $response->setHttpResponseCode(400);
+                return $response;
+            }
+
+        }
+
+        if ($resultDecode->status === self::SUCCESS_STATUS) {
+            $accessToken = $this->getAccessToken();
+            $secretCode = $resultDecode->data->secretCode;
+            $this->config->saveSecretKey($secretCode);
+        }
+
+        if ($accessToken === null) {
+            $accessToken = '';
+        }
+
+        $refId = $this->getRefId($accessToken, $secretCode);
+        $updateMerchantRequest = $this->createUpdateMerchantRequest($refId);
+        $resultMerchant = $this->updateMerchant($updateMerchantRequest);
+        $resultMerchantDecode = json_decode($resultMerchant);
+        $debug = ['update_merchant_response' => $resultMerchantDecode];
+        $this->logger->info($this->serializer->serialize($debug));
+        if ($resultMerchantDecode->response->status === 'success') {
+
+            if ($updatingMerchant) {
+                $response = $response->setData(
+                    json_encode(['status'=> true , 'message' => __('Update Merchant Successfully')])
+                );
+            } else {
+                $response = $response->setData($result);
+            }
+            $response->setHttpResponseCode(200);
+        } else {
             $response->setHttpResponseCode(400);
             return $response;
         }
 
-        if ($resultDecode->status === 'SUCCESS') {
-            $secretCode = $resultDecode->data->secretCode;
-            $this->config->saveSecretKey($secretCode);
-
-            $accessToken = $this->getAccessToken();
-            if ($accessToken === null) {
-                $accessToken = '';
-            }
-            $refId = $this->getRefId($accessToken, $secretCode);
-            $updateMerchantRequest = $this->createUpdateMerchantRequest($refId);
-            $resultMerchant = $this->updateMerchant($updateMerchantRequest);
-            $resultMerchantDecode = json_decode($resultMerchant);
-            $debug = ['update_merchant_response' => $resultMerchantDecode,];
-            $this->logger->info($this->serializer->serialize($debug));
-            $response = $response->setData($result);
-            $response->setHttpResponseCode(200);
-            return $response;
-        }
-
-        $response->setHttpResponseCode(400);
         return $response;
     }
 

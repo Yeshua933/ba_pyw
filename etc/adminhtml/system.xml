@@ -143,7 +143,6 @@
                         <depends>
                             <field id="*/*/settings/environment">production</field>
                         </depends>
-                        <validate>phoneUS</validate>
                     </field>
                     <field id="merchant_phone_sb" translate="label" type="text" sortOrder="101" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                         <label>Sandbox Merchant Phone</label>
@@ -151,7 +150,6 @@
                         <depends>
                             <field id="*/*/settings/environment">sandbox</field>
                         </depends>
-                        <validate>phoneUS</validate>
                     </field>
                     <field id="merchant_category_pr" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                         <label>Merchant Category</label>
