@@ -138,7 +138,7 @@ require(['jquery', 'Magento_Ui/js/modal/alert', 'mage/translate', 'domReady!'], 
      */
     function stripClientId(clientId)
     {
-        return clientId.replace(/[^a-z0-9]/gi,'').toUpperCase();
+        return clientId.replace(/[^a-z0-9_]/gi,'').toUpperCase();
     }
 
     $('#payment_us_payyourway_settings_merchant_name_sb').on("input",function () {
