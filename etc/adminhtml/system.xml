@@ -101,6 +101,13 @@
                             <field id="*/*/*/environment">sandbox</field>
                         </depends>
                     </field>
+                    <field id="payment_action" translate="label" type="select" sortOrder='70' showInDefault="1" showInWebsite="1">
+                        <label>Payment Action</label>
+                        <config_path>payment/payyourway/payment_action</config_path>
+                        <source_model>PayYourWay\Pyw\Model\Adminhtml\Config\Source\PaymentAction</source_model>
+                        <frontend_model>PayYourWay\Pyw\Block\Adminhtml\Config\Form\Field\PaymentActionDisable</frontend_model>
+                        <attribute type="shared">1</attribute>
+                    </field>
                 </group>
 
                 <group id="register" translate="label comment" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
