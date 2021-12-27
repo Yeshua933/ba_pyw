@@ -412,11 +412,12 @@ class PlaceOrder implements HttpGetActionInterface
      */
     private function createPaymentConfirmationRequest(): \PayYourWay\Pyw\Api\RequestInterface
     {
-        $accessToken =  $this->generateAccessToken->execute();
+        $sandboxMode = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX;
+        $accessToken =  $this->generateAccessToken->execute('', '', $sandboxMode);
         if ($accessToken === null) {
             $accessToken = '';
         }
-        $sandboxMode = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX;
+
         $quoteId = (string) $this->quote->getId();
         $customerEmail = $this->quote->getCustomerEmail() ?? '';
 

@@ -57,7 +57,7 @@ class CheckoutConfigProvider implements ConfigProviderInterface
     {
         $quote = $this->checkoutSession->getQuote();
         $sandboxMode = $this->scopeConfig->getEnvironment() === Environment::ENVIRONMENT_SANDBOX;
-        $accessToken = (string)$this->generateAccessToken->execute();
+        $accessToken = (string)$this->generateAccessToken->execute('', '', $sandboxMode);
         $quoteId = (string)$quote->getId();
         $customerEmail = $quote->getCustomerEmail() ?? '';
         $clientId = $this->scopeConfig->getClientId() ?? '';
