@@ -58,7 +58,7 @@ class MerchantStatusProduction extends Field
             );
         }
 
-        if ($this->generateAccessToken->execute('', '', true)) {
+        if ($this->generateAccessToken->execute('', '', false)) {
             $state = 'notice';
             $status = 'Active';
             $helpText = __(
