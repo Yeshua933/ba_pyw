@@ -58,14 +58,14 @@
                         </depends>
                     </field>
                     <field id="client_id_pr" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                        <label>Client Id</label>
+                        <label>Client ID</label>
                         <config_path>payment/payyourway/client_id_pr</config_path>
                         <depends>
                             <field id="*/*/*/environment">production</field>
                         </depends>
                     </field>
                     <field id="client_id_sb" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                        <label>Sandbox Client Id</label>
+                        <label>Sandbox Client ID</label>
                         <config_path>payment/payyourway/client_id_sb</config_path>
                         <depends>
                             <field id="*/*/*/environment">sandbox</field>
@@ -111,7 +111,7 @@
                 </group>
 
                 <group id="register" translate="label comment" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Register your Store</label>
+                    <label>Register Your Store</label>
                     <field id="public_key_pr" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                         <label>Public Key</label>
                         <config_path>payment/payyourway/public_key_pr</config_path>
@@ -221,14 +221,14 @@
                     </field>
 
                     <field id="merchant_zip_pr" translate="label" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                        <label>Merchant Zip Code</label>
+                        <label>Merchant ZIP Code</label>
                         <config_path>payment/payyourway/merchant_zip_pr</config_path>
                         <depends>
                             <field id="*/*/settings/environment">production</field>
                         </depends>
                     </field>
                     <field id="merchant_zip_sb" translate="label" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                        <label>Sandbox Merchant Zip Code</label>
+                        <label>Sandbox Merchant ZIP Code</label>
                         <config_path>payment/payyourway/merchant_zip_sb</config_path>
                         <depends>
                             <field id="*/*/settings/environment">sandbox</field>
@@ -246,7 +246,7 @@
                     </field>
 
                     <field id="sign_up" translate="label" type="button" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                        <label>Sign up</label>
+                        <label>Sign Up</label>
                         <frontend_model>PayYourWay\Pyw\Block\Adminhtml\System\Config\PywOnboarding</frontend_model>
                         <comment>
                             <![CDATA[<a href="http://www.shopyourway.com" target="_blank">Program Information</a>]]>
