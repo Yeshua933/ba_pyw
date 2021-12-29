@@ -17,6 +17,7 @@ use PayYourWay\Pyw\Api\GenerateAccessTokenInterface;
 use PayYourWay\Pyw\Model\Adminhtml\Config\Source\Environment;
 use PayYourWay\Pyw\Model\ResourceModel\AccessToken as ResourceModel;
 use PayYourWay\Pyw\Model\ResourceModel\AccessToken\Collection;
+use PayYourWay\Pyw\Model\ResourceModel\AccessToken\CollectionFactory;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -39,6 +40,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
     private SerializerInterface $serializer;
     private Collection $collection;
     private LoggerInterface $logger;
+    private CollectionFactory $collectionFactory;
 
     public function __construct(
         Config                             $config,
@@ -48,7 +50,8 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
         ResourceModel                      $resourceModel,
         SerializerInterface                $serializer,
         Collection                         $collection,
-        LoggerInterface                    $logger
+        LoggerInterface                    $logger,
+        CollectionFactory                  $collectionFactory
     ) {
         $this->config = $config;
         $this->accessTokenRequestFactory = $accessTokenRequestFactory;
@@ -58,6 +61,7 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
         $this->serializer = $serializer;
         $this->collection = $collection;
         $this->logger = $logger;
+        $this->collectionFactory = $collectionFactory;
     }
 
     /**
@@ -72,8 +76,9 @@ class GenerateAccessToken implements GenerateAccessTokenInterface
         }
 
         $privateKey = (!empty($privateKey)) ? $privateKey : $this->config->getPrivateKey();
-        $storedAccessToken = $this->collection
-            ->addFieldToFilter('sandbox', $isSandbox)
+        $collection = $this->collectionFactory->create();
+        $storedAccessToken = $collection
+            ->addFieldToFilter('sandbox', (int)$isSandbox)
             ->addFieldToFilter('merchant_id', $clientId)
             ->getFirstItem();
         $aud = $this->config->getEnvironment() === Environment::ENVIRONMENT_SANDBOX ?
