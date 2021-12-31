@@ -13,6 +13,7 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Serialize\SerializerInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use PayYourWay\Pyw\Api\ConfigInterface;
 use PayYourWay\Pyw\Api\OnboardingLookupInterface;
 use PayYourWay\Pyw\Api\OnboardingRequestInterface;
@@ -41,6 +42,7 @@ class OnboardingController implements HttpPostActionInterface
     private const MESSAGE_CLIENT_ID_ALREADY_TAKEN = 'The Client ID chosen is already taken';
     private const MESSAGE_ERROR = 'ERROR';
     private const SUCCESS_STATUS = 'SUCCESS';
+    private StoreManagerInterface $storeManager;
 
     public function __construct(
         JsonFactory $jsonFactory,
@@ -53,7 +55,8 @@ class OnboardingController implements HttpPostActionInterface
         UpdateMerchantRequestInterfaceFactory $updateMerchantRequestFactory,
         SerializerInterface $serializer,
         GenerateAccessToken $generateAccessToken,
-        RefIdBuilderInterface $refIdBuilder
+        RefIdBuilderInterface $refIdBuilder,
+        StoreManagerInterface $storeManager
     ) {
         $this->config = $config;
         $this->jsonFactory = $jsonFactory;
@@ -66,6 +69,7 @@ class OnboardingController implements HttpPostActionInterface
         $this->serializer = $serializer;
         $this->generateAccessToken = $generateAccessToken;
         $this->refIdBuilder = $refIdBuilder;
+        $this->storeManager = $storeManager;
     }
 
     public function execute(): ResultInterface
@@ -194,7 +198,7 @@ class OnboardingController implements HttpPostActionInterface
 
     private function createUpdateMerchantRequest(string $refId): UpdateMerchantRequestInterface
     {
-        $domain = ['domain'=>'domain.test']; //TODO
+        $domain = ['domain'=> parse_url($this->storeManager->getStore()->getBaseUrl(), PHP_URL_HOST)];
         $clientName = $this->request->getParam('client_name');
         $clientEmail = $this->request->getParam('email');
         $clientId = $this->request->getParam('client_id');
